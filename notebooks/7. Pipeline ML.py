@@ -75,7 +75,7 @@ def _(mo):
     from sklearn.model_selection import RepeatedKFold
 
     from lightgbm.sklearn import LGBMClassifier
-    
+
     from typing import Any
     from hyperopt import hp, tpe, fmin
 
@@ -380,7 +380,7 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/kedro3.png" />
-    
+
     On installera les packages nécessaires avec `uv add lightgbm hyperopt` en vérifiant que l'on soit bien dans l'environnement virtuel.
     """)
     return
@@ -401,7 +401,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-
     /// attention |
     Pour mettre à jour la visualisation des pipelines, il faut relancer le processus <code>uv run kedro viz</code> dans un terminal (on le stoppera au préalable avec <code>Ctrl+C</code>).
     ///
@@ -579,7 +578,7 @@ def _(mo):
     ```
     export GOOGLE_APPLICATION_CREDENTIALS="conf/local/service-account.json"
     ```
-    
+
     Pour intéger la clée sur windows
     ```
     set GOOGLE_APPLICATION_CREDENTIALS=conf/local/service-account.json
@@ -637,7 +636,6 @@ def _(mo):
     ```
     """)
     return
-
 
 
 @app.cell(hide_code=True)
@@ -710,6 +708,18 @@ def _(mo):
     uv run pre-commit install
     ```
 
+    si vous obtenez l'erreur
+
+    ```
+    An error has occurred: FatalError: git failed. Is it installed, and are you in a Git repository directory?
+    ```
+
+    alors faites
+
+    ```
+    git init
+    ```
+
 
     Le message suivant devrait s'afficher
     ```
@@ -717,7 +727,7 @@ def _(mo):
     ```
 
 
-    Pour intégrer ruff dans notre pre-commit, nous devons créer un nouveau fichier nommé `.pre-commit-config.yaml`
+    Pour intégrer ruff dans notre pre-commit, nous devons créer un nouveau fichier nommé `.pre-commit-config.yaml` a la racine
 
     ```
     repos:
@@ -770,11 +780,6 @@ def _(mo):
     - Ensuite, nous avons combiné une partie des pipelines (encodage et entraînement) en un seul.
     - Pour finir, nous avons appliqué les bonnes pratiques de développement en vérifiant les codes Python avec la norme PEP 8.
     """)
-    return
-
-
-@app.cell
-def _():
     return
 
 
