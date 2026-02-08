@@ -330,6 +330,38 @@
       "console": []
     },
     {
+      "id": "XREd",
+      "code_hash": "238f5d61f092af464b10067ec692f02f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 partir de maintenant, les codes qui vont \u00eatre produits seront utilis\u00e9s dans des environnements de production. Il est n\u00e9cessaire que le code respecte les normes de PEP 8, telles que nous les avions vues avec ruff. Installons ce package.</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add --dev ruff\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qdjU",
+      "code_hash": "61bd2042c1f24a4014dbcd72490976db",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons cr\u00e9er un fichier <code>ruff.toml</code> qui aurat les propri\u00e9t\u00e9s suivantes\n<div class=\"language-text codehilite\"><pre><span></span><code>line-length = 120\n</code></pre></div></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dqQF",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "ZHCJ",
       "code_hash": "69cc4a0401cfcc564409cb09d17c4349",
       "outputs": [

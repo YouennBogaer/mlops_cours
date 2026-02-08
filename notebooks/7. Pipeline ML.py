@@ -613,6 +613,36 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    À partir de maintenant, les codes qui vont être produits seront utilisés dans des environnements de production. Il est nécessaire que le code respecte les normes de PEP 8, telles que nous les avions vues avec ruff. Installons ce package.
+
+    ```
+    uv add --dev ruff
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Nous allons créer un fichier `ruff.toml` qui aurat les propriétés suivantes
+    ```
+    line-length = 120
+
+
+    ```
+    """)
+    return
+
+
+@app.cell
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ## Linting et Refactoring
 
     À partir de maintenant, les codes qui vont être produits seront utilisés dans des environnements de production. Il est **nécessaire** que le code respecte les normes de PEP 8, telles que nous les avions vues avec `flake8` et `black`. Installons ces deux packages.
