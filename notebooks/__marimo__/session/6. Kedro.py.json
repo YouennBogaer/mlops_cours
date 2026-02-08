@@ -1,0 +1,398 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "c232e8c57effcfb5bfb520b506437ae1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il est temps d'organiser tout notre pipeline ML, qui est actuellement s\u00e9par\u00e9 dans plusieurs Notebooks. Pour nous aider, nous allons utiliser <strong>Kedro</strong>, un outil open-source permettant de cr\u00e9er des projets de Machine Learning reproductibles, maintenables et modulaires (i.e. plusieurs fichiers), le tout sans trop d'efforts. C'est donc un outil sur-mesure pour les ML Engineers !</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>Cr\u00e9er un premier projet Kedro et comprendre son architecture</li>\n    <li>Comprendre les concepts de Kedro</li>\n    <li>Construire un premier pipeline de traitement de donn\u00e9es</li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/ZVUu5Pm23hDZS/giphy.gif\" width=\"300\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "920690d556e08f84a54d2c85f311c0ab",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"kedro\">Kedro</h2>\n<span class=\"paragraph\">Qu'est-ce que Kedro, et pourquoi avons-nous besoin de cet outil ?</span>\n<span class=\"paragraph\">La m\u00e9thode classique pour construire des mod\u00e8les de Machine Learning est d'utiliser Jupyter Notebook dans les temps de la pr\u00e9histoire (soit avant 2022). Mais cette m\u00e9thode n'est pas du tout viable, notamment lorsqu'il s'agit de d\u00e9ployer le mod\u00e8le en production dans un futur proche. Face \u00e0 cette situation, on pr\u00e9f\u00e8re donc construire un projet entier, dont les Notebooks sont en r\u00e9alit\u00e9 des phases de recherche, d'exp\u00e9rimentation mais ne constituent pas en soi le coeur de sujet du projet. D\u00e8s lors que l'on met en place une architecture de code source, il est n\u00e9cessaire d'adopter de bonnes pratiques, aussi bien h\u00e9rit\u00e9es des environnements IT que celles utilis\u00e9es par les Data Scientists.</span>\n<span class=\"paragraph\"><img alt=\"kedro.png\" src=\"https://kedro.org/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fzwej9aiux6b9%2F66Z0PVvj5UD0FL4KzlXv7h%2F28712a7f7b62a4dd5ace9f0c1a85e4b7%2Fkedro-horizontal-color-on-light.png&amp;w=3840&amp;q=75\" /></span>\n<span class=\"paragraph\">Kedro a \u00e9t\u00e9 d\u00e9velopp\u00e9 pour appliquer ces bonnes pratiques tout au long d'un projet de Machine Learning.</span>\n<ul>\n<li>\u00c9viter au maximum de d\u00e9pendre de Jupyter Notebooks qui emp\u00eache la production d'un code source maintenable et reproductible.</li>\n<li>Am\u00e9liorer la collaboration entre les diff\u00e9rents acteurs (Data Scientists, Data Engineers, DevOps) aux comp\u00e9tences diverses dans un projet.</li>\n<li>Augmenter l'efficacit\u00e9 en appliquant la modularit\u00e9 du code, les s\u00e9parations entre les donn\u00e9es et leur utilisation ou encore en optimisant les ex\u00e9cutions de traitements atomiques.</li>\n</ul>\n<span class=\"paragraph\">En bref, Kedro nous permet d'avoir un projet Python <strong>enti\u00e8rement pens\u00e9</strong> pour le Machine Learning et optimis\u00e9 dans ce sens. Il existe d'autres alternatives \u00e0 Kedro (comme Kubeflow qui se base sur Kubernetes), mais il a l'avantage d'\u00eatre rapide \u00e0 prendre en main et poss\u00e8de une communaut\u00e9 d\u00e9j\u00e0 active.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "0e0441d99738929eb5868a1526e5c8ae",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"admonition\">\n<span class=\"paragraph\">Les temps changent !</span>\n<span class=\"paragraph\">En effet, les jupyter notebook sont progressivement remplac\u00e9s par des alternatives r\u00e9pondant \u00e0 ce probl\u00e8me. C'est le cas notament de Marimo. La particularit\u00e9 de Marimo r\u00e9side sur le fait que les cellules sont encapsul\u00e9 par des m\u00e9thodes. Elle va donc d\u00e9terminer automatiquement l'ordre d'execution des cellules, comme \u00e0 l'image des graphes d'ex\u00e9cutions.</span>\n<span class=\"paragraph\">L'utilisation de Marimo dans le cadre de ce cours vous facilitera la transition d'un code sous la forme de cellules, vers un code en production via Kedro.</span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "c1b7419c3f6deaa0f2a8df847452ec5f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"premiers-pas-avec-kedro\">Premiers pas avec Kedro</h3>\n<span class=\"paragraph\">Essayons de cr\u00e9er un premier projet avec Kedro que nous allons nommer <code>purchase-predict</code>.</span>\n<span class=\"paragraph\">Cr\u00e9ons un nouveau terminal et un nouveau projet Kedro.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "8d75d0127618bbeb9070f5ca49382842",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><code>uvx --python 3.12 kedro new</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "0fdb70105567a77f9e9e3f0d5974f792",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"admonition danger\">\n<p class=\"admonition-title\">Danger</span>\n<span class=\"paragraph\">Au 8 f\u00e9vrier 2026, tout projet de Data Science en production doit imp\u00e9rativement \u00eatre sous version python 3.12.</span>\n<span class=\"paragraph\">En effet, c'est la version qui assure une compatibilit\u00e9 globale de l'ensemble des paquets que vous \u00eates amen\u00e9s \u00e0 utiliser !</span>\n<span class=\"paragraph\">Certains d\u00e9veloppeurs n'ont pas encore migr\u00e9 leur code source vers python 3.14, c'est notament le cas de Kedro.</span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "4af6103698120753ab8c8f8b7b3e76e3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><ol>\n<li>Il nous est demand\u00e9 un nom de projet. Nous metterons la valeur <code>purchase-predict</code>.</li>\n<li>Au niveau des <code>projet tools</code>, nous saissons la valeur <code>1-5</code></li>\n<li>Et nous n'allons pas g\u00e9n\u00e9rer de pipelines</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "7d1c2c57cf545d48fb7e712749fa9328",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-restructuredtext codehilite\"><pre><span></span><code><span class=\"gh\">Project Name</span>\n<span class=\"gh\">============</span>\nPlease enter a name for your new project.\nSpaces, hyphens, and underscores are allowed.\nTo skip this step in future use --name\n [New Kedro Project]: purchase-predict\n\n<span class=\"gh\">Project Tools</span>\n<span class=\"gh\">=============</span>\nThese optional tools can help you apply software engineering best practices.\nTo skip this step in future use --tools\nTo find out more: https://docs.kedro.org/en/stable/starters/new_project_tools.html\n\nTools\n<span class=\"m\">1)</span> Lint: Basic linting with Ruff\n<span class=\"m\">2)</span> Test: Basic testing with pytest\n<span class=\"m\">3)</span> Log: Additional, environment-specific logging options\n<span class=\"m\">4)</span> Docs: A Sphinx documentation setup\n<span class=\"m\">5)</span> Data Folder: A folder structure for data management\n<span class=\"m\">6)</span> PySpark: Configuration for working with PySpark\n\nWhich tools would you like to include in your project? [1-6/1,3/all/none]:\n [none]: 1-5\n\n<span class=\"gh\">Example Pipeline</span>\n<span class=\"gh\">================</span>\nSelect whether you would like an example spaceflights pipeline included in your project.\nTo skip this step in the future use --example=y/n\nTo find out more: https://docs.kedro.org/en/stable/starters/new_project_tools.html\n\nWould you like to include an example pipeline? [y/N]:\n [no]: no\n\nCongratulations!\nYour project &#39;purchase-predict&#39; has been created in the directory\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "825825ee653d1b98565906fac641f9ce",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ce qui nous donne l'architecture des dossiers suivants :</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "b6c9b81aca269f885cae3d46000680df",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>\u251c\u2500\u2500 conf\n\u2502   \u251c\u2500\u2500 base\n\u2502   \u2502   \u251c\u2500\u2500 catalog.yml\n\u2502   \u2502   \u251c\u2500\u2500 credentials.yml\n\u2502   \u2502   \u251c\u2500\u2500 logging.yml\n\u2502   \u2502   \u2514\u2500\u2500 parameters.yml\n\u2502   \u251c\u2500\u2500 local\n\u2502   \u2514\u2500\u2500 README.md\n\u251c\u2500\u2500 data\n\u2502   \u251c\u2500\u2500 01_raw\n\u2502   \u251c\u2500\u2500 02_intermediate\n\u2502   \u251c\u2500\u2500 03_primary\n\u2502   \u251c\u2500\u2500 04_feature\n\u2502   \u251c\u2500\u2500 05_model_input\n\u2502   \u251c\u2500\u2500 06_models\n\u2502   \u251c\u2500\u2500 07_model_output\n\u2502   \u2514\u2500\u2500 08_reporting\n\u251c\u2500\u2500 docs\n\u2502   \u2514\u2500\u2500 source\n\u2502       \u251c\u2500\u2500 conf.py\n\u2502       \u2514\u2500\u2500 index.rst\n\u251c\u2500\u2500 logs\n\u2502   \u2514\u2500\u2500 journals\n\u251c\u2500\u2500 notebooks\n\u251c\u2500\u2500 pyproject.toml\n\u251c\u2500\u2500 README.md\n\u251c\u2500\u2500 setup.cfg\n\u2514\u2500\u2500 src\n    \u251c\u2500\u2500 purchase_predict\n    \u2502   \u251c\u2500\u2500 cli.py\n    \u2502   \u251c\u2500\u2500 hooks.py\n    \u2502   \u251c\u2500\u2500 __init__.py\n    \u2502   \u251c\u2500\u2500 pipelines\n    \u2502   \u2502   \u2514\u2500\u2500 __init__.py\n    \u2502   \u251c\u2500\u2500 run.py\n    \u2502   \u2514\u2500\u2500 settings.py\n    \u251c\u2500\u2500 requirements.txt\n    \u251c\u2500\u2500 setup.py\n    \u2514\u2500\u2500 tests\n        \u251c\u2500\u2500 __init__.py\n        \u251c\u2500\u2500 pipelines\n        \u2502   \u2514\u2500\u2500 __init__.py\n        \u2514\u2500\u2500 test_run.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "66163a3a8ad51ad6bd89d9f624094789",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">D\u00e9taillons tout d'abord chaque dossier de premier niveau.</span>\n<ul>\n<li><code>conf</code> contient tous les fichiers de configuration des param\u00e8tres (code, mod\u00e8le) ainsi que les cl\u00e9s et secrets n\u00e9cessaires.</li>\n<li><code>data</code> contient plusieurs dossiers qui correspondent aux donn\u00e9es utilis\u00e9es ou produits \u00e0 chaque \u00e9tape du pipeline (base d'apprentissage, matrices des <em>features</em>, mod\u00e8le s\u00e9rialis\u00e9).</li>\n<li><code>docs</code> contient des fichiers de documentation.</li>\n<li><code>logs</code> contient les journaux d'\u00e9v\u00e9nements de Kedro.</li>\n<li><code>notebooks</code> permet de stocker des notebooks.</li>\n<li><code>src</code> contient tous les codes n\u00e9cessaire pour cr\u00e9er les pipelines.</li>\n<li><code>tests</code> contient les tests unitaires.</li>\n</ul>\n<span class=\"paragraph\">C'est notamment dans le dossier <code>src</code> que nous d\u00e9velopperons les briques \u00e9l\u00e9mentaires et que nous les connecterons ensembles afin de former les diff\u00e9rents pipelines.\nAvant de pouvoir commencer \u00e0 travailler sur ce r\u00e9pertoire, nous devons initialiser un environnement virtuel python, g\u00e9n\u00e9r\u00e9 par Kedro</span>\n<span class=\"paragraph\">Pour cela nous tapons la commande <code>uv sync</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "9bca200e03a572429f461a49850165c9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"concepts-de-kedro\">Concepts de Kedro</h2>\n<span class=\"paragraph\">Kedro ne se contente pas uniquement de cr\u00e9er un projet : il va \u00e9galement apporter des fonctionnalit\u00e9s tr\u00e8s puissantes qui en font sa popularit\u00e9.</span>\n<h3 id=\"data-catalog\">Data Catalog</h3>\n<span class=\"paragraph\">Pour utiliser des donn\u00e9es tout au long d'un pipeline ML, il est d\u00e9conseill\u00e9 d'inscrire des chemins d'acc\u00e8s en dur dans le code. Il est pr\u00e9f\u00e9rable d'attribuer des noms \u00e0 des donn\u00e9es existantes que l'on utilise ou celles que l'on cr\u00e9e. C'est r\u00f4le du Data Catalog : nous allons d\u00e9finir en amont des r\u00e9f\u00e9rentiels de donn\u00e9es avec des noms associ\u00e9s. Le Data Catalog est r\u00e9f\u00e9renc\u00e9 dans le fichier <code>conf/base/catalog.yml</code>.</span>\n<span class=\"paragraph\">Par d\u00e9faut, Kedro propose plusieurs sous-dossiers dans <code>data</code> qui permet de mieux organiser les donn\u00e9es.</span>\n<ul>\n<li><code>raw</code>, <code>intermediate</code> et <code>primary</code> font r\u00e9f\u00e9rence aux donn\u00e9es brutes, celles ayant subi des traitements interm\u00e9diaires et celles pr\u00eates \u00e0 \u00eatre encod\u00e9es.</li>\n<li><code>feature</code> contiendrait la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X,y)||)</marimo-tex> encod\u00e9e.</li>\n<li><code>model_input</code> contiendrait les \u00e9chantillons d'entra\u00eenement et de test fournis au mod\u00e8le.</li>\n<li><code>models</code> contiendrait le ou les mod\u00e8les s\u00e9rialis\u00e9s.</li>\n<li><code>model_output</code> et <code>reporting</code> contiendraient les sorties du mod\u00e8les ainsi que les graphes pour valider et interp\u00e9ter.</li>\n</ul>\n<div class=\"admonition\">\n<span class=\"paragraph\">\u2139\ufe0f Bien entendu, nous ne sommes pas tenu de suivre exactement cette structure, il s'agit plut\u00f4t d'une organisation par d\u00e9faut propos\u00e9e par Kedro.</span>\n</div>\n<span class=\"paragraph\">Dans notre cas, nous n'allons pas effectuer la transformation des donn\u00e9es avec Kedro, puisque ce sera une t\u00e2che Spark SQL qui en sera charg\u00e9e. Ainsi, nous aurons uniquement le donn\u00e9es transform\u00e9 qui subira ensuite l'encodage. Nous consid\u00e9rons donc que l'\u00e9chantillon que recevra Kedro sera situ\u00e9 dans <code>primary</code> et sera nomm\u00e9 <code>primary.csv</code>.</span>\n<span class=\"paragraph\">\u00c0 partir de ces donn\u00e9es <code>primary.csv</code>, nous encoderons vers un nouveau fichier <code>dataset.csv</code> dans le dossier <code>feature</code>, dont nous r\u00e9cup\u00e9rerons les sous-ensembles d'apprentissage et de test. Pour r\u00e9f\u00e9rencer tous ces fichiers dans le Data Catalog, nous \u00e9ditons le fichier <code>conf/base/catalog.yml</code> en sp\u00e9cifiant le nom, le type de donn\u00e9es et le chemin en relatif par rapport au dossier racine.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "910c5f6284f2f1053b7b59575a7893b8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">primary</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/03_primary/</span><span class=\"n\">primary</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n\n<span class=\"n\">dataset</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/04_feature/</span><span class=\"n\">dataset</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n\n<span class=\"n\">X_train</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/05_model_input/</span><span class=\"n\">X_train</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n\n<span class=\"n\">y_train</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/05_model_input/</span><span class=\"n\">y_train</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n\n<span class=\"n\">X_test</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/05_model_input/</span><span class=\"n\">X_test</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n\n<span class=\"n\">y_test</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pandas</span><span class=\"o\">.</span><span class=\"na\">CSVDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/05_model_input/</span><span class=\"n\">y_test</span><span class=\"o\">.</span><span class=\"na\">csv</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "ee565fbc500693de1afc0fa437e2d5d0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L'avantage du Data Catalog est la flexibilit\u00e9 d'utilisation. Plut\u00f4t que de sp\u00e9cifier le chemin d'acc\u00e8s dans chaque fichier Python, nous pouvons simplement inscrire <code>primary</code> comme argument, et Kedro va automatiquement charger en m\u00e9moire (ici au format CSV avec <code>pandas</code>) ce jeu de donn\u00e9es. Ainsi, nous pouvons \u00e0 tout moment modifier la valeur du chemin <code>filepath</code> ici sans alt\u00e9rer tous les fichiers Python.</span>\n<h3 id=\"nodes-et-pipelines\">Nodes et Pipelines</h3>\n<span class=\"paragraph\">Parmi les concepts les plus importants, nous retrouvons celui des <strong>nodes</strong> et des <strong>pipelines</strong>.</span>\n<span class=\"paragraph\">Un <strong>node</strong> est un \u00e9l\u00e9ment unitaire qui repr\u00e9sente une t\u00e2che. Par exemple, nous pouvons imaginer un node pour encoder le jeu de donn\u00e9es, un autre pour construire les sous-ensembles d'entra\u00eenement et de test, et un dernier pour calibrer un mod\u00e8le de Machine Learning.</span>\n<span class=\"paragraph\">Un <strong>pipeline</strong>, \u00e0 l'instar des pipelines de donn\u00e9es, est une succession de nodes qui peuvent \u00eatre assembl\u00e9s en s\u00e9quence ou en parall\u00e8le.</span>\n<span class=\"paragraph\">Les pipelines sont une partie tr\u00e8s importante dans Kedro. Reprenons le pipeline d'exp\u00e9rimentation o\u00f9 l'on entra\u00eene un mod\u00e8le de Machine Learning.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/kedro2.png\" /></span>\n<span class=\"paragraph\">Ce qui est important \u00e0 voir, c'est le caract\u00e8re s\u00e9quenc\u00e9 entre les t\u00e2ches. En particulier, <strong>impossible d'entra\u00eener un mod\u00e8le sans avoir encod\u00e9 les donn\u00e9es</strong>, tout comme il est impossible d'\u00e9valuer un mod\u00e8le si l'on n'en a pas.</span>\n<span class=\"paragraph\">Kedro va nous permettre de cr\u00e9er ces pipelines, garantissant que les <strong>artifacts</strong> (donn\u00e9es construites, mod\u00e8les, etc) vont \u00eatre disponibles pour les autres nodes du pipeline. C'est un outil essentiel car il va nous assurer que les traitements sont homog\u00e8nes et que lorsque l'on souhaitera entra\u00eener un nouveau mod\u00e8le par exemple, les donn\u00e9es subiront exactement le m\u00eame traitement puisqu'elles passeront par le m\u00eame pipeline. On \u00e9vite ainsi les risques d'oubli ou d'erreur de coh\u00e9rence entre deux ex\u00e9cutions successives, chose qui arrive plus souvent que l'on ne l'imagine avec les Jupyter Notebooks.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "b75e1a826985e63706cbb495f0e39b7a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"premier-pipeline\">Premier pipeline</h2>\n<span class=\"paragraph\">Nous allons cr\u00e9er ensemble un premier pipeline qui va contenir deux noeuds.</span>\n<ul>\n<li>Un premier qui va se charger d'encoder le jeu de donn\u00e9es <code>primary</code>.</li>\n<li>Un autre qui va s\u00e9parer la base de donn\u00e9es en deux sous-ensembles d'entra\u00eenement et d'apprentissage.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons tout d'abord par t\u00e9l\u00e9charger le fichier d'\u00e9chantillon dans le dossier <code>data/03_primary</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "0cf8632a7cbaf2485eceeddd965c0a59",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>cp data/primary.csv purchase-predict/data/03_primary/primary.csv\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "a48f287bfb65a56194c99993b3fa0581",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cr\u00e9ons un dossier <code>processing</code> dans <code>src/purchase_predict/pipelines</code>. Nous allons y ajouter deux fichiers Python <code>nodes.py</code> et <code>pipeline.py</code>.</span>\n<ul>\n<li>Le fichier <code>nodes.py</code> contient les d\u00e9finitions des fonctions qui seront utilis\u00e9es par les nodes.</li>\n<li>Le fichier <code>pipeline.py</code> permet de construire le pipeline \u00e0 partir de nodes qui utiliseront les fonctions du fichier <code>nodes.py</code>.</li>\n</ul>\n<span class=\"paragraph\">Puisque nous avons deux noeuds, nous devons construire deux fonctions.</span>\n<h3 id=\"noeud-encode_features\">Noeud <code>encode_features</code></h3>\n<span class=\"paragraph\">La fonction <code>encode_features</code> va r\u00e9cup\u00e9rer <code>dataset</code>, qui correspond au fichier CSV ayant subit les transformations (notamment via Spark SQL).\nNotre IDE va se plaindre que sklearn n'est pas install\u00e9, il faudra tout simplement l'installer avec <code>uv add scikit-learn</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "7904e6ba1195f234471d2bdde199c88b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">pandas</span><span class=\"w\"> </span><span class=\"k\">as</span><span class=\"w\"> </span><span class=\"nn\">pd</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">sklearn.preprocessing</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LabelEncoder</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">sklearn.model_selection</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">train_test_split</span>\n\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">encode_features</span><span class=\"p\">(</span>\n    <span class=\"n\">dataset</span><span class=\"p\">:</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">DataFrame</span><span class=\"p\">,</span>\n<span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">DataFrame</span> <span class=\"o\">|</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">LabelEncoder</span><span class=\"p\">]]:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">Encode</span> <span class=\"n\">features</span> <span class=\"n\">of</span> <span class=\"n\">data</span> <span class=\"n\">file</span><span class=\"o\">.</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">features</span> <span class=\"o\">=</span> <span class=\"n\">dataset</span><span class=\"o\">.</span><span class=\"n\">drop</span><span class=\"p\">([</span><span class=\"s2\">&quot;user_id&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;user_session&quot;</span><span class=\"p\">],</span> <span class=\"n\">axis</span><span class=\"o\">=</span><span class=\"mi\">1</span><span class=\"p\">)</span><span class=\"o\">.</span><span class=\"n\">copy</span><span class=\"p\">()</span>\n\n    <span class=\"n\">encoders</span> <span class=\"o\">=</span> <span class=\"p\">[]</span>\n    <span class=\"n\">transform_pipeline</span><span class=\"p\">:</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">LabelEncoder</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"p\">{}</span>\n    <span class=\"k\">for</span> <span class=\"n\">label</span> <span class=\"ow\">in</span> <span class=\"p\">[</span><span class=\"s2\">&quot;category&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;sub_category&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;brand&quot;</span><span class=\"p\">]:</span>\n        <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">astype</span><span class=\"p\">(</span><span class=\"s2\">&quot;string&quot;</span><span class=\"p\">)</span><span class=\"o\">.</span><span class=\"n\">fillna</span><span class=\"p\">(</span><span class=\"s2\">&quot;unknown&quot;</span><span class=\"p\">)</span>\n        <span class=\"n\">encoder</span> <span class=\"o\">=</span> <span class=\"n\">LabelEncoder</span><span class=\"p\">()</span>\n        <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"n\">encoder</span><span class=\"o\">.</span><span class=\"n\">fit_transform</span><span class=\"p\">(</span><span class=\"n\">features</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">])</span>\n        <span class=\"n\">encoders</span><span class=\"o\">.</span><span class=\"n\">append</span><span class=\"p\">((</span><span class=\"n\">label</span><span class=\"p\">,</span> <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">]))</span>\n        <span class=\"n\">transform_pipeline</span><span class=\"p\">[</span><span class=\"n\">label</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"n\">encoder</span>\n\n    <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"s2\">&quot;weekday&quot;</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"n\">features</span><span class=\"p\">[</span><span class=\"s2\">&quot;weekday&quot;</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">astype</span><span class=\"p\">(</span><span class=\"nb\">int</span><span class=\"p\">)</span>\n    <span class=\"k\">return</span> <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">features</span><span class=\"o\">=</span><span class=\"n\">features</span><span class=\"p\">,</span> <span class=\"n\">transform_pipeline</span><span class=\"o\">=</span><span class=\"n\">transform_pipeline</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "372babe6a56b482a3a434ed528a1d22e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cette fonction retourne le DataFrame <code>features</code>, qui correspond aux donn\u00e9es encod\u00e9es.</span>\n<h3 id=\"noeud-split_dataset\">Noeud <code>split_dataset</code></h3>\n<span class=\"paragraph\">L'autre fonction, <code>split_dataset</code>, op\u00e8re simplement une s\u00e9paration en deux sous-\u00e9chantillons. L'argument <code>test_ratio</code> permettra de sp\u00e9cifier la proportion d'observation \u00e0 consid\u00e9rer dans le sous-\u00e9chantillon de test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "518b0aa9e38b5cc9ab5b6e297da8a06e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-Py codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">split_dataset</span><span class=\"p\">(</span><span class=\"n\">dataset</span><span class=\"p\">:</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">DataFrame</span><span class=\"p\">,</span> <span class=\"n\">test_ratio</span><span class=\"p\">:</span> <span class=\"nb\">float</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">DataFrame</span><span class=\"p\">]:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">Splits</span> <span class=\"n\">dataset</span> <span class=\"n\">into</span> <span class=\"n\">a</span> <span class=\"n\">training</span> <span class=\"nb\">set</span> <span class=\"ow\">and</span> <span class=\"n\">a</span> <span class=\"n\">test</span> <span class=\"nb\">set</span><span class=\"o\">.</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">X</span> <span class=\"o\">=</span> <span class=\"n\">dataset</span><span class=\"o\">.</span><span class=\"n\">drop</span><span class=\"p\">(</span><span class=\"s2\">&quot;purchased&quot;</span><span class=\"p\">,</span> <span class=\"n\">axis</span><span class=\"o\">=</span><span class=\"mi\">1</span><span class=\"p\">)</span>\n    <span class=\"n\">y</span> <span class=\"o\">=</span> <span class=\"n\">dataset</span><span class=\"p\">[</span><span class=\"s2\">&quot;purchased&quot;</span><span class=\"p\">]</span>\n\n    <span class=\"n\">X_train</span><span class=\"p\">,</span> <span class=\"n\">X_test</span><span class=\"p\">,</span> <span class=\"n\">y_train</span><span class=\"p\">,</span> <span class=\"n\">y_test</span> <span class=\"o\">=</span> <span class=\"n\">train_test_split</span><span class=\"p\">(</span>\n        <span class=\"n\">X</span><span class=\"p\">,</span> <span class=\"n\">y</span><span class=\"p\">,</span> <span class=\"n\">test_size</span><span class=\"o\">=</span><span class=\"n\">test_ratio</span><span class=\"p\">,</span> <span class=\"n\">random_state</span><span class=\"o\">=</span><span class=\"mi\">40</span>\n    <span class=\"p\">)</span>\n\n    <span class=\"k\">return</span> <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">X_train</span><span class=\"o\">=</span><span class=\"n\">X_train</span><span class=\"p\">,</span> <span class=\"n\">y_train</span><span class=\"o\">=</span><span class=\"n\">y_train</span><span class=\"p\">,</span> <span class=\"n\">X_test</span><span class=\"o\">=</span><span class=\"n\">X_test</span><span class=\"p\">,</span> <span class=\"n\">y_test</span><span class=\"o\">=</span><span class=\"n\">y_test</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "3b724c90e626efe07d96f78a06787132",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"admonition attention\">\n<span class=\"paragraph\">Note : Il se peut que vous avez un warning concernant la ligne <code>dataset.drop([\"user_id\", \"user_sessions\"], axis=1).copy()</code>.\nEn effet, drop permet de renvoyer soit un DataFrame (ce qui est le cas ici), soit rien du tout, en attribuant la valeur <code>False</code> \u00e0 <code>inplace</code>.</span>\n<span class=\"paragraph\">Pour effacer ce warning, nous devons installer <code>pandas-stubs</code> \u00e0 l'aide de la commande <code>uv add pandas-stubs</code></span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "7889b1c4c3e04351fb093e5ffd02f4a8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La fonction retourne les quatre DataFrames.</span>\n<h3 id=\"construction-du-pipeline\">Construction du pipeline</h3>\n<span class=\"paragraph\">Pour entamer la construction du pipeline, nous allons tout d'abord d\u00e9finir un <strong>param\u00e8tre</strong> Kedro, le <code>test_ratio</code>. En effet, il s'agit d'un param\u00e8tre de configuration qui doit \u00eatre initialis\u00e9 au pr\u00e9alable, et plut\u00f4t que d'inscrire en dur dans le code la valeur du ratio pour l'ensemble de test, tout comme le Data Catalog, le fichier <code>parameters.yml</code> dans le dossier <code>conf/base</code> permet de centraliser tous les param\u00e8tres du mod\u00e8le, Cloud, de traitement de donn\u00e9es, etc.</span>\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">test_ratio</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"mf\">0.3</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "003c6bc8e5e436da2580a917b45350ca",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 partir de l\u00e0, nous pouvons construire notre pipeline. Pour cela, nous utilisons l'objet <code>Pipeline</code> de Kedro, qui s'attends \u00e0 une liste de <code>node</code>. Chaque instance de <code>node</code> attends trois param\u00e8tres.</span>\n<ul>\n<li>Le nom de la fonction Python qui sera appel\u00e9e.</li>\n<li>Les arguments de la fonction (sous forme de liste ou dictionnaire).</li>\n<li>Les sorties du mod\u00e8les (sous forme de liste ou dictionnaire).</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "f524218943f85763d6edadc89b54dc0a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Pipeline</span><span class=\"p\">,</span> <span class=\"n\">node</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">.nodes</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">encode_features</span><span class=\"p\">,</span> <span class=\"n\">split_dataset</span>\n\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">Pipeline</span><span class=\"p\">:</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">(</span>\n        <span class=\"p\">[</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">encode_features</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;primary&quot;</span><span class=\"p\">,</span>\n                <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">features</span><span class=\"o\">=</span><span class=\"s2\">&quot;dataset&quot;</span><span class=\"p\">,</span> <span class=\"n\">transform_pipeline</span><span class=\"o\">=</span><span class=\"s2\">&quot;transform_pipeline&quot;</span><span class=\"p\">),</span>\n            <span class=\"p\">),</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">split_dataset</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;dataset&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;params:test_ratio&quot;</span><span class=\"p\">],</span>\n                <span class=\"nb\">dict</span><span class=\"p\">(</span>\n                    <span class=\"n\">X_train</span><span class=\"o\">=</span><span class=\"s2\">&quot;X_train&quot;</span><span class=\"p\">,</span>\n                    <span class=\"n\">y_train</span><span class=\"o\">=</span><span class=\"s2\">&quot;y_train&quot;</span><span class=\"p\">,</span>\n                    <span class=\"n\">X_test</span><span class=\"o\">=</span><span class=\"s2\">&quot;X_test&quot;</span><span class=\"p\">,</span>\n                    <span class=\"n\">y_test</span><span class=\"o\">=</span><span class=\"s2\">&quot;y_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"p\">),</span>\n            <span class=\"p\">),</span>\n        <span class=\"p\">]</span>\n    <span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "02f634c5e7544321488f18f77c9d0456",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Le premier noeud appelle la fonction <code>encode_features</code> avec pour argument le jeu de donn\u00e9es <code>primary</code>, et le r\u00e9sultat (un seul) retourn\u00e9 par la fonction sera stock\u00e9 dans le jeu de donn\u00e9es <code>dataset</code>.</span>\n<span class=\"paragraph\">Le deuxi\u00e8me noeud n\u00e9cessite le jeu de donn\u00e9es <code>dataset</code> ainsi que le param\u00e8tre <code>test_ratio</code>, et retourne les 4 DataFrames qui correspond aux sous-ensembles.</span>\n<span class=\"paragraph\">Notre pipeline est donc en place, et nous pouvons la visualiser ci-dessous.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/kedro1.jpg.jpeg\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "2d04d4ba0fc51cd3746072404a528ba9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Mais avant de passer \u00e0 la suite, il nous reste \u00e0 cr\u00e9er un fichier <code>__init__.py</code> afin d'avertir aux programmes annexes que le module <code>processing</code> existe.</span>\n<span class=\"paragraph\">Nous mettrons ce bout de code</span>\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">create_pipeline</span>\n\n<span class=\"n\">__all__</span> <span class=\"o\">=</span> <span class=\"p\">[</span><span class=\"s2\">&quot;create_pipeline&quot;</span><span class=\"p\">]</span>\n\n<span class=\"n\">__version__</span> <span class=\"o\">=</span> <span class=\"s2\">&quot;0.1&quot;</span>\n</code></pre></div>\n<span class=\"paragraph\">Nous ex\u00e9cutons ensuite la pipeline avec la commande <code>uv run kedro run --pipeline processing</code> Mais nous allons avoir l'erreur suivante :\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">DatasetError</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">Dataset</span><span class=\"w\"> </span><span class=\"s1\">&#39;CSVDataset&#39;</span><span class=\"w\"> </span><span class=\"n\">not</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"k\">in</span><span class=\"w\"> </span><span class=\"s1\">&#39;pandas&#39;</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">Make</span><span class=\"w\"> </span><span class=\"n\">sure</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">dataset</span><span class=\"w\"> </span><span class=\"n\">name</span><span class=\"w\"> </span><span class=\"k\">is</span><span class=\"w\"> </span><span class=\"n\">correct</span><span class=\"o\">.</span>\n<span class=\"n\">Hint</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">If</span><span class=\"w\"> </span><span class=\"n\">you</span><span class=\"w\"> </span><span class=\"n\">are</span><span class=\"w\"> </span><span class=\"n\">trying</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">use</span><span class=\"w\"> </span><span class=\"n\">a</span><span class=\"w\"> </span><span class=\"n\">dataset</span><span class=\"w\"> </span><span class=\"n\">from</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">kedro</span><span class=\"o\">-</span><span class=\"n\">datasets</span><span class=\"err\">`</span><span class=\"o\">,</span><span class=\"w\"> </span><span class=\"n\">make</span><span class=\"w\"> </span><span class=\"n\">sure</span><span class=\"w\"> </span><span class=\"n\">that</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"k\">package</span><span class=\"w\"> </span><span class=\"nn\">is</span><span class=\"w\"> </span><span class=\"n\">installed</span><span class=\"w\"> </span><span class=\"k\">in</span><span class=\"w\"> </span><span class=\"n\">your</span><span class=\"w\"> </span><span class=\"n\">current</span><span class=\"w\"> </span><span class=\"n\">environment</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">You</span><span class=\"w\"> </span><span class=\"n\">can</span><span class=\"w\"> </span><span class=\"k\">do</span><span class=\"w\"> </span><span class=\"n\">so</span>\n<span class=\"n\">by</span><span class=\"w\"> </span><span class=\"n\">running</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">pip</span><span class=\"w\"> </span><span class=\"n\">install</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"o\">-</span><span class=\"n\">datasets</span><span class=\"err\">`</span><span class=\"w\"> </span><span class=\"n\">or</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">pip</span><span class=\"w\"> </span><span class=\"n\">install</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"o\">-</span><span class=\"n\">datasets</span><span class=\"o\">[&lt;</span><span class=\"n\">dataset</span><span class=\"o\">-</span><span class=\"n\">group</span><span class=\"o\">&gt;]</span><span class=\"err\">`</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">install</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">kedro</span><span class=\"o\">-</span><span class=\"n\">datasets</span><span class=\"err\">`</span><span class=\"w\"> </span><span class=\"n\">along</span><span class=\"w\"> </span><span class=\"k\">with</span><span class=\"w\"> </span><span class=\"n\">related</span>\n<span class=\"n\">dependencies</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">specific</span><span class=\"w\"> </span><span class=\"n\">dataset</span><span class=\"w\"> </span><span class=\"n\">group</span><span class=\"o\">.</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Ce qui est normal, car depuis la version final (donc la 1) de kedro, les Datasets ne sont plus fourni.\nNous devons donc les installer \u00e0 l'aide de la commande : <code>uv add kedro-datasets</code></span>\n<span class=\"paragraph\">Relancez la pipeline et tout devrait s'ex\u00e9cuter avec succ\u00e8s.</span>\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"o\">&gt;</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"n\">pipeline</span><span class=\"w\"> </span><span class=\"n\">processing</span>\n<span class=\"p\">[</span><span class=\"mi\">12</span><span class=\"o\">/</span><span class=\"mi\">17</span><span class=\"o\">/</span><span class=\"mi\">25</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">:</span><span class=\"mi\">44</span><span class=\"p\">:</span><span class=\"mi\">22</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Using</span><span class=\"w\"> </span><span class=\"s1\">&#39;conf\\logging.yml&#39;</span><span class=\"w\"> </span><span class=\"k\">as</span><span class=\"w\"> </span><span class=\"n\">logging</span><span class=\"w\"> </span><span class=\"n\">configuration</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">You</span><span class=\"w\"> </span><span class=\"n\">can</span><span class=\"w\"> </span><span class=\"n\">change</span><span class=\"w\"> </span><span class=\"n\">this</span><span class=\"w\"> </span><span class=\"n\">by</span><span class=\"w\"> </span><span class=\"n\">setting</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\">                  </span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">269</span>\n<span class=\"w\">                             </span><span class=\"n\">KEDRO_LOGGING_CONFIG</span><span class=\"w\"> </span><span class=\"n\">environment</span><span class=\"w\"> </span><span class=\"n\">variable</span><span class=\"w\"> </span><span class=\"n\">accordingly</span><span class=\"o\">.</span>\n<span class=\"p\">[</span><span class=\"mi\">12</span><span class=\"o\">/</span><span class=\"mi\">17</span><span class=\"o\">/</span><span class=\"mi\">25</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">:</span><span class=\"mi\">44</span><span class=\"p\">:</span><span class=\"mi\">23</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Kedro</span><span class=\"w\"> </span><span class=\"n\">project</span><span class=\"w\"> </span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span><span class=\"w\">                                                                          </span><span class=\"n\">session</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">330</span>\n<span class=\"p\">[</span><span class=\"mi\">12</span><span class=\"o\">/</span><span class=\"mi\">17</span><span class=\"o\">/</span><span class=\"mi\">25</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">:</span><span class=\"mi\">44</span><span class=\"p\">:</span><span class=\"mi\">24</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Kedro</span><span class=\"w\"> </span><span class=\"k\">is</span><span class=\"w\"> </span><span class=\"n\">sending</span><span class=\"w\"> </span><span class=\"n\">anonymous</span><span class=\"w\"> </span><span class=\"n\">usage</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">with</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">sole</span><span class=\"w\"> </span><span class=\"n\">purpose</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">improving</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">product</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">No</span><span class=\"w\"> </span><span class=\"n\">personal</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\">   </span><span class=\"n\">plugin</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">242</span>\n<span class=\"w\">                             </span><span class=\"ow\">or</span><span class=\"w\"> </span><span class=\"n\">IP</span><span class=\"w\"> </span><span class=\"n\">addresses</span><span class=\"w\"> </span><span class=\"n\">are</span><span class=\"w\"> </span><span class=\"n\">stored</span><span class=\"w\"> </span><span class=\"n\">on</span><span class=\"w\"> </span><span class=\"n\">our</span><span class=\"w\"> </span><span class=\"n\">side</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">To</span><span class=\"w\"> </span><span class=\"n\">opt</span><span class=\"w\"> </span><span class=\"n\">out</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">set</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">KEDRO_DISABLE_TELEMETRY</span><span class=\"err\">`</span><span class=\"w\"> </span><span class=\"ow\">or</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"n\">DO_NOT_TRACK</span><span class=\"err\">`</span>\n<span class=\"w\">                             </span><span class=\"n\">environment</span><span class=\"w\"> </span><span class=\"n\">variables</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"ow\">or</span><span class=\"w\"> </span><span class=\"n\">create</span><span class=\"w\"> </span><span class=\"n\">a</span><span class=\"w\"> </span><span class=\"err\">`</span><span class=\"o\">.</span><span class=\"n\">telemetry</span><span class=\"err\">`</span><span class=\"w\"> </span><span class=\"n\">file</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">current</span><span class=\"w\"> </span><span class=\"n\">working</span><span class=\"w\"> </span><span class=\"n\">directory</span><span class=\"w\"> </span><span class=\"n\">with</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">contents</span>\n<span class=\"w\">                             </span><span class=\"err\">`</span><span class=\"n\">consent</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"bp\">false</span><span class=\"err\">`</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">To</span><span class=\"w\"> </span><span class=\"n\">hide</span><span class=\"w\"> </span><span class=\"n\">this</span><span class=\"w\"> </span><span class=\"n\">message</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">explicitly</span><span class=\"w\"> </span><span class=\"n\">grant</span><span class=\"w\"> </span><span class=\"ow\">or</span><span class=\"w\"> </span><span class=\"n\">deny</span><span class=\"w\"> </span><span class=\"n\">consent</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">Read</span><span class=\"w\"> </span><span class=\"n\">more</span><span class=\"w\"> </span><span class=\"n\">at</span>\n<span class=\"w\">                             </span><span class=\"n\">https</span><span class=\"p\">:</span><span class=\"o\">//</span><span class=\"n\">docs</span><span class=\"o\">.</span><span class=\"n\">kedro</span><span class=\"o\">.</span><span class=\"n\">org</span><span class=\"o\">/</span><span class=\"n\">en</span><span class=\"o\">/</span><span class=\"n\">stable</span><span class=\"o\">/</span><span class=\"n\">about</span><span class=\"o\">/</span><span class=\"n\">telemetry</span><span class=\"o\">/</span>\n<span class=\"p\">[</span><span class=\"mi\">12</span><span class=\"o\">/</span><span class=\"mi\">17</span><span class=\"o\">/</span><span class=\"mi\">25</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">:</span><span class=\"mi\">44</span><span class=\"p\">:</span><span class=\"mi\">25</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Using</span><span class=\"w\"> </span><span class=\"n\">synchronous</span><span class=\"w\"> </span><span class=\"n\">mode</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">loading</span><span class=\"w\"> </span><span class=\"ow\">and</span><span class=\"w\"> </span><span class=\"n\">saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">Use</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"n\">async</span><span class=\"w\"> </span><span class=\"n\">flag</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">potential</span><span class=\"w\">         </span><span class=\"n\">sequential_runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">59</span>\n<span class=\"w\">                             </span><span class=\"n\">performance</span><span class=\"w\"> </span><span class=\"n\">gains</span><span class=\"o\">.</span>\n<span class=\"w\">                             </span><span class=\"n\">https</span><span class=\"p\">:</span><span class=\"o\">//</span><span class=\"n\">docs</span><span class=\"o\">.</span><span class=\"n\">kedro</span><span class=\"o\">.</span><span class=\"n\">org</span><span class=\"o\">/</span><span class=\"n\">en</span><span class=\"o\">/</span><span class=\"n\">stable</span><span class=\"o\">/</span><span class=\"n\">nodes_and_pipelines</span><span class=\"o\">/</span><span class=\"n\">run_a_pipeline</span><span class=\"o\">.</span><span class=\"n\">html</span><span class=\"c1\">#load-and-save-asynchr</span>\n<span class=\"w\">                             </span><span class=\"n\">onously</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Loading</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">from</span><span class=\"w\"> </span><span class=\"n\">primary</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                         </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1048</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Running</span><span class=\"w\"> </span><span class=\"n\">node</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">encode_features</span><span class=\"p\">()</span><span class=\"w\"> </span><span class=\"o\">-&gt;</span><span class=\"w\">                                                                         </span><span class=\"n\">node</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">420</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">dataset</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                            </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">transform_pipeline</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">MemoryDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                              </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Completed</span><span class=\"w\"> </span><span class=\"n\">node</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">encode_features__4f0652e1</span><span class=\"w\">                                                                </span><span class=\"n\">runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">245</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Completed</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"n\">out</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">tasks</span><span class=\"w\">                                                                               </span><span class=\"n\">runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">246</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Loading</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">from</span><span class=\"w\"> </span><span class=\"n\">dataset</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                         </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1048</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Loading</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">from</span><span class=\"w\"> </span><span class=\"n\">params</span><span class=\"p\">:</span><span class=\"n\">test_ratio</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">MemoryDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                            </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1048</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Running</span><span class=\"w\"> </span><span class=\"n\">node</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">split_dataset</span><span class=\"p\">()</span><span class=\"w\"> </span><span class=\"o\">-&gt;</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"n\">X_train</span><span class=\"p\">;</span><span class=\"n\">y_train</span><span class=\"p\">;</span><span class=\"n\">X_test</span><span class=\"p\">;</span><span class=\"n\">y_test</span><span class=\"p\">]</span><span class=\"w\">                                           </span><span class=\"n\">node</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">420</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">X_train</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                            </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">y_train</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                            </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">X_test</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                             </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Saving</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"w\"> </span><span class=\"n\">to</span><span class=\"w\"> </span><span class=\"n\">y_test</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">CSVDataset</span><span class=\"p\">)</span><span class=\"o\">...</span><span class=\"w\">                                                             </span><span class=\"n\">data_catalog</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">1008</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Completed</span><span class=\"w\"> </span><span class=\"n\">node</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">split_dataset__f432ba67</span><span class=\"w\">                                                                  </span><span class=\"n\">runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">245</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Completed</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">out</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">tasks</span><span class=\"w\">                                                                               </span><span class=\"n\">runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">246</span>\n<span class=\"w\">                    </span><span class=\"n\">INFO</span><span class=\"w\">     </span><span class=\"n\">Pipeline</span><span class=\"w\"> </span><span class=\"n\">execution</span><span class=\"w\"> </span><span class=\"n\">completed</span><span class=\"w\"> </span><span class=\"n\">successfully</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"mf\">0.3</span><span class=\"w\"> </span><span class=\"n\">sec</span><span class=\"o\">.</span><span class=\"w\">                                                    </span><span class=\"n\">runner</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">119</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "aafca023296564656b3710c138dcfde7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Deux remarques :</span>\n<ul>\n<li>\n<span class=\"paragraph\">Pour cacher les message en lien avec la t\u00e9l\u00e9m\u00e9trie, vous devez cr\u00e9er un fichier .telemetrie au m\u00eame endroit que <code>pyproject.toml</code> et renseigner la ligne <code>consent: false</code></span>\n<ul>\n<li>Pour des \u00e9ventuelles acc\u00e9l\u00e9rations de traitement de donn\u00e9es, lorsqu'il y a plusieurs fichier, il est peut \u00eatre avantageux d'ajouter la commande <code>--async</code> \u00e0 la fin</li>\n</ul>\n</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "0e1958075b0f9e6ee26800145bc1ecba",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En d\u00e9roulant le dossier <code>data/05_model_input</code>, nous devrions voir appara\u00eetre les 4 fichiers CSV g\u00e9n\u00e9r\u00e9s par le pipeline.</span>\n<h3 id=\"visualisation-des-pipelines\">Visualisation des pipelines</h3>\n<span class=\"paragraph\">La derni\u00e8re d\u00e9pendance <code>kedro-viz</code> peut \u00eatre utile car elle permet de visualiser les diff\u00e9rents pipelines directement depuis le navigateur. Pour cela nous devons l'ajouter \u00e0 l'aide de la commande <code>uv add kedro-viz</code></span>\n<span class=\"paragraph\">Pour lancer le serveur de visualisation, il suffit d'ex\u00e9cuter la commande suivante (attention de v\u00e9rifier que l'environnement virtuel est bien activ\u00e9).</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>uv kedro viz run --port 4141\n</code></pre></div>\n<span class=\"paragraph\">Une fois lanc\u00e9, nous pouvons y acc\u00e9der <a href=\"http://localhost:4141\" rel=\"noopener noreferrer\" target=\"_blank\">par ce lien</a> : </span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "a71e1d8834fc188535a6935c5e751651",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Vous vennez de mettre en place votre premi\u00e8re pipeline avec Kedro !</span>\n<ul>\n<li>Nous avons vu cr\u00e9\u00e9 notre premier projet avec Kedro.</li>\n<li>Nous avons d\u00e9taill\u00e9 les concepts importants que l'on rencontre avec Kedro.</li>\n<li>Nous avons mis en place un premier pipeline.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Apr\u00e8s avoir construit le pipeline de traitement de donn\u00e9es, place au <strong>pipeline d'entra\u00eenement du mod\u00e8le</strong>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

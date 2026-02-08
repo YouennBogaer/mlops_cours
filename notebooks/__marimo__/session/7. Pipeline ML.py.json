@@ -1,0 +1,411 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "03e0b6cf6c4421cee13bd6beaf3884ad",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme nous venons de le voir, Kedro est un outil puissant. Le premier pipeline que nous avons construit permettait d'encoder les donn\u00e9es pour qu'elles soit utilis\u00e9es par un mod\u00e8le. Pour continuer \u00e0 construire le pipeline ML, nous allons d\u00e9finir ici le <strong>pipeline d'entra\u00eenement de mod\u00e8les</strong>, qui pourra \u00eatre combin\u00e9 avec celui que nous avons d\u00e9j\u00e0 fait sur l'encodage.</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>D\u00e9velopper le pipeline d'entra\u00eenement de mod\u00e8les</li>\n    <li>Construire le pipeline ML de la collecte des donn\u00e9es jusqu'\u00e0 la mod\u00e9lisation</li>\n    <li>Appliquer les bonnes pratiques de d\u00e9veloppement</li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/l46CwEYnbFtFfjZNS/giphy.gif\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "e025f39bfa341819a57f00ea4ceb0683",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"entrainement-du-modele\">Entra\u00eenement du mod\u00e8le</h2>\n<span class=\"paragraph\">Nous avions appliqu\u00e9 de l'AutoML sur un LightGBM avec des Jupyter Notebooks (Bon dans notre cas sous Marimo). (En tout cas pour les classes concern\u00e9es cela correspond \u00e0 l'optimisation des hyper-param\u00e8tres ainsi que sur l'explicabilit\u00e9 des mod\u00e8les).</span>\n<span class=\"paragraph\">Notre objectif est maintenant de le faire directement dans le projet Kedro. Nous allons construire un pipeline nomm\u00e9 <code>training</code> qui est charg\u00e9 de de d\u00e9terminer un mod\u00e8le optimal.</span>\n<div class=\"admonition\">\n<span class=\"paragraph\">Dans la construction, le pipeline <code>training</code> intervient apr\u00e8s le pipeline <code>processing</code>, mais l'int\u00e9r\u00eat de s\u00e9parer le pipeline ML en deux est de pouvoir ex\u00e9cuter un seul des deux pipelines au besoin.</span>\n</div>\n<span class=\"paragraph\">Nous n'allons pas cr\u00e9er de dossier <code>training</code>, nous allons \u00e0 la place utiliser les commandes de <code>kedro</code> pour cr\u00e9er une pipeline que l'on nomme <code>training</code>.</span>\n<span class=\"paragraph\">Pour cela utilisez la commande suivante : \n<div class=\"language-text codehilite\"><pre><span></span><code>uv run kedro pipeline create training\n</code></pre></div></span>\n<span class=\"paragraph\">Notre premier fichier <code>nodes.py</code> contient toutes les fonctions n\u00e9cessaires pour entra\u00eener le module. Pour am\u00e9liorer la productivit\u00e9 et faciliter la maintenance du code, nous allons y cr\u00e9er trois fonctions.</span>\n<ul>\n<li>La premi\u00e8re fonction <code>train_model</code> va entra\u00eener une instance de mod\u00e8le selon des hyper-param\u00e8tres sp\u00e9cifiques sur un ensemble d'entra\u00eenement.</li>\n<li>La seconde fonction <code>optimize_hyp</code> va d\u00e9terminer les hyper-param\u00e8tres qui maximisent le score d'un mod\u00e8le \u00e0 partir d'une m\u00e9trique sp\u00e9cifique.</li>\n<li>La derni\u00e8re fonction <code>auto_ml</code> sera ensuite utilis\u00e9e par le node Kedro pour entra\u00eener un mod\u00e8le optimis\u00e9.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons par importer les librairies n\u00e9cessaires aux fonctions que nous d\u00e9velopperons.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "c46b94bac4b1cf1543a18a06df5acfd6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-numpy codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">numpy</span><span class=\"w\"> </span><span class=\"k\">as</span><span class=\"w\"> </span><span class=\"nn\">np</span>\n<span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">pandas</span><span class=\"w\"> </span><span class=\"k\">as</span><span class=\"w\"> </span><span class=\"nn\">pd</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">collections.abc</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Callable</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">sklearn.base</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">,</span> <span class=\"n\">clone</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">sklearn.metrics</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">f1_score</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">sklearn.model_selection</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">RepeatedKFold</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">lightgbm.sklearn</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LGBMClassifier</span>\n\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">hyperopt</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">hp</span><span class=\"p\">,</span> <span class=\"n\">tpe</span><span class=\"p\">,</span> <span class=\"n\">fmin</span>\n\n<span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">warnings</span>\n<span class=\"n\">warnings</span><span class=\"o\">.</span><span class=\"n\">filterwarnings</span><span class=\"p\">(</span><span class=\"s1\">&#39;ignore&#39;</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "42a04d2957aa73993401890b7000457c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cr\u00e9ons une variable <code>MODELS</code> dans laquelle nous allons sp\u00e9cifier une liste de mod\u00e8les candidats. Pour commencer, nous n'utiliserons qu'un seul mod\u00e8le LightGBM, mais nous pourrions \u00e9galement calibrer d'autres mod\u00e8les comme XGBoost, CatBoost, Random Forest. Nous d\u00e9finissons un dictionnaire pour chaque mod\u00e8le.</span>\n<ul>\n<li><code>name</code> est le nom du mod\u00e8le.</li>\n<li><code>class</code> est l'objet Python permettant d'instancier le mod\u00e8le.</li>\n<li><code>params</code> repr\u00e9sente l'espace de recherche pour l'optimisation des hyper-param\u00e8tres.</li>\n<li><code>override_schemas</code> est un champ qui contient les hyper-param\u00e8tres dont le type doit \u00eatre modifi\u00e9 avant d'entra\u00eener le mod\u00e8le.</li>\n</ul>\n<span class=\"paragraph\">Par exemple, l'hyper-param\u00e8tre <code>max_depth</code> doit \u00eatre entier, mais un point de l'espace peut produire un flottant (<marimo-tex class=\"arithmatex\">||(10.0||)</marimo-tex> au lieu de <marimo-tex class=\"arithmatex\">||(10||)</marimo-tex>). Dans ce cas, il faut forcer la conversion en entier pour \u00e9viter une erreur g\u00e9n\u00e9r\u00e9e par LightGBM.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "7ea8ebb1fa06585e538351d6548a8474",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-carbon codehilite\"><pre><span></span><code><span class=\"nx\">MODELS</span><span class=\"w\"> </span><span class=\"p\">=</span><span class=\"w\"> </span><span class=\"p\">[</span>\n<span class=\"w\">    </span><span class=\"p\">{</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;name&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"s\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;class&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">LGBMClassifier</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;params&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">{</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;objective&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"s\">&quot;binary&quot;</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;verbose&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;learning_rate&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;learning_rate&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.001</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">100</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1000</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">20</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">6</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">128</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.3</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;subsample&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;subsample&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">20</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"kd\">choice</span><span class=\"p\">(</span><span class=\"s\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"nx\">e</span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">]),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"kd\">choice</span><span class=\"p\">(</span><span class=\"s\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"nx\">e</span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">]),</span>\n<span class=\"w\">        </span><span class=\"p\">},</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;override_schemas&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">{</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"p\">},</span>\n<span class=\"w\">    </span><span class=\"p\">}</span>\n<span class=\"p\">]</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "UnFk",
+      "code_hash": "7b072022fbe435d2bcf762eec1e8928a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via <code>\"class\"</code>, le TY de astral nous reverra l'erreur suivante : \n<div class=\"language-mysql codehilite\"><pre><span></span><code><span class=\"k\">Error</span><span class=\"w\"> </span><span class=\"k\">at</span><span class=\"w\"> </span><span class=\"n\">model_conf</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"k\">next</span><span class=\"p\">(</span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">in</span><span class=\"w\"> </span><span class=\"n\">MODELS</span><span class=\"w\"> </span><span class=\"k\">if</span><span class=\"w\"> </span><span class=\"n\">isinstance</span><span class=\"p\">(</span><span class=\"k\">instance</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"err\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"err\">]</span><span class=\"p\">))</span>\n<span class=\"n\">Argument</span><span class=\"w\"> </span><span class=\"k\">to</span><span class=\"w\"> </span><span class=\"k\">function</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`isinstance`</span><span class=\"w\"> </span><span class=\"k\">is</span><span class=\"w\"> </span><span class=\"n\">incorrect</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">Expected</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`type | UnionType | tuple[Divergent, ...]`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"k\">found</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Unknown | str | &lt;class &#39;LGBMClassifier&#39;&gt; | dict[Unknown | str, Unknown | str | int] | dict[Unknown | str, Unknown | &lt;class &#39;int&#39;&gt;]`</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">ty</span><span class=\"w\"> </span><span class=\"n\">invalid</span><span class=\"o\">-</span><span class=\"n\">argument</span><span class=\"o\">-</span><span class=\"k\">type</span><span class=\"p\">)</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Nous allons devoir cr\u00e9er une fonction qui v\u00e9rifie le typage afin que faire taire cette erreur lanc\u00e9 par <code>ty</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "QiTZ",
+      "code_hash": "0076adedb706e2ac5e2daf19284f932a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">get_model_config</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">:</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">Returns</span> <span class=\"n\">the</span> <span class=\"n\">configuration</span> <span class=\"n\">dictionary</span> <span class=\"k\">for</span> <span class=\"n\">the</span> <span class=\"n\">given</span> <span class=\"n\">model</span> <span class=\"n\">instance</span><span class=\"o\">.</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"k\">if</span> <span class=\"nb\">isinstance</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">,</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">):</span>\n        <span class=\"k\">return</span> <span class=\"n\">MODELS</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>  <span class=\"c1\"># Or match by type</span>\n    <span class=\"k\">raise</span> <span class=\"ne\">ValueError</span><span class=\"p\">(</span><span class=\"sa\">f</span><span class=\"s2\">&quot;Unsupported model: </span><span class=\"si\">{</span><span class=\"nb\">type</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">)</span><span class=\"si\">}</span><span class=\"s2\">&quot;</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "6549cbd414056a368ec57ee19410532f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Bien que le pipeline d'entra\u00eenement du mod\u00e8le ne poss\u00e9dera qu'un node, nous pouvons tout \u00e0 fait cr\u00e9er plusieurs fonctions dans le fichier <code>nodes.py</code> qui vont \u00eatre appel\u00e9es par la fonction du node.</span>\n<span class=\"paragraph\">Commen\u00e7ons par la premi\u00e8re fonction <code>train_model</code>.</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">train_model</span><span class=\"p\">(</span>\n    <span class=\"n\">instance</span><span class=\"p\">:</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">,</span>\n    <span class=\"n\">training_set</span><span class=\"p\">:</span> <span class=\"nb\">tuple</span><span class=\"p\">[</span><span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">],</span>\n    <span class=\"n\">params</span><span class=\"p\">:</span> <span class=\"nb\">dict</span> <span class=\"o\">|</span> <span class=\"kc\">None</span> <span class=\"o\">=</span> <span class=\"kc\">None</span><span class=\"p\">,</span>\n<span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">Trains</span> <span class=\"n\">a</span> <span class=\"n\">new</span> <span class=\"n\">instance</span> <span class=\"n\">of</span> <span class=\"n\">model</span> <span class=\"k\">with</span> <span class=\"n\">supplied</span> <span class=\"n\">training</span> <span class=\"nb\">set</span> <span class=\"ow\">and</span> <span class=\"n\">hyper</span><span class=\"o\">-</span><span class=\"n\">parameters</span><span class=\"o\">.</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span><span class=\"s2\">&quot;</span>\n    <span class=\"n\">model_conf</span> <span class=\"o\">=</span> <span class=\"n\">get_model_config</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">)</span>\n    <span class=\"n\">params</span> <span class=\"o\">=</span> <span class=\"n\">params</span> <span class=\"ow\">or</span> <span class=\"p\">{}</span>\n    <span class=\"n\">model_conf</span> <span class=\"o\">=</span> <span class=\"nb\">next</span><span class=\"p\">(</span><span class=\"n\">m</span> <span class=\"k\">for</span> <span class=\"n\">m</span> <span class=\"ow\">in</span> <span class=\"n\">MODELS</span> <span class=\"k\">if</span> <span class=\"nb\">isinstance</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">,</span> <span class=\"n\">model_conf</span><span class=\"p\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"p\">]))</span>\n    <span class=\"n\">override_schemas</span> <span class=\"o\">=</span> <span class=\"n\">model_conf</span><span class=\"p\">[</span><span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">]</span>\n\n    <span class=\"k\">for</span> <span class=\"n\">p</span> <span class=\"ow\">in</span> <span class=\"n\">params</span><span class=\"p\">:</span>\n        <span class=\"k\">if</span> <span class=\"n\">p</span> <span class=\"ow\">in</span> <span class=\"n\">override_schemas</span><span class=\"p\">:</span>\n            <span class=\"n\">params</span><span class=\"p\">[</span><span class=\"n\">p</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"n\">override_schemas</span><span class=\"p\">[</span><span class=\"n\">p</span><span class=\"p\">](</span><span class=\"n\">params</span><span class=\"p\">[</span><span class=\"n\">p</span><span class=\"p\">])</span>\n    <span class=\"n\">model</span> <span class=\"o\">=</span> <span class=\"n\">clone</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">)</span>\n    <span class=\"n\">model</span><span class=\"o\">.</span><span class=\"n\">set_params</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">params</span><span class=\"p\">)</span>\n    <span class=\"n\">model</span><span class=\"o\">.</span><span class=\"n\">fit</span><span class=\"p\">(</span><span class=\"o\">*</span><span class=\"n\">training_set</span><span class=\"p\">)</span>\n    <span class=\"k\">return</span> <span class=\"n\">model</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "84a7793ce52ba7adbcc2c7943081e04f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme nous l'avons \u00e9voqu\u00e9 plus haut, nous for\u00e7ons la conversion de certains hyper-param\u00e8tres. On r\u00e9cup\u00e8re les noms des hyper-param\u00e8tres dont le type est surcharg\u00e9, puis ils sont convertis vers le type cible (ici, uniquement des entiers). Le reste de la fonction est explicitive, car il s'agit juste d'instancier le mod\u00e8le et d'appeler la fonction <code>fit</code>.</span>\n<span class=\"paragraph\">Voyons maintenant la deuxi\u00e8me fonction <code>optimize_hyp</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "2ed430d927c114ea1703299a95a93dac",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">optimize_hyp</span><span class=\"p\">(</span>\n    <span class=\"n\">instance</span><span class=\"p\">:</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">,</span>\n    <span class=\"n\">dataset</span><span class=\"p\">:</span> <span class=\"n\">Tuple</span><span class=\"p\">[</span><span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">],</span>\n    <span class=\"n\">search_space</span><span class=\"p\">:</span> <span class=\"n\">Dict</span><span class=\"p\">,</span>\n    <span class=\"n\">metric</span><span class=\"p\">:</span> <span class=\"n\">Callable</span><span class=\"p\">[[</span><span class=\"n\">Any</span><span class=\"p\">,</span> <span class=\"n\">Any</span><span class=\"p\">],</span> <span class=\"nb\">float</span><span class=\"p\">],</span>\n    <span class=\"n\">max_evals</span><span class=\"p\">:</span> <span class=\"nb\">int</span> <span class=\"o\">=</span> <span class=\"mi\">40</span><span class=\"p\">,</span>\n<span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">:</span>\n    \\<span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"n\">Trains</span> <span class=\"n\">model</span><span class=\"s1\">&#39;s instances on hyper-parameters search space and returns most accurate</span>\n    <span class=\"n\">hyper</span><span class=\"o\">-</span><span class=\"n\">parameters</span> <span class=\"n\">based</span> <span class=\"n\">on</span> <span class=\"nb\">eval</span> <span class=\"nb\">set</span><span class=\"o\">.</span>\n    \\<span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"n\">X</span><span class=\"p\">,</span> <span class=\"n\">y</span> <span class=\"o\">=</span> <span class=\"n\">dataset</span>\n\n    <span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">objective</span><span class=\"p\">(</span><span class=\"n\">params</span><span class=\"p\">):</span>\n        <span class=\"n\">rep_kfold</span> <span class=\"o\">=</span> <span class=\"n\">RepeatedKFold</span><span class=\"p\">(</span><span class=\"n\">n_splits</span><span class=\"o\">=</span><span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"n\">n_repeats</span><span class=\"o\">=</span><span class=\"mi\">1</span><span class=\"p\">)</span>\n        <span class=\"n\">scores_test</span> <span class=\"o\">=</span> <span class=\"p\">[]</span>\n        <span class=\"k\">for</span> <span class=\"n\">train_I</span><span class=\"p\">,</span> <span class=\"n\">test_I</span> <span class=\"ow\">in</span> <span class=\"n\">rep_kfold</span><span class=\"o\">.</span><span class=\"n\">split</span><span class=\"p\">(</span><span class=\"n\">X</span><span class=\"p\">):</span>\n            <span class=\"n\">X_fold_train</span> <span class=\"o\">=</span> <span class=\"n\">X</span><span class=\"o\">.</span><span class=\"n\">iloc</span><span class=\"p\">[</span><span class=\"n\">train_I</span><span class=\"p\">,</span> <span class=\"p\">:]</span>\n            <span class=\"n\">y_fold_train</span> <span class=\"o\">=</span> <span class=\"n\">y</span><span class=\"o\">.</span><span class=\"n\">iloc</span><span class=\"p\">[</span><span class=\"n\">train_I</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">values</span><span class=\"o\">.</span><span class=\"n\">flatten</span><span class=\"p\">()</span>\n            <span class=\"n\">X_fold_test</span> <span class=\"o\">=</span> <span class=\"n\">X</span><span class=\"o\">.</span><span class=\"n\">iloc</span><span class=\"p\">[</span><span class=\"n\">test_I</span><span class=\"p\">,</span> <span class=\"p\">:]</span>\n            <span class=\"n\">y_fold_test</span> <span class=\"o\">=</span> <span class=\"n\">y</span><span class=\"o\">.</span><span class=\"n\">iloc</span><span class=\"p\">[</span><span class=\"n\">test_I</span><span class=\"p\">]</span><span class=\"o\">.</span><span class=\"n\">values</span><span class=\"o\">.</span><span class=\"n\">flatten</span><span class=\"p\">()</span>\n            <span class=\"c1\"># On entra\u00eene une instance du mod\u00e8le avec les param\u00e8tres params</span>\n            <span class=\"n\">model</span> <span class=\"o\">=</span> <span class=\"n\">train_model</span><span class=\"p\">(</span>\n                <span class=\"n\">instance</span><span class=\"o\">=</span><span class=\"n\">instance</span><span class=\"p\">,</span>\n                <span class=\"n\">training_set</span><span class=\"o\">=</span><span class=\"p\">(</span><span class=\"n\">X_fold_train</span><span class=\"p\">,</span> <span class=\"n\">y_fold_train</span><span class=\"p\">),</span>\n                <span class=\"n\">params</span><span class=\"o\">=</span><span class=\"n\">params</span>\n            <span class=\"p\">)</span>\n            <span class=\"c1\"># On calcule le score du mod\u00e8le sur le test</span>\n            <span class=\"n\">scores_test</span><span class=\"o\">.</span><span class=\"n\">append</span><span class=\"p\">(</span>\n                <span class=\"n\">metric</span><span class=\"p\">(</span><span class=\"n\">y_fold_test</span><span class=\"p\">,</span> <span class=\"n\">model</span><span class=\"o\">.</span><span class=\"n\">predict</span><span class=\"p\">(</span><span class=\"n\">X_fold_test</span><span class=\"p\">))</span>\n            <span class=\"p\">)</span>\n\n        <span class=\"k\">return</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">mean</span><span class=\"p\">(</span><span class=\"n\">scores_test</span><span class=\"p\">)</span>\n\n    <span class=\"k\">return</span> <span class=\"n\">fmin</span><span class=\"p\">(</span><span class=\"n\">fn</span><span class=\"o\">=</span><span class=\"n\">objective</span><span class=\"p\">,</span> <span class=\"n\">space</span><span class=\"o\">=</span><span class=\"n\">search_space</span><span class=\"p\">,</span> <span class=\"n\">algo</span><span class=\"o\">=</span><span class=\"n\">tpe</span><span class=\"o\">.</span><span class=\"n\">suggest</span><span class=\"p\">,</span> <span class=\"n\">max_evals</span><span class=\"o\">=</span><span class=\"n\">max_evals</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "2aa6594b8cd375ffdf3b152ac2a16d3f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Tout d'abord, nous r\u00e9cup\u00e9rons la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex> \u00e0 partir de l'argument <code>dataset</code>. Nous d\u00e9finissons ensuite la fonction <code>objective</code> dont on cherche une minimisation. \u00c0 chaque \u00e9valuation, elle r\u00e9alise un <marimo-tex class=\"arithmatex\">||(k||)</marimo-tex>-Fold sur le mod\u00e8le candidat, puis stocke le score, calcul\u00e9e \u00e0 partir de la m\u00e9trique, dans la liste <code>scores_test</code>.</span>\n<span class=\"paragraph\">Cette liste contient tous les scores sur les ensembles de test du <marimo-tex class=\"arithmatex\">||(k||)</marimo-tex>-Fold. Ici, nous aurons uniquement <marimo-tex class=\"arithmatex\">||(4||)</marimo-tex> scores \u00e0 chaque ex\u00e9cution de la fonction. Nous retournons donc le score moyen des mod\u00e8les sur les ensembles de test.</span>\n<span class=\"paragraph\">Pour terminer, nous retournons le r\u00e9sultat de <code>fmin</code>, c'est-\u00e0-dire le jeu d'hyper-param\u00e8tres qui maximise la fonction <code>objective</code>.</span>\n<span class=\"paragraph\">Enfin, la derni\u00e8re fonction <code>auto_ml</code>, qui sera utilis\u00e9e par le node Kedro.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "68d5f23a6089512eaf0609c43f83cb39",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code> <span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">auto_ml</span><span class=\"p\">(</span>\n    <span class=\"n\">X_train</span><span class=\"p\">:</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span>\n    <span class=\"n\">y_train</span><span class=\"p\">:</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span>\n    <span class=\"n\">X_test</span><span class=\"p\">:</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span>\n    <span class=\"n\">y_test</span><span class=\"p\">:</span> <span class=\"n\">np</span><span class=\"o\">.</span><span class=\"n\">ndarray</span><span class=\"p\">,</span>\n    <span class=\"n\">max_evals</span><span class=\"p\">:</span> <span class=\"nb\">int</span> <span class=\"o\">=</span> <span class=\"mi\">40</span>\n<span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">]:</span>\n    \\<span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"n\">Runs</span> <span class=\"n\">training</span> <span class=\"n\">of</span> <span class=\"n\">multiple</span> <span class=\"n\">model</span> <span class=\"n\">instances</span> <span class=\"ow\">and</span> <span class=\"n\">select</span> <span class=\"n\">the</span> <span class=\"n\">most</span> <span class=\"n\">accurated</span> <span class=\"n\">based</span> <span class=\"n\">on</span> <span class=\"n\">objective</span> <span class=\"n\">function</span><span class=\"o\">.</span>\n    \\<span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"n\">X</span> <span class=\"o\">=</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">concat</span><span class=\"p\">((</span><span class=\"n\">X_train</span><span class=\"p\">,</span> <span class=\"n\">X_test</span><span class=\"p\">))</span>\n    <span class=\"n\">y</span> <span class=\"o\">=</span> <span class=\"n\">pd</span><span class=\"o\">.</span><span class=\"n\">concat</span><span class=\"p\">((</span><span class=\"n\">y_train</span><span class=\"p\">,</span> <span class=\"n\">y_test</span><span class=\"p\">))</span>\n\n    <span class=\"n\">opt_models</span> <span class=\"o\">=</span> <span class=\"p\">[]</span>\n    <span class=\"k\">for</span> <span class=\"n\">model_specs</span> <span class=\"ow\">in</span> <span class=\"n\">MODELS</span><span class=\"p\">:</span>\n        <span class=\"c1\"># Finding best hyper-parameters with bayesian optimization</span>\n        <span class=\"n\">optimum_params</span> <span class=\"o\">=</span> <span class=\"n\">optimize_hyp</span><span class=\"p\">(</span>\n            <span class=\"n\">model_specs</span><span class=\"p\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"p\">](),</span>\n            <span class=\"n\">dataset</span><span class=\"o\">=</span><span class=\"p\">(</span><span class=\"n\">X</span><span class=\"p\">,</span> <span class=\"n\">y</span><span class=\"p\">),</span>\n            <span class=\"n\">search_space</span><span class=\"o\">=</span><span class=\"n\">model_specs</span><span class=\"p\">[</span><span class=\"s2\">&quot;params&quot;</span><span class=\"p\">],</span>\n            <span class=\"n\">metric</span><span class=\"o\">=</span><span class=\"k\">lambda</span> <span class=\"n\">x</span><span class=\"p\">,</span> <span class=\"n\">y</span><span class=\"p\">:</span> <span class=\"o\">-</span><span class=\"n\">f1_score</span><span class=\"p\">(</span><span class=\"n\">x</span><span class=\"p\">,</span> <span class=\"n\">y</span><span class=\"p\">),</span>\n            <span class=\"n\">max_evals</span><span class=\"o\">=</span><span class=\"n\">max_evals</span>\n        <span class=\"p\">)</span>\n        <span class=\"nb\">print</span><span class=\"p\">(</span><span class=\"s2\">&quot;done&quot;</span><span class=\"p\">)</span>\n        <span class=\"c1\"># Training the supposed best model with found hyper-parameters</span>\n        <span class=\"n\">model</span> <span class=\"o\">=</span> <span class=\"n\">train_model</span><span class=\"p\">(</span>\n            <span class=\"n\">model_specs</span><span class=\"p\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"p\">](),</span>\n            <span class=\"n\">training_set</span><span class=\"o\">=</span><span class=\"p\">(</span><span class=\"n\">X_train</span><span class=\"p\">,</span> <span class=\"n\">y_train</span><span class=\"p\">),</span>\n            <span class=\"n\">params</span><span class=\"o\">=</span><span class=\"n\">optimum_params</span><span class=\"p\">,</span>\n        <span class=\"p\">)</span>\n        <span class=\"n\">opt_models</span><span class=\"o\">.</span><span class=\"n\">append</span><span class=\"p\">(</span>\n            <span class=\"p\">{</span>\n                <span class=\"s2\">&quot;model&quot;</span><span class=\"p\">:</span> <span class=\"n\">model</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"n\">model_specs</span><span class=\"p\">[</span><span class=\"s2\">&quot;name&quot;</span><span class=\"p\">],</span>\n                <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"n\">optimum_params</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;score&quot;</span><span class=\"p\">:</span> <span class=\"n\">f1_score</span><span class=\"p\">(</span><span class=\"n\">y_test</span><span class=\"p\">,</span> <span class=\"n\">model</span><span class=\"o\">.</span><span class=\"n\">predict</span><span class=\"p\">(</span><span class=\"n\">X_test</span><span class=\"p\">)),</span>\n            <span class=\"p\">}</span>\n        <span class=\"p\">)</span>\n\n    <span class=\"c1\"># In case we have multiple models</span>\n    <span class=\"n\">best_model</span> <span class=\"o\">=</span> <span class=\"nb\">max</span><span class=\"p\">(</span><span class=\"n\">opt_models</span><span class=\"p\">,</span> <span class=\"n\">key</span><span class=\"o\">=</span><span class=\"k\">lambda</span> <span class=\"n\">x</span><span class=\"p\">:</span> <span class=\"n\">x</span><span class=\"p\">[</span><span class=\"s2\">&quot;score&quot;</span><span class=\"p\">])</span>\n    <span class=\"k\">return</span> <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">model</span><span class=\"o\">=</span><span class=\"n\">best_model</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "0f04731976050a7025dba8128eaa4f9c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il s'agit simplement d'une ex\u00e9uction s\u00e9quenc\u00e9e en plusieurs \u00e9tapes. Pour chaque mod\u00e8le candidat que l'on souhaite optimiser, il y a trois \u00e9tapes.</span>\n<ul>\n<li>On d\u00e9termine les hyper-param\u00e8tres optimaux avec <code>optimize_hyp</code> sur la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex>.</li>\n<li>Une fois les hyper-param\u00e8tres optimaux trouv\u00e9s, une instance du mod\u00e8le est calibr\u00e9 avec ces derniers sur le sous-\u00e9chantillon d'entra\u00eenement.</li>\n<li>Le score du mod\u00e8le est calcul\u00e9 sur le sous-\u00e9chantillon de test et stock\u00e9 dans une liste.</li>\n</ul>\n<span class=\"paragraph\">\u00c0 la fin, la liste <code>opt_models</code> contiendra tous les mod\u00e8les optimis\u00e9 de chaque mod\u00e8le candidat. Si l'on souhaite tester un LightGBM, un XGBoost et un CatBoost, alors <code>opt_models</code> contiendra trois \u00e9l\u00e9ments, chacun \u00e9tant le mod\u00e8le optimis\u00e9 de la classe d'algorithme.</span>\n<span class=\"paragraph\">Pour terminer, on tourne le meilleur mod\u00e8le parmi tous les mod\u00e8les optimis\u00e9s.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "5467573b53d0dccfff4c6eac757090da",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"creation-du-pipeline\">Cr\u00e9ation du pipeline</h3>\n<span class=\"paragraph\">Derni\u00e8re \u00e9tape : construire le pipeline dans le fichier <code>pipeline.py</code>. Avant toute chose, nous allons d\u00e9finir le mod\u00e8le (optimis\u00e9) dans le Data Catalog afin de l'enregistrer une fois entra\u00een\u00e9. On utilise le type <code>pickle.PickleDataset</code> pour enregistrer un mod\u00e8le au format binaire sur le disque.</span>\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">test_ratio</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"mf\">0.3</span>\n<span class=\"n\">automl_max_evals</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"mi\">10</span>\n</code></pre></div>\n<span class=\"paragraph\">Pour la pipeline, il n'y a qu'un seul node \u00e0 d\u00e9finir:</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Node</span><span class=\"p\">,</span> <span class=\"n\">Pipeline</span>  <span class=\"c1\"># noqa</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">.nodes</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">auto_ml</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">Pipeline</span><span class=\"p\">:</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">([</span>\n        <span class=\"n\">Node</span><span class=\"p\">(</span><span class=\"n\">auto_ml</span><span class=\"p\">,</span>\n             <span class=\"p\">[</span>\n                <span class=\"s2\">&quot;X_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;X_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;params:automl_max_evals&quot;</span>\n            <span class=\"p\">],</span>\n            <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">model</span><span class=\"o\">=</span><span class=\"s2\">&quot;model&quot;</span><span class=\"p\">),)</span>\n    <span class=\"p\">])</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "eefcb6a62e316f01a9f6bbc09c5923be",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/kedro3.png\" /></span>\n<span class=\"paragraph\">Comme nous l'avions fait pour le pipeline <code>processing</code>, nous devons d\u00e9finir le pipeline dans le fichier <code>hooks.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "c9689d417c9771f4cbb00d852a6e56a1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il ne reste plus qu'\u00e0 ex\u00e9cuter le pipeline. Nous allons au total entra\u00eener 40 mod\u00e8les puisque nous avons un <marimo-tex class=\"arithmatex\">||(4||)</marimo-tex>-Fold et 10 it\u00e9rations : le temps d'ex\u00e9cution sera d'environ 3 \u00e0 5 minutes.</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>kedro run --pipeline training\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "69cc4a0401cfcc564409cb09d17c4349",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"linting-et-refactoring\">Linting et Refactoring</h2>\n<span class=\"paragraph\">\u00c0 partir de maintenant, les codes qui vont \u00eatre produits seront utilis\u00e9s dans des environnements de production. Il est <strong>n\u00e9cessaire</strong> que le code respecte les normes de PEP 8, telles que nous les avions vues avec <code>flake8</code> et <code>black</code>. Installons ces deux packages.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "f327bf9eea2fcbfc0150066fa4f457d7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><code>uv pip install flake8 black</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "6cadb8b7149ee08def1e57704617df30",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons ensuite cr\u00e9er deux fichiers.</span>\n<ul>\n<li>Le fichier <code>.flake8</code> \u00e0 la racine du projet configure les param\u00e8tres propres \u00e0 <code>flake8</code>. En particulier, nous pouvons par exemple ignorer certaines erreurs de PEP 8 ou, \u00e0 l'inverse, ajouter ses propres sp\u00e9cifications.</li>\n<li>Le fichier <code>.toml</code>, lui aussi \u00e0 la racine du projet, configure les param\u00e8tres pour <code>black</code>. \u00c0 noter que dans les deux fichiers, il est important de pr\u00e9ciser la m\u00eame taille pour les lignes. L\u00e0 o\u00f9 <code>flake8</code> g\u00e9n\u00e9rera une erreur, <code>black</code> d\u00e9coupera la ligne actuelle en plusieurs.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons par le fichier <code>.flake8</code>.</span>\n<span class=\"paragraph\"><div class=\"language-ini codehilite\"><pre><span></span><code><span class=\"k\">[flake8]</span>\n<span class=\"na\">max-line-length</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">120</span>\n<span class=\"na\">max-complexity</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">16</span>\n<span class=\"na\">exclude</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">.git,.ipython,__pycache__,venv,build,dist</span>\n</code></pre></div>\nNous choisissons volontairement un nombre de caract\u00e8res maximal \u00e0 120. La complexit\u00e9, qui est un calcul r\u00e9alis\u00e9 en fonction du nombre d'identations maximales et de variables utilis\u00e9es, est fix\u00e9e \u00e0 16. Enfin, nous d\u00e9finissons les dossiers et fichiers \u00e0 exclure de l'analyse.</span>\n<span class=\"paragraph\">Le contenu du fichier <code>.toml</code> est tr\u00e8s similaire.</span>\n<div class=\"language-ini codehilite\"><pre><span></span><code><span class=\"k\">[tool.black]</span>\n<span class=\"na\">line-length</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">120</span>\n<span class=\"na\">include</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">&#39;\\.pyi?$&#39;</span>\n<span class=\"na\">exclude</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">&#39;&#39;</span><span class=\"na\">&#39;</span>\n<span class=\"na\">/(</span>\n<span class=\"w\">    </span><span class=\"na\">\\.git</span>\n<span class=\"w\">  </span><span class=\"na\">| venv</span>\n<span class=\"w\">  </span><span class=\"na\">| build</span>\n<span class=\"w\">  </span><span class=\"na\">| dist</span>\n<span class=\"w\">  </span><span class=\"na\">| conf</span>\n<span class=\"na\">)/</span>\n<span class=\"na\">&#39;&#39;&#39;</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "a3942daaebb8f17242ad391ab7706d8e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La seule diff\u00e9rence est que l'on choisit \u00e9galement d'y inclure certains fichiers dont l'extension est <code>.pyi</code>. Ex\u00e9cutons tout d'abord <code>flake8</code>.</span>\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">hooks</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">42</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">5</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">20</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">43</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">61</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">96</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">137</span><span class=\"p\">:</span><span class=\"mi\">34</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">8</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">17</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">9</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">27</span><span class=\"p\">:</span><span class=\"mi\">14</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">8</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">27</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">10</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "09a3f7803dc0eeaef9f3f45b5303fc37",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous remarquons que la majorit\u00e9 des erreurs et avertissements peuvent \u00eatre corrig\u00e9s par un formatage de code avec <code>black</code>.</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>black .\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "6532d2a42dad91927ca6af1b3c376514",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">hooks</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">setup</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">All</span><span class=\"w\"> </span><span class=\"n\">done</span><span class=\"o\">!</span><span class=\"w\"> </span><span class=\"err\">\u2728</span><span class=\"w\"> </span><span class=\"err\">\ud83c\udf70</span><span class=\"w\"> </span><span class=\"err\">\u2728</span>\n<span class=\"mi\">8</span><span class=\"w\"> </span><span class=\"n\">files</span><span class=\"w\"> </span><span class=\"n\">reformatted</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"w\"> </span><span class=\"n\">files</span><span class=\"w\"> </span><span class=\"n\">left</span><span class=\"w\"> </span><span class=\"n\">unchanged</span><span class=\"o\">.</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "675cdd6273b1682b22a5d76a56c75e79",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En ex\u00e9cutant \u00e0 nouveau <code>flake8</code>, il ne devrait y avoir aucune sortie console, signifiant que tous les codes sources respectent PEP 8.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Est-ce que l'on doit tout le temps ex\u00e9cuter ces deux commandes ?</span>\n</blockquote>\n<span class=\"paragraph\">Les bonnes pratiques en d\u00e9veloppement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus ad\u00e9quat ici serait d'ex\u00e9cuter automatiquement <code>black</code> puis <code>flake8</code> \u00e0 chaque commit de Git. Il y aurait alors deux possibilit\u00e9s.</span>\n<ul>\n<li>Le code ne respecte pas la norme PEP 8, et le commit n'est pas accept\u00e9.</li>\n<li>Le code respecte la norme PEP 8, et le commit est accept\u00e9 <strong>en local</strong>.</li>\n</ul>\n<span class=\"paragraph\">Il faudra ensuite pousser le code local vers le d\u00e9p\u00f4t distant. Et tout ceci peut \u00eatre r\u00e9alis\u00e9 avec <code>pre-commit</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "58f113cfac8ac1f5ac1e9d3b744137e6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><code>pip install pre-commit</code></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "0d90be79756691062a65f6fd582d5ab5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>repos:\n\n<span class=\"k\">-</span>   repo: https://github.com/psf/black\n    rev: stable\n    hooks:\n\n    <span class=\"k\">-</span> id: black\n      language_version: python3.12\n\n<span class=\"k\">-</span>   repo: https://github.com/PyCQA/flake8\n    rev: 7.3.0\n    hooks:\n\n    <span class=\"k\">-</span> id: flake8\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "e7a9b7599a6ab2e0167839e3aa9aec4d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour initialiser l'environnement et installer les d\u00e9clencheurs, il suffit d'ex\u00e9cuter <code>pre-commit install</code> dans la console. Cette op\u00e9ration n\u00e9cessite quelques dizaines de secondes. Dor\u00e9navant, \u00e0 chaque commit, <code>black</code> puis <code>flake8</code> sont ex\u00e9cut\u00e9s et cela garantit que le code qui sera par la suite pouss\u00e9 vers le d\u00e9p\u00f4t distant respecte la norme PEP 8.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "1b74047a5fb698a80ad33c45899c87b7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-text codehilite\"><pre><span></span><code>git add .\ngit commit -am &quot;Added linting and refactoring&quot;\n</code></pre></div>\n<div class=\"language-text codehilite\"><pre><span></span><code>black................................................(no files to check)Skipped\nflake8...............................................(no files to check)Skipped\nOn branch master\nnothing to commit, working tree clean\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "f1b623da457b0dc4ff7e5d591451d147",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dor\u00e9navant, \u00e0 la moindre modification de fichier, lors d'un commit, tous les codes Python seront inspect\u00e9s.\n<div class=\"language-objective-c codehilite\"><pre><span></span><code><span class=\"n\">black</span><span class=\"p\">....................................................................</span><span class=\"n\">Passed</span>\n<span class=\"n\">flake8</span><span class=\"p\">...................................................................</span><span class=\"n\">Passed</span>\n<span class=\"p\">[</span><span class=\"n\">master</span><span class=\"w\"> </span><span class=\"n\">c6ff4a6</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">Added</span><span class=\"w\"> </span><span class=\"n\">linting</span><span class=\"w\"> </span><span class=\"n\">and</span><span class=\"w\"> </span><span class=\"n\">refactoring</span>\n<span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"n\">file</span><span class=\"w\"> </span><span class=\"n\">changed</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"n\">deletion</span><span class=\"p\">(</span><span class=\"o\">-</span><span class=\"p\">)</span>\n</code></pre></div></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "47dff06f77d961a9421605aa80e5e1c6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">git push google master\n\u00c0 noter qu'\u00e0 chaque nouveau terminal, il faut relancer l'agent SSH et lui sp\u00e9cifier la cl\u00e9e priv\u00e9e pour pouvoir avoir les droits sur le d\u00e9p\u00f4t distant.\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>eval &quot;$(ssh-agent -s)&quot;\nchmod 600 ~/ssh/git_key\nssh-add ~/ssh/git_key\n</code></pre></div></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "ea995615e4e269d18e30880205f187d1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Notre pipeline ML est enfin r\u00e9alis\u00e9 avec Kedro.</span>\n<ul>\n<li>Tout d'abord, nous avons construit le pipeline qui entra\u00eene des mod\u00e8les.</li>\n<li>Ensuite, nous avons combin\u00e9 une partie des pipelines (encodage et entra\u00eenement) en un seul.</li>\n<li>Pour finir, nous avons appliqu\u00e9 les bonnes pratiques de d\u00e9veloppement en v\u00e9rifiant les codes Python avec la norme PEP 8.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Au programme des prochaines activit\u00e9s : La cr\u00e9ation de notre derni\u00e8re pipeline collect, permettant de r\u00e9cup\u00e9rer un fichier depuis le datalake S3 de AWS, et ensuite nous parlerons de tests logicielle</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

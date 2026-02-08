@@ -1,0 +1,40 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "8f91d9769dbd31a055b42f70b4519068",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"1-presentation-du-cours\">1. Pr\u00e9sentation du cours</h1>\n<span class=\"paragraph\">Le cours <strong>Machine Learning Operation</strong> vise \u00e0 acqu\u00e9rir des comp\u00e9tences et bonnes pratiques li\u00e9es \u00e0 la mise en production de mod\u00e8les de Machine Learning, qualifi\u00e9e de <strong>MLOps</strong>.</span>\n<h2 id=\"evaluations\">\u00c9valuations</h2>\n<span class=\"paragraph\">D'une <strong>\u00e9valuation finale</strong> \u00e0 la derni\u00e8re journ\u00e9e en apr\u00e8s midi avec Hedi Boufaden sous forme de projet donnant lieu \u00e0 une soutenance.</span>\n<span class=\"paragraph\">Chaque jour, le cours aura lieu de 09h45 \u00e0 15h45, et le projet pourra \u00eatre r\u00e9alis\u00e9 de 16h00 \u00e0 19h00.</span>\n<h2 id=\"programme\">Programme</h2>\n<ul>\n<li>\n<span class=\"paragraph\"><strong>Pr\u00e9sentation du MLOps</strong></span>\n<ul>\n<li>M\u00e9tier, comp\u00e9tences et outils</li>\n<li>Niveaux de MLOps</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Entra\u00eenement automatis\u00e9</strong> (AutoML)</span>\n<ul>\n<li>Optimisation d'hyper-param\u00e8tres</li>\n<li>Validation crois\u00e9e de mod\u00e8le</li>\n<li>M\u00e9thodes d'interpr\u00e9tabilit\u00e9 locales et globales</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Software Engineering en Machine Learning</strong></span>\n<ul>\n<li>Cr\u00e9ation de pipelines ML</li>\n<li>Bonnes pratiques de d\u00e9veloppement (docstring, PEP8, linting, refactoring)</li>\n<li>Tests unitaires logiciels et de mod\u00e8les</li>\n<li>Pipelines CI/CD</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Orchestration ML</strong></span>\n<ul>\n<li>Conteneurisation de mod\u00e8les</li>\n<li>Apache Airflow pour le MLOps</li>\n<li>D\u00e9ploiement de mod\u00e8les sous forme de microservices (Serverless, Kubernetes)</li>\n<li>Kubeflow pour le MLOps sur Kubernetes</li>\n</ul>\n</li>\n</ul>\n<h2 id=\"projet\">Projet</h2>\n<span class=\"paragraph\">Le projet constitue l'examen final du cours <em>MLOps</em>.</span>\n<h3 id=\"modalites\">Modalit\u00e9s</h3>\n<ul>\n<li>Chaque groupe doit \u00eatre constitu\u00e9 de <strong>3 \u00e0 4 personnes</strong> maximum.</li>\n<li>Une <strong>pr\u00e9sentation orale de 20 minutes</strong> (incluant les questions) aura lieue lors du dernier cours. Lors de cette pr\u00e9sentation, <strong>tous les membres du groupes doivent prendre la parole</strong> et pr\u00e9senter leur partie.</li>\n<li>Le projet doit \u00eatre <strong>fonctionnel, op\u00e9rationnel et document\u00e9</strong> le jour de la pr\u00e9sentation.</li>\n<li>Les livrables (pr\u00e9sentation + code source) sont \u00e0 fournir sur la plateforme CYU. Un lien GitHub peut \u00eatre envoy\u00e9 ou suppl\u00e9ment, mais <strong>ne se substitue pas</strong> aux livrables du code source du cyu.</li>\n</ul>\n<div class=\"alert alert-warning\">\n    Pensez \u00e0 <b>ne pas ajouter le dossier d'environnement virtuel</b> (<code>env</code> ou <code>venv</code>) pour \u00e9viter d'avoir un dossier compress\u00e9 de plusieurs centaines de Mo !\n</div>\n\n<h3 id=\"description-du-projet\">Description du projet</h3>\n<span class=\"paragraph\">Pour une entreprise fictive, on cherche \u00e0 d\u00e9velopper un pipeline ML enti\u00e8rement automatis\u00e9 qui r\u00e9pond \u00e0 diff\u00e9rents crit\u00e8res.</span>\n<ul>\n<li>Le pipeline ML doit \u00eatre compos\u00e9 d'un <strong>pipeline d'entra\u00eenement</strong> et d'un <strong>pipeline d'inf\u00e9rence</strong>.</li>\n<li>Le mod\u00e8le doit pouvoir \u00eatre entra\u00een\u00e9 <strong>automatiquement sur de nouvelles donn\u00e9es</strong>, et les \u00e9quipes techniques doivent pouvoir auditer le comportement du mod\u00e8le. Les donn\u00e9es doivent avoir un minimum de <strong>tendance saisonni\u00e8re</strong> afin de justifier l'entra\u00eenement r\u00e9gulier.</li>\n</ul>\n<span class=\"paragraph\">Exemple de projets :</span>\n<ul>\n<li>Estimation de la dur\u00e9e d'une demande de trajet VTC dans un ville.</li>\n<li>D\u00e9tecter les utilisateurs h\u00e9sitant \u00e0 acheter un article ECommerce.</li>\n<li>G\u00e9n\u00e9rer automatiquement des images Google Maps \u00e0 partir d'images satellites.</li>\n<li>Pr\u00e9dire le co\u00fbt \u00e9nerg\u00e9tique d'un foyer.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fUZQ",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

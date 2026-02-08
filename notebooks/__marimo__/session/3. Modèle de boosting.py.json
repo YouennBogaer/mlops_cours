@@ -1,0 +1,796 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "1cfb57e3c0604f7942925eacaddc7767",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"3-modeles-de-boosting\">3. Mod\u00e8les de boosting</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "6bfb599160c64ae6328824a8b0c5a922",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Maintenant que nous avons plus de connaissances sur les donn\u00e9es, nous pouvons commencer par transformer les donn\u00e9es et entra\u00eener un premier mod\u00e8le. Notre choix se portera sur <strong>LightGBM</strong>, par sa rapidit\u00e9 d'entra\u00eenement et ses performances aussi proches que XGBoost.</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>Transformer le jeu de donn\u00e9es pour construire la base d'apprentissage</li>\n    <li>Calibrer un mod\u00e8le LightGBM</li>\n    <li>\u00c9valuer les r\u00e9sultats</li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/xUA7b4arnbo3THfzi0/giphy.gif\" width=\"300\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "1ac4afc953907ed45ecdea3cb2f400ce",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"transformation-des-donnees\">Transformation des donn\u00e9es</h2>\n<span class=\"paragraph\">Reprenons l'\u00e9chantillon que nous avons \u00e9tudi\u00e9 auparavant.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "1517bf900483d1897447c7472a441480",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='lEQa-0' random-id='d1909976-905a-bbf8-52a6-8c3296374fab'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:44600062,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2103807459595387724&#92;&quot;},&#92;&quot;category_code&#92;&quot;:NaN,&#92;&quot;brand&#92;&quot;:&#92;&quot;shiseido&#92;&quot;,&#92;&quot;price&#92;&quot;:35.79,&#92;&quot;user_id&#92;&quot;:541312140,&#92;&quot;user_session&#92;&quot;:&#92;&quot;72d76fde-8bb3-4e00-8c23-a032dfed738c&#92;&quot;},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:3900821,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013552326770905&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;appliances.environment.water_heater&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;aqua&#92;&quot;,&#92;&quot;price&#92;&quot;:33.2,&#92;&quot;user_id&#92;&quot;:554748717,&#92;&quot;user_session&#92;&quot;:&#92;&quot;9333dfbd-b87a-4708-9857-6336556b0fcc&#92;&quot;},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:00:01&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:17200506,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013559792632471&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;furniture.living_room.sofa&#92;&quot;,&#92;&quot;brand&#92;&quot;:NaN,&#92;&quot;price&#92;&quot;:543.1,&#92;&quot;user_id&#92;&quot;:519107250,&#92;&quot;user_session&#92;&quot;:&#92;&quot;566511c2-e2e3-422b-b695-cf8e6e792ca8&#92;&quot;},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:00:01&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1307067,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013558920217191&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;computers.notebook&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;lenovo&#92;&quot;,&#92;&quot;price&#92;&quot;:251.74,&#92;&quot;user_id&#92;&quot;:550050854,&#92;&quot;user_session&#92;&quot;:&#92;&quot;7c90fc70-0e80-4590-96f3-13c02c18c713&#92;&quot;},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:00:04&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1004237,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;apple&#92;&quot;,&#92;&quot;price&#92;&quot;:1081.98,&#92;&quot;user_id&#92;&quot;:535871217,&#92;&quot;user_session&#92;&quot;:&#92;&quot;c6bd7419-2748-4c56-95b4-8cec9ff8b80d&#92;&quot;}]&quot;' data-total-rows='5' data-total-columns='9' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;event_time&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;event_type&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_code&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;brand&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Taille de l'\u00e9chantillon : 1244245\nTaille m\u00e9moire : 89.59 Mb\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "PKri",
+      "code_hash": "acc0eff59bd27c03fe09c4f0393a62ff",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme \u00e9voqu\u00e9 pr\u00e9c\u00e9demment, nous cherchons \u00e0 conna\u00eetre si, lors d'une session, un utilisateur va acheter un produit ou non. Ainsi, notre base d'apprentissage va \u00eatre constitu\u00e9 de sessions dont on sait si l'utilisateur a achet\u00e9 ce produit ou non.</span>\n<span class=\"paragraph\">Chaque observation de notre base d'apprentissage disposera des informations suivantes.</span>\n<ul>\n<li>Les informations li\u00e9es au produit (nombre de vues du produit dans la session, cat\u00e9gorie, identifiant du produit).</li>\n<li>Les informations li\u00e9es \u00e0 la session (dur\u00e9e en secondes, nombres de sessions pr\u00e9c\u00e9dentes, heure de d\u00e9but).</li>\n</ul>\n<span class=\"paragraph\">Nous allons donc <strong>transformer l'\u00e9chantillon</strong> afin d'obtenir ces informations.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "0447be873cb06b72fdbb91971894ac3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"informations-sur-les-produits\">Informations sur les produits</h3>\n<span class=\"paragraph\">Conform\u00e9ment \u00e0 notre objectif, notre base d'apprentissage repr\u00e9sentera un ensemble de sessions o\u00f9, pour chaque session et chaque produit, l'utilisateur a achet\u00e9 (colonne <code>purchased</code> \u00e0 <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>) ce produit ou non (colonne <code>purchased</code> \u00e0 <marimo-tex class=\"arithmatex\">||(0||)</marimo-tex>). Il faudra donc <strong>agr\u00e9ger les lignes</strong> ayant la m\u00eame session utilisateur et pour le m\u00eame produit.</span>\n<span class=\"paragraph\">Commen\u00e7ons par construire la colonne <code>purchased</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "8d4f10d0d2f28dd78d6d489a4109ff2b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='SFPL-0' random-id='88803d00-3a79-e2f6-0c5b-746f128044b9'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:1084946,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 17:54:15&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1004443,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;meizu&#92;&quot;,&#92;&quot;price&#92;&quot;:257.38,&#92;&quot;user_id&#92;&quot;:514817771,&#92;&quot;user_session&#92;&quot;:&#92;&quot;7feb8a49-be91-474d-a188-72159d9f3666&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0},{&#92;&quot;&#92;&quot;:887844,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 15:48:25&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:28708833,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013565480109009&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;apparel.shoes.keds&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;escan&#92;&quot;,&#92;&quot;price&#92;&quot;:30.63,&#92;&quot;user_id&#92;&quot;:535767651,&#92;&quot;user_session&#92;&quot;:&#92;&quot;d6039884-dc59-4bc3-ba42-f9e46433fe76&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0},{&#92;&quot;&#92;&quot;:1217234,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 20:59:44&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:28703801,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013565069067197&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;apparel.shoes.keds&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;nike&#92;&quot;,&#92;&quot;price&#92;&quot;:61.57,&#92;&quot;user_id&#92;&quot;:524938711,&#92;&quot;user_session&#92;&quot;:&#92;&quot;27856ee2-6fb9-49cc-85d0-e7a19cdc6e2c&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0},{&#92;&quot;&#92;&quot;:773054,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 14:31:02&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:10201152,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013553224352013&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;kids.dolls&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;llorens&#92;&quot;,&#92;&quot;price&#92;&quot;:41.26,&#92;&quot;user_id&#92;&quot;:555662174,&#92;&quot;user_session&#92;&quot;:&#92;&quot;b2f65673-0f6e-4471-936a-a32f050d6eba&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0},{&#92;&quot;&#92;&quot;:590146,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 11:45:38&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:5700300,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013553970938175&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;auto.accessories.player&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;jvc&#92;&quot;,&#92;&quot;price&#92;&quot;:122.27,&#92;&quot;user_id&#92;&quot;:513914219,&#92;&quot;user_session&#92;&quot;:&#92;&quot;53d20c98-a4c7-42bb-906e-c6cd0bbd54c5&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='10' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;event_time&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;event_type&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_code&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;brand&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "3a74859284334ae28500ef19facb39fe",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Si la colonne <code>purchased</code> vaut <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>, cela signifie que durant la session, l'utilisateur a achet\u00e9 le produit concern\u00e9.</span>\n<span class=\"paragraph\">Effectuons la m\u00eame chose pour le nombre de vues dans la session en cr\u00e9ant la colonne <code>num_views</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "626fc2ca6b107eea225f1f04bc794a65",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='RGSE-0' random-id='398ec522-b16b-1de8-8ab4-fb768c8c7308'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:964321,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 16:34:29&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:15901680,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013558190408249&#92;&quot;},&#92;&quot;category_code&#92;&quot;:NaN,&#92;&quot;brand&#92;&quot;:NaN,&#92;&quot;price&#92;&quot;:29.6,&#92;&quot;user_id&#92;&quot;:513456303,&#92;&quot;user_session&#92;&quot;:&#92;&quot;6c19c8dd-c9c0-423c-8ef2-baf003a3e2e0&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:6,&#92;&quot;num_views_product&#92;&quot;:1},{&#92;&quot;&#92;&quot;:620205,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 12:14:46&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:3100152,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555262783879&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;appliances.kitchen.blender&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;panasonic&#92;&quot;,&#92;&quot;price&#92;&quot;:51.46,&#92;&quot;user_id&#92;&quot;:543293990,&#92;&quot;user_session&#92;&quot;:&#92;&quot;4857854c-9deb-4f04-ac6b-34a451df09aa&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:27,&#92;&quot;num_views_product&#92;&quot;:4},{&#92;&quot;&#92;&quot;:166072,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 05:35:53&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1005122,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;apple&#92;&quot;,&#92;&quot;price&#92;&quot;:1027.05,&#92;&quot;user_id&#92;&quot;:517294695,&#92;&quot;user_session&#92;&quot;:&#92;&quot;bf677f5c-8392-4623-a797-05795cbf32df&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:2,&#92;&quot;num_views_product&#92;&quot;:2},{&#92;&quot;&#92;&quot;:714806,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 13:42:44&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1004849,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;huawei&#92;&quot;,&#92;&quot;price&#92;&quot;:960.89,&#92;&quot;user_id&#92;&quot;:550403441,&#92;&quot;user_session&#92;&quot;:&#92;&quot;c01d7894-010e-4635-b896-12fcaca598f2&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:5,&#92;&quot;num_views_product&#92;&quot;:1},{&#92;&quot;&#92;&quot;:466502,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 09:52:35&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;view&#92;&quot;,&#92;&quot;product_id&#92;&quot;:8500088,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013552259662037&#92;&quot;},&#92;&quot;category_code&#92;&quot;:NaN,&#92;&quot;brand&#92;&quot;:&#92;&quot;hubert&#92;&quot;,&#92;&quot;price&#92;&quot;:540.08,&#92;&quot;user_id&#92;&quot;:516088051,&#92;&quot;user_session&#92;&quot;:&#92;&quot;33c28435-efa1-42b6-9351-51fddf826f0b&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:17,&#92;&quot;num_views_product&#92;&quot;:15}]&quot;' data-total-rows='5' data-total-columns='12' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;event_time&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;event_type&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_code&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;brand&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_session&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_product&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "77939d416edc0c25fec9ecaaa47daa15",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons \u00e9galement effectuer un <code>split</code> sur la colonne <code>category_code</code> pour r\u00e9cup\u00e9rer la cat\u00e9gorie et la sous-cat\u00e9gorie de chaque produit (si elles existent).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "f800dd496a1085fc9aae6924b114c401",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "a17455fb177fd91fa453501f3ed55d22",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Enfin, nous convertissons la colonne <code>event_time</code> en objet <code>datetime</code>, ce qui nous permet de r\u00e9cup\u00e9rer pr\u00e9cis\u00e9ment l'heure, la minute et le jour de la semaine associ\u00e9s \u00e0 l'\u00e9v\u00e9nement.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "39e0457ddcaa9764cde82ca30751a32a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "4f9b2ec95f0d2979a5634ea5f3bfe20e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"informations-sur-les-sessions\">Informations sur les sessions</h3>\n<span class=\"paragraph\">Regardons maintenant les sessions de chaque utilisateur. Nous allons commencer par d\u00e9terminer les dur\u00e9es de chaque session. Pour cela, la m\u00e9thode la plus facile consiste \u00e0 regrouper les observations par <code>user_session</code>, puis \u00e0 calculer le minimum et le maximum de la colonne <code>event_time</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "670733c42e0afc3708d363e614c4e8a3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='ZHCJ-0' random-id='59b24431-b1b4-6d9b-3f46-da0ba70b0e35'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;user_session&#92;&quot;:&#92;&quot;0000c738-9fbb-466a-906c-e3b2a62730da&#92;&quot;,&#92;&quot;amax&#92;&quot;:&#92;&quot;2019-10-01 19:12:07+00:00&#92;&quot;,&#92;&quot;amin&#92;&quot;:&#92;&quot;2019-10-01 19:08:39+00:00&#92;&quot;,&#92;&quot;duration&#92;&quot;:208},{&#92;&quot;user_session&#92;&quot;:&#92;&quot;00012d23-c857-40af-b8cb-ada787bc00cc&#92;&quot;,&#92;&quot;amax&#92;&quot;:&#92;&quot;2019-10-01 15:49:51+00:00&#92;&quot;,&#92;&quot;amin&#92;&quot;:&#92;&quot;2019-10-01 15:49:07+00:00&#92;&quot;,&#92;&quot;duration&#92;&quot;:44},{&#92;&quot;user_session&#92;&quot;:&#92;&quot;00016584-60b8-4d68-8b89-960b6a5cb750&#92;&quot;,&#92;&quot;amax&#92;&quot;:&#92;&quot;2019-10-01 19:24:49+00:00&#92;&quot;,&#92;&quot;amin&#92;&quot;:&#92;&quot;2019-10-01 19:24:49+00:00&#92;&quot;,&#92;&quot;duration&#92;&quot;:0},{&#92;&quot;user_session&#92;&quot;:&#92;&quot;00016bb9-b50d-4bcb-95d1-9c375f214c66&#92;&quot;,&#92;&quot;amax&#92;&quot;:&#92;&quot;2019-10-01 09:52:14+00:00&#92;&quot;,&#92;&quot;amin&#92;&quot;:&#92;&quot;2019-10-01 09:51:44+00:00&#92;&quot;,&#92;&quot;duration&#92;&quot;:30},{&#92;&quot;user_session&#92;&quot;:&#92;&quot;0001c1b8-85f4-46c6-837d-f5becd54f208&#92;&quot;,&#92;&quot;amax&#92;&quot;:&#92;&quot;2019-10-01 22:27:58+00:00&#92;&quot;,&#92;&quot;amin&#92;&quot;:&#92;&quot;2019-10-01 22:27:58+00:00&#92;&quot;,&#92;&quot;duration&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;amax&quot;,[&quot;datetime&quot;,&quot;datetime64[us, UTC]&quot;]],[&quot;amin&quot;,[&quot;datetime&quot;,&quot;datetime64[us, UTC]&quot;]],[&quot;duration&quot;,[&quot;integer&quot;,&quot;int32&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "2f45f9344a857d1b6940519ad95fce43",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Une fois calcul\u00e9, nous avons simplement besoin de faire <strong>une jointure</strong> avec le DataFrame <code>events_per_session</code>, dont le r\u00e9sultat sera stock\u00e9 dans le DataFrame <code>dataset</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "b2c428abe2a43174f823b25a91f645e2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='qnkX-0' random-id='4b7f7400-5d24-44ba-b2c9-0d95bcce37ee'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:02:14+00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;purchase&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1004856,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;samsung&#92;&quot;,&#92;&quot;price&#92;&quot;:130.76,&#92;&quot;user_id&#92;&quot;:543272936,&#92;&quot;user_session&#92;&quot;:&#92;&quot;8187d148-3c41-46d4-b0c0-9c08cd9dc564&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:3,&#92;&quot;num_views_product&#92;&quot;:3,&#92;&quot;category&#92;&quot;:&#92;&quot;electronics&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;smartphone&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:2,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:76},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:04:37+00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;purchase&#92;&quot;,&#92;&quot;product_id&#92;&quot;:1002532,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013555631882655&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;electronics.smartphone&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;apple&#92;&quot;,&#92;&quot;price&#92;&quot;:642.69,&#92;&quot;user_id&#92;&quot;:551377651,&#92;&quot;user_session&#92;&quot;:&#92;&quot;3c80f0d6-e9ec-4181-8c5c-837a30be2d68&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:9,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:&#92;&quot;electronics&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;smartphone&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:4,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:547},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:05:14+00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;cart&#92;&quot;,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013553375346967&#92;&quot;},&#92;&quot;category_code&#92;&quot;:NaN,&#92;&quot;brand&#92;&quot;:&#92;&quot;xiaomi&#92;&quot;,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;user_id&#92;&quot;:550121407,&#92;&quot;user_session&#92;&quot;:&#92;&quot;6f623695-9581-4633-813f-825b8760c7ae&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:2,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:NaN,&#92;&quot;sub_category&#92;&quot;:NaN,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:5,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:42},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:06:02+00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;purchase&#92;&quot;,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013553375346967&#92;&quot;},&#92;&quot;category_code&#92;&quot;:NaN,&#92;&quot;brand&#92;&quot;:&#92;&quot;xiaomi&#92;&quot;,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;user_id&#92;&quot;:514591159,&#92;&quot;user_session&#92;&quot;:&#92;&quot;0e5dfc4b-2a55-43e6-8c05-97e1f07fbb56&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:NaN,&#92;&quot;sub_category&#92;&quot;:NaN,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:6,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:120},{&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 00:07:07+00:00&#92;&quot;,&#92;&quot;event_type&#92;&quot;:&#92;&quot;purchase&#92;&quot;,&#92;&quot;product_id&#92;&quot;:13800054,&#92;&quot;category_id&#92;&quot;:{&#92;&quot;&#36;bigint&#92;&quot;:&#92;&quot;2053013557418656265&#92;&quot;},&#92;&quot;category_code&#92;&quot;:&#92;&quot;furniture.bathroom.toilet&#92;&quot;,&#92;&quot;brand&#92;&quot;:&#92;&quot;santeri&#92;&quot;,&#92;&quot;price&#92;&quot;:54.42,&#92;&quot;user_id&#92;&quot;:555332717,&#92;&quot;user_session&#92;&quot;:&#92;&quot;1dea3ee2-2ded-42e8-8e7a-4e2ad6ae942f&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:&#92;&quot;furniture&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;bathroom&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:7,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:67}]&quot;' data-total-rows='5' data-total-columns='18' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;event_time&quot;,[&quot;datetime&quot;,&quot;datetime64[us, UTC]&quot;]],[&quot;event_type&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category_code&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;brand&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_session&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_product&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category&quot;,[&quot;string&quot;,&quot;category&quot;]],[&quot;sub_category&quot;,[&quot;string&quot;,&quot;category&quot;]],[&quot;hour&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;minute&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;weekday&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;duration&quot;,[&quot;integer&quot;,&quot;int32&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "5de34faf25b82740e0792b98a63d0dec",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Notons qu'ici nous utilisons un <code>drop_duplicates</code> pour supprimer les lignes doublons : elles correspondent au m\u00eame produit, type d'\u00e9v\u00e9nement, utilisateur et session (par exemple, un utilisateur qui visite deux fois le m\u00eame produit dans une seule session).</span>\n<div class=\"alert alert-block alert-info\">\n    Nous avons d\u00e9j\u00e0 r\u00e9colt\u00e9 cette informations plus haut en calculant le nombre de vues par session.\n</div>\n\n<span class=\"paragraph\">Autre question qui peut se r\u00e9v\u00e9ler int\u00e9ressante : l'utilisateur a-t-il d\u00e9j\u00e0 eu d'autres sessions auparavant ? Pour cela, il est important d'\u00e9tablir une <strong>relation d'ordre</strong>, notamment avec <code>event_time</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "316fee1003474b587243a208c9ae0e82",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='Vxnm-0' random-id='8ba3917e-908b-2517-a0d5-35789e4f12d8'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;user_id&#92;&quot;:386070015,&#92;&quot;user_session&#92;&quot;:&#92;&quot;49d03116-3c95-4e13-8b9c-e3be97551fe8&#92;&quot;,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 05:02:50+00:00&#92;&quot;,&#92;&quot;num_prev_sessions&#92;&quot;:0},{&#92;&quot;user_id&#92;&quot;:393619196,&#92;&quot;user_session&#92;&quot;:&#92;&quot;ed5d037e-be8c-4c94-a8b3-ec881eecdb33&#92;&quot;,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 09:59:42+00:00&#92;&quot;,&#92;&quot;num_prev_sessions&#92;&quot;:0},{&#92;&quot;user_id&#92;&quot;:440756116,&#92;&quot;user_session&#92;&quot;:&#92;&quot;c31bc5b7-e14d-463c-89b0-594688e4e69d&#92;&quot;,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 11:12:02+00:00&#92;&quot;,&#92;&quot;num_prev_sessions&#92;&quot;:0},{&#92;&quot;user_id&#92;&quot;:441259588,&#92;&quot;user_session&#92;&quot;:&#92;&quot;69e19a80-b184-4008-ad62-a3902cd1aecf&#92;&quot;,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 15:12:23+00:00&#92;&quot;,&#92;&quot;num_prev_sessions&#92;&quot;:0},{&#92;&quot;user_id&#92;&quot;:451971397,&#92;&quot;user_session&#92;&quot;:&#92;&quot;c88ccdb0-0ad9-4e46-bd76-8f8b66a883e6&#92;&quot;,&#92;&quot;event_time&#92;&quot;:&#92;&quot;2019-10-01 09:37:14+00:00&#92;&quot;,&#92;&quot;num_prev_sessions&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='4' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;event_time&quot;,[&quot;datetime&quot;,&quot;datetime64[us, UTC]&quot;]],[&quot;num_prev_sessions&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "5ba6e55cf4925e0be023ec2d935caa0d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme toujours, nous effectuons une jointure avec <code>dataset</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "ecdac7428cbb5ebd4e36ce07ec3dae16",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "d761930823b80b1ec03911541a294a3c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Une derni\u00e8re information qui pourrait \u00e9galement \u00eatre utile, c'est de savoir si l'utilisateur a d\u00e9j\u00e0 vu un produit en particulier dans une session pr\u00e9c\u00e9dente. Elle ressemble fortement \u00e0 la transformation pr\u00e9c\u00e9dente, si ce n'est qu'il faut \u00e9galement prendre en compte le <code>product_id</code> et le <code>user_id</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "9013b4bca81b91308549777704c4d4af",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "1f49da98fe285319b023d3ff9da7b72c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Enfin, nous allons supprimer les lignes doublons par rapport aux colonnes <code>user_session</code>, <code>product_id</code> et <code>purchased</code>, si par exemple un utilisateur a achet\u00e9 plus d'une fois un m\u00eame produit (auquel cas, l'issue serait toujours la classe positive \u00e0 partir du moment o\u00f9 le produit est achet\u00e9 au moins une fois).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "a4499b9cc46a541eb480176da77171a4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='aLJB-0' random-id='86655a62-5df5-6cbe-9368-bfcbec49edfe'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:0,&#92;&quot;product_id&#92;&quot;:1004856,&#92;&quot;brand&#92;&quot;:&#92;&quot;samsung&#92;&quot;,&#92;&quot;price&#92;&quot;:130.76,&#92;&quot;user_id&#92;&quot;:543272936,&#92;&quot;user_session&#92;&quot;:&#92;&quot;8187d148-3c41-46d4-b0c0-9c08cd9dc564&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:3,&#92;&quot;num_views_product&#92;&quot;:3,&#92;&quot;category&#92;&quot;:&#92;&quot;electronics&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;smartphone&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:2,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:76,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:1,&#92;&quot;product_id&#92;&quot;:1002532,&#92;&quot;brand&#92;&quot;:&#92;&quot;apple&#92;&quot;,&#92;&quot;price&#92;&quot;:642.69,&#92;&quot;user_id&#92;&quot;:551377651,&#92;&quot;user_session&#92;&quot;:&#92;&quot;3c80f0d6-e9ec-4181-8c5c-837a30be2d68&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:9,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:&#92;&quot;electronics&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;smartphone&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:4,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:547,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:2,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;brand&#92;&quot;:&#92;&quot;xiaomi&#92;&quot;,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;user_id&#92;&quot;:550121407,&#92;&quot;user_session&#92;&quot;:&#92;&quot;6f623695-9581-4633-813f-825b8760c7ae&#92;&quot;,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:2,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:NaN,&#92;&quot;sub_category&#92;&quot;:NaN,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:5,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:42,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:3,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;brand&#92;&quot;:&#92;&quot;xiaomi&#92;&quot;,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;user_id&#92;&quot;:514591159,&#92;&quot;user_session&#92;&quot;:&#92;&quot;0e5dfc4b-2a55-43e6-8c05-97e1f07fbb56&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:NaN,&#92;&quot;sub_category&#92;&quot;:NaN,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:6,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:120,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:4,&#92;&quot;product_id&#92;&quot;:13800054,&#92;&quot;brand&#92;&quot;:&#92;&quot;santeri&#92;&quot;,&#92;&quot;price&#92;&quot;:54.42,&#92;&quot;user_id&#92;&quot;:555332717,&#92;&quot;user_session&#92;&quot;:&#92;&quot;1dea3ee2-2ded-42e8-8e7a-4e2ad6ae942f&#92;&quot;,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:&#92;&quot;furniture&#92;&quot;,&#92;&quot;sub_category&#92;&quot;:&#92;&quot;bathroom&#92;&quot;,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:7,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:67,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='16' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;brand&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;user_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;user_session&quot;,[&quot;string&quot;,&quot;str&quot;]],[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_session&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_product&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category&quot;,[&quot;string&quot;,&quot;category&quot;]],[&quot;sub_category&quot;,[&quot;string&quot;,&quot;category&quot;]],[&quot;hour&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;minute&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;weekday&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;duration&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;num_prev_sessions&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_prev_product_views&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "c81e0e2e511c7ba10c585592acee15f0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous pouvons maintenant v\u00e9rifier la proportion des deux classes pr\u00e9sentes dans le jeu de donn\u00e9es.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "269dca68193368bb783871170f8e827c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='xXTn-0' random-id='5a12c836-2e10-f1f2-ea99-750dbd5645d7'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;count&#92;&quot;:0.7808105872622002},{&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;count&#92;&quot;:0.21918941273779982}]&quot;' data-total-rows='2' data-total-columns='1' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;count&quot;,[&quot;number&quot;,&quot;float64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Taille du jeu de donn\u00e9es : 22971\nProportion des classes :\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "d5da349beab6cc4a27854682383f259b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Notre jeu de donn\u00e9es n'est d\u00e9s\u00e9quilibr\u00e9, il n'y a donc pas de r\u00e9-\u00e9chantillonnage \u00e0 appliquer.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "701cdaed10ec6a80c74adcb280062c51",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "b87453634c1312e133e2b094da2da610",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"feature-engineering\">Feature Engineering</h2>\n<span class=\"paragraph\">Maintenant que notre DataFrame <code>dataset</code> contient les observations, nous devons appliquer une \u00e9tape de <strong>feature engineering</strong> pour que la base d'apprentissage soit transform\u00e9e num\u00e9riquement et utilisable par notre mod\u00e8le. Il n'y a, en r\u00e9alit\u00e9, que trois colonnes \u00e0 encoder : <code>brand</code>, <code>category</code> et <code>sub_category</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "6683e16faa80b1ef3b6c361bb04bc5d5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='aqbW-0' random-id='9b20e859-bbe6-e185-fc18-c136094eb8f5'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:0,&#92;&quot;product_id&#92;&quot;:1004856,&#92;&quot;brand&#92;&quot;:543,&#92;&quot;price&#92;&quot;:130.76,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:3,&#92;&quot;num_views_product&#92;&quot;:3,&#92;&quot;category&#92;&quot;:7,&#92;&quot;sub_category&#92;&quot;:29,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:2,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:76,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:1,&#92;&quot;product_id&#92;&quot;:1002532,&#92;&quot;brand&#92;&quot;:30,&#92;&quot;price&#92;&quot;:642.69,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:9,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:7,&#92;&quot;sub_category&#92;&quot;:29,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:4,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:547,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:2,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;brand&#92;&quot;:668,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;purchased&#92;&quot;:0,&#92;&quot;num_views_session&#92;&quot;:2,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:13,&#92;&quot;sub_category&#92;&quot;:41,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:5,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:42,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:3,&#92;&quot;product_id&#92;&quot;:5100816,&#92;&quot;brand&#92;&quot;:668,&#92;&quot;price&#92;&quot;:29.51,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:13,&#92;&quot;sub_category&#92;&quot;:41,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:6,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:120,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:4,&#92;&quot;product_id&#92;&quot;:13800054,&#92;&quot;brand&#92;&quot;:545,&#92;&quot;price&#92;&quot;:54.42,&#92;&quot;purchased&#92;&quot;:1,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:8,&#92;&quot;sub_category&#92;&quot;:3,&#92;&quot;hour&#92;&quot;:0,&#92;&quot;minute&#92;&quot;:7,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:67,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='14' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;brand&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;purchased&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_session&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_product&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;sub_category&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;hour&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;minute&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;weekday&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;duration&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;num_prev_sessions&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_prev_product_views&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "d794fb8d0178e863f1f629686893b6d1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">V\u00e9rifions qu'il n'y a pas de valeurs manquantes.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "008c0abb88e026b3761853ed8b288ef5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='TRpd-0' random-id='d02c70f9-e69f-39e1-9763-2216664572af'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:&#92;&quot;product_id&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;brand&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;price&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;purchased&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;category&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;sub_category&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;num_views_session&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;num_views_product&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;hour&#92;&quot;,&#92;&quot;value&#92;&quot;:0},{&#92;&quot;&#92;&quot;:&#92;&quot;minute&#92;&quot;,&#92;&quot;value&#92;&quot;:0}]&quot;' data-total-rows='14' data-total-columns='1' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;value&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='true' data-show-data-types='true' data-show-page-size-selector='true' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;string&quot;,&quot;str&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "661bea689e2d974e056cc02f66410fa8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 partir de l\u00e0, nous allons cr\u00e9er la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex> constitu\u00e9e des <em>features</em> puis s\u00e9parer la base en deux sous-ensembles.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "51faecedb535a597ffbe9cde246b15b4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='yCnT-0' random-id='05fb2b38-4198-b3af-f79a-57b45ea220ab'><marimo-table data-initial-value='[]' data-label='null' data-data='&quot;[{&#92;&quot;&#92;&quot;:17020,&#92;&quot;product_id&#92;&quot;:4804056,&#92;&quot;brand&#92;&quot;:30,&#92;&quot;price&#92;&quot;:161.93,&#92;&quot;num_views_session&#92;&quot;:1,&#92;&quot;num_views_product&#92;&quot;:1,&#92;&quot;category&#92;&quot;:7,&#92;&quot;sub_category&#92;&quot;:1,&#92;&quot;hour&#92;&quot;:11,&#92;&quot;minute&#92;&quot;:44,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:21,&#92;&quot;num_prev_sessions&#92;&quot;:1,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:2240,&#92;&quot;product_id&#92;&quot;:6200373,&#92;&quot;brand&#92;&quot;:187,&#92;&quot;price&#92;&quot;:51.46,&#92;&quot;num_views_session&#92;&quot;:13,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:2,&#92;&quot;sub_category&#92;&quot;:16,&#92;&quot;hour&#92;&quot;:4,&#92;&quot;minute&#92;&quot;:22,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:1061,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:1272,&#92;&quot;product_id&#92;&quot;:12701398,&#92;&quot;brand&#92;&quot;:674,&#92;&quot;price&#92;&quot;:70.14,&#92;&quot;num_views_session&#92;&quot;:3,&#92;&quot;num_views_product&#92;&quot;:3,&#92;&quot;category&#92;&quot;:13,&#92;&quot;sub_category&#92;&quot;:41,&#92;&quot;hour&#92;&quot;:3,&#92;&quot;minute&#92;&quot;:40,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:1218,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:9684,&#92;&quot;product_id&#92;&quot;:4803686,&#92;&quot;brand&#92;&quot;:668,&#92;&quot;price&#92;&quot;:8.21,&#92;&quot;num_views_session&#92;&quot;:3,&#92;&quot;num_views_product&#92;&quot;:3,&#92;&quot;category&#92;&quot;:7,&#92;&quot;sub_category&#92;&quot;:1,&#92;&quot;hour&#92;&quot;:8,&#92;&quot;minute&#92;&quot;:13,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:125,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0},{&#92;&quot;&#92;&quot;:17778,&#92;&quot;product_id&#92;&quot;:1004858,&#92;&quot;brand&#92;&quot;:543,&#92;&quot;price&#92;&quot;:133.81,&#92;&quot;num_views_session&#92;&quot;:11,&#92;&quot;num_views_product&#92;&quot;:2,&#92;&quot;category&#92;&quot;:7,&#92;&quot;sub_category&#92;&quot;:29,&#92;&quot;hour&#92;&quot;:12,&#92;&quot;minute&#92;&quot;:11,&#92;&quot;weekday&#92;&quot;:1,&#92;&quot;duration&#92;&quot;:12263,&#92;&quot;num_prev_sessions&#92;&quot;:0,&#92;&quot;num_prev_product_views&#92;&quot;:0}]&quot;' data-total-rows='5' data-total-columns='13' data-max-columns='50' data-banner-text='&quot;&quot;' data-pagination='true' data-page-size='10' data-field-types='[[&quot;product_id&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;brand&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;price&quot;,[&quot;number&quot;,&quot;float64&quot;]],[&quot;num_views_session&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_views_product&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;category&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;sub_category&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;hour&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;minute&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;weekday&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;duration&quot;,[&quot;integer&quot;,&quot;int32&quot;]],[&quot;num_prev_sessions&quot;,[&quot;integer&quot;,&quot;int64&quot;]],[&quot;num_prev_product_views&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-show-filters='true' data-show-download='true' data-show-column-summaries='false' data-show-data-types='true' data-show-page-size-selector='false' data-show-column-explorer='true' data-show-chart-builder='true' data-row-headers='[[&quot;&quot;,[&quot;integer&quot;,&quot;int64&quot;]]]' data-has-stable-row-id='false' data-lazy='false' data-preload='false'></marimo-table></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "b206143389e51997a867227981d5d48d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons ensuite enregistrer les donn\u00e9es g\u00e9n\u00e9r\u00e9es.</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention!</span>\n<span class=\"paragraph\">Il est important d'avoir une consistance sur les ensembles utilis\u00e9s pour entra\u00eener les mod\u00e8les et pour les \u00e9valuer.</span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "a53197279a51edb9f27b43fd90868f1d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il se peut que nous ayons des probl\u00e8me li\u00e9 au typage des colonnes, lors de l'entrainement de notre mod\u00e8le. Pour \u00e9viter ce cas, nous allons forcer le passage des colonnes :</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "eff9c7055035c24dc3f9f6532e1e9cb8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "43d500327d0d54c4f91e81a6b2aaf6ea",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"modelisation-avec-lightgbm\">Mod\u00e9lisation avec LightGBM</h2>\n<span class=\"paragraph\">L'algorithme que nous utiliserons est <strong>LightGBM</strong> : il a l'avantage d'\u00eatre plus rapide que XGBoost tout en conservant des performances proches.</span>\n<span class=\"paragraph\">Vous y trouverez le papier correspondant sur le lien suivant : <a href=\"https://proceedings.neurips.cc/paper_files/paper/2017/file/6449f44a102fde848669bdd9eb6b76fa-Paper.pdf\" rel=\"noopener noreferrer\" target=\"_blank\">LightGBM</a></span>\n<h3 id=\"creation-des-arbres\">Cr\u00e9ation des arbres</h3>\n<span class=\"paragraph\">Bien que similaire, la principale diff\u00e9rence entre LightGBM et XGBoost est la mani\u00e8re dont les arbres sont construits.</span>\n<span class=\"paragraph\">XGBoost applique une m\u00e9thode appel\u00e9e <strong>level-wise tree growth</strong>, o\u00f9 chaque arbre est construit niveau par niveau. Ainsi, XGBoost d\u00e9veloppe le premier niveau (profondeur 1), puis d\u00e9veloppe le second niveau (profondeur 2) d\u00e8s lors que le niveau pr\u00e9c\u00e9dent a \u00e9t\u00e9 \u00e9tendu. Il s'agit d'une approche horizontale.</span>\n<span class=\"paragraph\">LightGBM applique une m\u00e9thode appel\u00e9e <strong>leaf-wise tree growth</strong>. Contrairement \u00e0 la m\u00e9thode pr\u00e9c\u00e9dente, l'\u00e9lagage n'est pas r\u00e9alis\u00e9 en fonction de la profondeur, mais directement en fonction des feuilles. Ainsi, LightGBM \u00e9tendra chaque feuille de mani\u00e8re verticale, sans s'assurer que la profondeur concern\u00e9e est totalement \u00e9tendue. Cela peut produire, par exemple, des arbres qui ne sont pas \u00e9quilibr\u00e9s (d'o\u00f9 la possibilit\u00e9 de toujours ajouter l'hyper-param\u00e8tre <code>max_depth</code>).</span>\n<div class=\"admonition\">\n<p class=\"admonition-title\">information</span>\n<span class=\"paragraph\">Si on ne faisait pas d'\u00e9lagage d'arbres, les arbres construits avec XGBoost et LightGBM seraient identiques.</span>\n</div>\n<span class=\"paragraph\">Une des principales raisons pour laquelle LightGBM est tr\u00e8s souvent plus rapide que XGBoost est due \u00e0 l'utilisation de la m\u00e9thode <em>leaf-wise</em>.</span>\n<span class=\"paragraph\">LightGBM permet \u00e9galement d'utiliser le <strong>Gradient-based One-Side Sampling</strong> (GOSS), qui consiste \u00e0 s\u00e9lectionner majoritairement des observations don les gradients sont \u00e9lev\u00e9s. Par exemple, si sur 10k lignes, seules 1k lignes pr\u00e9sentent des gradients \u00e9lev\u00e9s, LightGBM s\u00e9lectionnerai ces 1k observations, auxquelles il y ajoutera un certain nombres d'observations parmi les 9k restantes.</span>\n<span class=\"paragraph\">Les hyper-param\u00e8tres les plus importants pour LightGBM sont les suivants.</span>\n<ul>\n<li><code>num_leaves</code> qui contr\u00f4le le nombre de feuilles (noeuds) dans chaque arbre.</li>\n<li><code>min_child_samples</code> sp\u00e9cifie le nombre d'observations dans une feuille. Il s'agit d'un hyper-param\u00e8tre importante pour \u00e9viter un sur-apprentissage, notamment lorsque le nombre de feuilles est \u00e9lev\u00e9.</li>\n<li><code>max_depth</code> pour contr\u00f4ler la profondeur maximale de chaque arbre.</li>\n<li><code>n_estimators</code> pour d\u00e9terminer le nombre d'arbres \u00e0 calibrer.</li>\n<li><code>learning_rate</code> pour sp\u00e9cifier le taux d'apprentissage de chaque arbre.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "055c61a0fecc671e280ad9f32b451fec",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "90b3d9cce2e22e6f1189aed026068aa4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Entra\u00eenons un classifieur LightGBM avec les param\u00e8tres par d\u00e9faut. Nous allons mettre en place un <a href=\"https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.RepeatedKFold.html#sklearn.model_selection.RepeatedKFold\" target=\"_blank\">Repeated k-Fold</a> pour calculer des scores sur plusieurs instances du mod\u00e8le.</span>\n<div class=\"admonition\">\n<span class=\"paragraph\">Pour rappel, la validation crois\u00e9e est importante ici pour s'assurer que le score calcul\u00e9 pour un mod\u00e8le est coh\u00e9rent.</span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "08ffe659011822311688440915473e01",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "0785c9f7f55b37e2158cc33fd8a2ea26",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous laisserons les param\u00e8tres par d\u00e9faut de l'objet <code>LGBMClassifier</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "19c9d11124d65f6ae28cd54c0992468e",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "interruption",
+          "evalue": "This cell was interrupted and needs to be re-run",
+          "traceback": []
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "It\u00e9ration 1 du k-Fold\nIt\u00e9ration 2 du k-Fold\nIt\u00e9ration 3 du k-Fold\nIt\u00e9ration 4 du k-Fold\n",
+          "mimetype": "text/plain"
+        },
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/var/folders/wm/1s5pdh690fn1cwlfn4hr0rsc0000gn/T/marimo_35814/__marimo__cell_fwwy_.py&quot;</span>, line <span class=\"m\">11</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">model</span><span class=\"o\">.</span><span class=\"n\">fit</span><span class=\"p\">(</span><span class=\"n\">X_fold_train</span><span class=\"p\">,</span> <span class=\"n\">y_fold_train</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/lightgbm/sklearn.py&quot;</span>, line <span class=\"m\">1560</span>, in <span class=\"n\">fit</span>\n<span class=\"w\">    </span><span class=\"nb\">super</span><span class=\"p\">()</span><span class=\"o\">.</span><span class=\"n\">fit</span><span class=\"p\">(</span>\n  File <span class=\"nb\">&quot;/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/lightgbm/sklearn.py&quot;</span>, line <span class=\"m\">1049</span>, in <span class=\"n\">fit</span>\n<span class=\"w\">    </span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_Booster</span> <span class=\"o\">=</span> <span class=\"n\">train</span><span class=\"p\">(</span>\n<span class=\"w\">                    </span><span class=\"pm\">^^^^^^</span>\n  File <span class=\"nb\">&quot;/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/lightgbm/engine.py&quot;</span>, line <span class=\"m\">322</span>, in <span class=\"n\">train</span>\n<span class=\"w\">    </span><span class=\"n\">booster</span><span class=\"o\">.</span><span class=\"n\">update</span><span class=\"p\">(</span><span class=\"n\">fobj</span><span class=\"o\">=</span><span class=\"n\">fobj</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/lightgbm/basic.py&quot;</span>, line <span class=\"m\">4155</span>, in <span class=\"n\">update</span>\n<span class=\"w\">    </span><span class=\"n\">_LIB</span><span class=\"o\">.</span><span class=\"n\">LGBM_BoosterUpdateOneIter</span><span class=\"p\">(</span>\n  File <span class=\"nb\">&quot;/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/marimo/_runtime/handlers.py&quot;</span>, line <span class=\"m\">49</span>, in <span class=\"n\">interrupt_handler</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"n\">MarimoInterrupt</span>\n<span class=\"gr\">KeyboardInterrupt</span>\n</pre></div>\n</span>",
+          "mimetype": "application/vnd.marimo+traceback"
+        }
+      ]
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "7dfbfc4ab82a1b18704ad0c7232cebc7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Regardons maintenant les scores sur les deux sous-ensembles.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "urSm",
+      "code_hash": "564bbf7b983a1c12baba6a42d43e942b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Score Train m\u00e9dian : 91.9%\nScore Test m\u00e9dian : 87.9%\n",
+          "mimetype": "text/plain"
+        },
+        {
+          "type": "streamMedia",
+          "name": "media",
+          "mimetype": "application/vnd.marimo+mimebundle",
+          "data": "{\"image/png\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACTcAAAL6CAYAAADpf/CAAAAAOnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHZlcnNpb24zLjEwLjgsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmcvwVt1zgAAAAlwSFlzAAAewgAAHsIBbtB1PgAAeuZJREFUeJzs/QWcXOXZP/7fCQGChQgNTpEGt+JS3IIUSpFCkRJcH1xbpLgFKO7F3SlWQnEJUiyB4BK0QBICgRBC8n9d5/ef/c7Mzm52N7vZO5v3+/WaJzNnZ87cR+bM8NyfXlen8ePHj08AAAAAAAAAAACZ6dzeAwAAAAAAAAAAAKhFuAkAAAAAAAAAAMiScBMAAAAAAAAAAJAl4SYAAAAAAAAAACBLwk0AAAAAAAAAAECWhJsAAAAAAAAAAIAsCTcBAAAAAAAAAABZEm4CAAAAAAAAAACyJNwEAAAAAAAAAABkSbgJAAAAAAAAAADIknATAAAAAAAAAACQJeEmAAAAAAAAAAAgS8JNAAAAAAAAAABAloSbAAAAAAAAAACALAk3AQAAAAAAAAAAWRJuAgAAAAAAAAAAsiTcBAAAAAAAAAAAZKlLew8AAAAAmmP48OHpzTffTEOHDk0jR45MP//8c+ratWvq3r17mmuuudIiiyySZpppJjsVAAAAAKADEG4CAAAgeyNGjEi33XZbuu+++4pg0/jx4xt8bufOnYuAU9++fdOWW26ZevbsOUnHypRtoYUWqnj8yCOPFKE7yOVc+/7779N2222XhgwZUrF8v/32S/vuu2+LxzNw4MC044471j2ec84503/+858Wr4+OfY3JfTvWXnvt9Omnn7b6eiN8/eKLL6b2ct5556Xzzz+/7vHmm2+eTj311FZ/H9cDAACgtWlLBwAAQLbGjRuXLr/88mKS8YwzzkhvvPFGo8Gm0msGDx6c+vfvX7zu7LPPTmPGjJlkYwbI2YwzzpguvfTSNMccc1Qsv+qqq4ogKQAAAEBuhJsAAADI0ujRo9Mee+xRhJpGjRpV8znTTTdd6tGjR5pmmmlq/v3HH39MF198cdpmm23SN99808YjBpg8zDrrrEVwdOaZZ65b9t1336XLLrusXccFAAAAUIu2dAAAAGTpkEMOSU888UTFsgUXXLBoNbfCCiukBRZYoCLUNHLkyKJi08MPP5zuvvvuovVSSSzv169fuvnmm4tAFMCULq6hF154Ydp5553TTz/9VCy7/vrr00477ZR+9atftffwICtLL710+sMf/jDR62kojA0AAEDjhJsAAADIzl133VWElEo6deqUDjrooLTrrrumzp1rFyHu1q1bWnnllYtbVHyKcNTzzz9f9/e33nqrqAJ1zDHHTJJtAMjdcsstV1wXDzjggKKlZ6na3dFHH93eQ4OszDfffGnbbbdt72EAAABMsbSlAwAAICsxwX7uuedWLNt7773T7rvv3mCwqVbLpUsvvTQtscQSFctvuumm9Mknn7TqeAEmZxtssEE68sgj6x5HhbtPP/20XccEAAAAUE64CQAAgKy89NJLFRPr3bt3T3vuuWez1xPt50488cSi6lPJL7/8UrSsA+D/2XHHHYvqdnEbNGhQmnPOOe0eAAAAIBvCTQAAAGQXbiq39NJLp2mmmaZF61p44YXTsssuW7HsxRdfnKjxAQAAAAAw6Qg3AQAAkJXPP/+84vHUU089UetbffXVKx4PHTp0otYHAAAAAMCk02USvhcAAABM0Pjx4yseR4ukcePGpc6dW/a/z1lppZXSlltumXr27FncZpttthatJ1rlvfHGG+mzzz5LP/zwQ5p++unTLLPMkhZbbLE077zzpokR21dqCTVixIj0008/pR49ehTr/+1vf1vcby0//vhjevzxx9PHH39ctO6L6lbLLLNMmmqqqZr0+nhd7Idvvvkmfffdd0XbwNI4e/XqNdHj+/LLL9Prr7+evvjii2L9sZ9j+2efffa01FJLtbiK18SKUFxpXGPHjk2zzjpr6tOnT1p00UVb/b2GDRuWXnnllfT111+n4cOHF/sg9m0cq/nnn3+i1x/7NT5XH374YRo5cmQRIIzjGO8RldJmnnnm1J5i/7766qvp7bffTt9++23q0qVL6t27d1piiSXSfPPN1+hrY39F9bc4T8eMGZO6detW7LPYrq5du07UuOJzGeOKdcfnNMQ+i2tKfIamnXba1Bo60rnWEq4xbX/cmXxMyt8HTf2NNmTIkLrfAfGdHOdqfD/PMccck3QsAADAlEW4CQAAgKxEiKW6ktO1116b/vKXv7RofTHhFreWGD16dLr99tvTzTffXEwsNmSeeeZJ22yzTdphhx2aFb756KOP0lVXXZX+9a9/FSGTWiLUFQGqHXfcMW2yySZNCnndcccd6cgjj6x7fNZZZ6WNN9443X///envf/97XTCjJCZJ99hjj+I9aokw19VXX53uuuuuIhBTS6dOnYpx7rTTTsU443FTRQjlpptuSrfddluj+znCKdFm8E9/+lNaf/31m/UeLfXAAw+kyy+/vAgD1RLhg9133z1tuummEz1hfN9996VrrrmmCLbEhHYtc801V9piiy2K/RxBlOZ45JFH0vXXX5+ee+659Msvv9R8TpxfiyyySLE9sZ8jANfaqs/PCy64IK277rrFeXDFFVcU+yBCN7Usvvji6bDDDksrrrhixfI4L+M8HzBgQM1tm2GGGdJ2222X9tlnn2aHnJ5//vn0z3/+Mz311FPFGGuJYNPKK69cnAvVrTCnxHOtuVxjWv+4n3feeen888+ve7z55punU089tcmvj++zOPdLTjnllPTHP/4xtafTTjstXXnllRXLVlhhhXTRRRelGWecMXUkbfX7oKXi91BcM+K7OsLe1eL7OK7LBx98cFpyySXbbBwAAMCUS1s6AAAAsrLccsvVWxYTsjFJGxPgk8qzzz6bNtpoo3T88cc3GrgpVRo5/fTTi8nnqDYzIVGV4x//+EfacMMN0w033NDgxGWI4EEEEA499NC02WabpXfffbdF2xPBlph0rA42haja0tC4H3300SJIdM455zQYbCoFJmJy/pBDDikCEU1t//fJJ58Uk+4nnXTSBPdzTK4+/fTT6f/+7/+KifcYd1uJihQ777xzOuCAAxoMHYR33nmnODYxpoaCLxPywQcfFKGBOD5RGaihsElpf8W5E8fkySefbNL6Y7/F+Pbee+9i/zUUbArx3oMHDy6CDHH+x3gmhdgHW2+9dXGeNRRsCnEsImxzyy231C275557is/eQw891OC2jRo1Kl166aXpz3/+c1G5qiliHPvuu29xrv3nP/9p9PhGNZXHHnusWH+8pqnv0dHOtZZwjWn7494RxDWpOtgUbWcvu+yyDhVsao/fBxMS52eEp/r3718z2FT6DRDB2W233ba41gIAALQ24SYAAACyCzdVt3mLCbyoQrHmmmum4447rphA+/nnn9tsDFGhaJdddmmwOkG07apVoSmCAxGEaCykE5PTu+22W7rwwgtrBjGiRVi00qolAkgRAHniiSeatT1fffVVUSmnsSBDtO6rFlUaIhATr68WrcJiP9SqFBHhmBjna6+9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VKNoSVWDeF251q6MEGONfV8SLayi8s+kmLDfZJNNituYMWOKAFpMaA8cOLBoizd27Nia1SUOOOCAdN1116Wll156ot6/VmWK6n3d0uosEzofNtpoo3T22WenthZBsgj8xS0q2bz55ptFC8fYxy+88EK9ah2lifdLLrkk9ezZM+20006pI6tu3zgx14DGPqdTwrnWGNeYtj/uraGtQmgNiWpFF198cdEyNlqQPvjggxVB5KjAFcvnnXfe1JHk+Pug+nUtOU8n5bkKAABMGYSbAAAAyEaEWAYPHlzxuDVE1ZrycFOtSdvqCcYIWLWWWu2QImA166yzNntdn332WcXj3r17p9YUYy0PN7VVC6kJVXtYaaWVilspZPLcc8+lRx55pJjwLg/hxLGMsMbVV189Ue8ZLchicr18ErclLamGDRvW7POhPfZxWGSRRYpbtJ+L8Ngrr7ySHn300aLC0xdffFHx3KimsuWWW7Zqu8bcVB+XOP5RCaW68tuExL783//+V7Gs/LM+JZ5r5Vxj2v64N1SNrTmiQt6kFNeYCDaVKg6dfPLJabPNNqurEhbjOeKII4oKTo19JiMgPTnJ8ffBHHPMUfE4vmfjvIuQa1PF9/akDsgBAAAdm7Z0AAAAZGO++earePziiy/WrNgzsRVZevXqVe85v/nNbyoev/fee0UFoea46667Ur9+/dIxxxyTLr300qIaTujRo0e9NmCvvfZaaq6oolMe/grzzDNPak0LLLBAdhPFEQZZd9110ymnnFIEnEoT4CURfBoxYsREv0/1OTBo0KBmvT4mct99993Jch936dKl2K+HHnpo0epvhx12qBeKiSpPHVmfPn0qHkeY4p133mn2et5+++16bdvmnnvuisdT8rmW45g62jWmVjvS5rYSbEnwamJUB2ri98D+++9fsezll18uWs12JDn+PojqWPGdMDHnalQGBAAAaE3CTQAAAGSjekI5qp/cf//9E73e999/v+Lx4osvXu85v/3tbysmg2MS+aWXXmrW+zz++ONFAOTmm29O/fv3T0899VSD2xYBkuaKCfaRI0dWLJvYdmzVqsf5/PPPN7v6QlSkiXDMIYccUlRVuuWWW9Inn3xSUUEkAgQxSf23v/0tbbfddk2eSI/KESeccEK95UOHDk0Ta8UVV6x4/NhjjzXr9dFCqSmBuKgkVl0lbMiQIam5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3/fZZ5/i3549e6YTTjihtd9+shfVkfbcc8/0888/p86dO6c11lgjrbDCCql3795pqqmmSt9880166aWX0oABA4pQ0+WXX54+//zz1L9//9SpU6c2GdOpp57aJusFAAAAAAAAAIBJGm6K0NK66647wedNN910TXrepLLiiitO8lZ41caOHZsOO+ywItg000wzpUsuuSQtu+yy9Z63/fbbp/fffz/ttttu6ZNPPkn33XdfWnXVVbWMAwAAAAAAAACgQ9GWLiNRjSmqMIUDDzywZrCpZP7550//+Mc/6qo1Res4AAAAAAAAAADoSISbMvLGG2/U3V9ppZUm+PzFF188Lb300sX9d955J40aNapNxwcAAAAAAAAAAJN1W7rWdN5556Xzzz8/TTXVVEXw58477yxatUUrth49eqQlllginXnmmWn66aeve83LL7+c7r333vTCCy+k//3vf+n7779PM8wwQ5ptttmK1nPbbbddmnfeeeu918CBA9OOO+5Y3N93333TfvvtV/e3O+64Ix155JHF/ccff7xovXfjjTcW7eA+/PDDNGbMmDTXXHOlddZZJ/Xr1y917969Rdv73Xff1d2PbVxggQUm+JrNNtsszT333MWYYhyxrbV88MEH6frrr09PP/10+uKLL4pls88+e9HOLrY71lFtoYUWqngc+z9u4ZRTTkl//OMfm72NAAAAAAAAAADQIcJN5SJMdNxxx9U9juBS3ErBpp9++ikdfvjh6YEHHqj32m+//ba4vfXWW+mGG25IJ510UvrDH/7QonEMGzYs7bXXXhVVlkqVk+J2yy23pKuvvjotuOCCzV53ecDo7LPPTssss0yaaaaZGn3NtttuW9wac+mll6Zzzz03/fzzzxXL33vvveIW+zbCWxH8AgAAAAAAAACAXEwW4aZx48alk08+OXXr1i3ttNNORZWkl156qajcVPLXv/61Ltg0xxxzFOGlCAt17tw5DR06tKg49Omnn6axY8emY489Nq288spp1llnbfZYDjrooKIKUoSXNt9886Ii1EcffVSEpiJsFeGnww47rHi/Tp06NWvdG264Yerfv38xxjfffDP17ds3bb311sW/1VWUmuqiiy5K55xzTnE/gmBRbWnJJZcsxvb666+n22+/vWhnd/zxxxf7qjwodcEFFxT/7rPPPsW/UfmqVN1q0UUXbdF4AAAAAAAAAACgQ4Wbxo8fX1Qduvbaa9PSSy9d146tZMiQIUUruhDBnXhe165dK9axxx57FLdnnnkmjR49Oj388MNp++23b/ZYIti05ZZbFmGgaJdXEssi7PTVV18VwaRBgwZVhK+aItrERTu8qNoUvv7663ThhRcWt969e6cVVlghLb/88kUw69e//vUE1zd48OCitV+IVnxXXHFFEQwr2XTTTYs2enGL9nrRam711VdPc845Z/H3ddddt2J9ERqrXgYAAAAAAAAAAG2lc5pMrLTSSnXBpmr//ve/KyorVQebwjTTTJN22WWXuscR5mmJXr16FZWfyoNN4Ve/+lVRZakkqiK1xJ577llsw9RTT12xPKpC/etf/yree/31108bbLBBUZEpwlQNufLKK9Mvv/xSVGn6xz/+URFsKg8snXDCCXWt/SIYBgAAAAAAAAAAOZgsKjeF5ZZbrtFA0MYbb1y0n4vWaQ0pD/f8+OOPLRrHWmutVQSlailvHffdd9+llooKU+uss0666qqr0kMPPZRGjhxZ7zkRzoqWc9ddd1065JBD0jbbbFPx92ht98gjjxT3F1tssbTwwgs3+H5RESpa+MX+e/TRR9MRRxzR4rEDAAAAAAAA0PGNGDE8HXzwvpP0/Zi8OEeY4sJN888/f4N/i7DRAgssUNxqtbT75JNPikpKEdwpGTduXIvGUes9Smaaaaa6+9FGb2L85je/SSeeeGI67rjj0ksvvVS00xs4cGDR7q583RGiimpOEYDafffd65a/9dZbdQGuqAI1YMCARt+ve/fuRbgpQlPff/99mnHGGSdq/AAAAAAAAAB0XDEXP3z4sPYeBhlzjjDFhZvKg0MNicDSc889V4SA3n///SKoE4GdWlWa4kPU2uMob1XX0vVX69KlS1GNqlSRatSoUcU23n///emBBx4o2s6F/v37pzXWWKOuetSXX35Zt46XX3457bPPPk1+z+HDhws3AQAAAAAAANCgTp06pe7de0zSKkCtNQ/PpOEcYYoLNzXUCq7k1VdfTUceeWR67733av593nnnTcsuu2y6/fbbJ2oc5QGm9jDDDDMULeviFu344haVqcL111+fjj/++OJ+VF9qqQhQAQAAAAAAAEBDItjUv//5k2wHRQs8laImL84RprhwU2OGDBmS/vKXv9RVaJpzzjmLSkdRxSjauy266KKpZ8+e6eOPP57ocFNbiVDWk08+mb766qvUt2/ftMQSS0zwNX369Elnn3122mqrrYrHb7/9dt3fpptuurr7u+22WzrkkEPaaOQAAAAAAAAAANA2OkS46fTTT68LNu2///5pr732KsqbVRs5cmTK1WuvvZZOOeWU4v60007bpHBTWHLJJdPMM8+cvv3224pqTRHmKonAFAAAAAAAAAAATG46p8ncTz/9lJ555pni/lxzzZX23nvvmsGm8Oabb9bdz60X58ILL1x3/8EHH2zy+H755Zc0evTo4v7cc89dtzyqVXXp8v9l11544YUJru/oo49OxxxzTLr00kvT2LFjW7gVAAAAAAAAAADQeib7cFNULCoFd6affvoGn/fzzz+n66+/vu5xbgGeRRZZJM0///x1LequueaaJr3u3nvvLQJeYe21165oS7fKKqsU9z/99NMiMNWQZ599Nt1yyy3p5ptvTvfdd19dKKqkFBYbN25cC7YMAAAAAAAAAACm0HBTtF8rhZrefffd9NJLL9V7TrSsO+ywwyoqN5UCQTk5/PDD64JEp556ajr77LPrqjLVMmDAgHTccccV9+eYY4602WabVfx91113rbt/7LHHpldffbXeOj777LPifUv69etX7zkRlMq9rR8AAAAAAAAAAB1PZYmeyVBUGdpkk02KykNRWWiXXXZJW221VVpsscWKlm3vvPNOUd3o66+/rnjdd999l3Kz5pprFkGjCDbFtlx88cXppptuKioyRZu5Xr16FaGsoUOHpscffzwNGjSoeF2Euy688MI0zTTTVKxvxRVXTDvttFO66qqrigpXf/7zn9PGG2+cVlpppdS5c+ci7BX77Ycffiiev9pqq9ULSIVZZ501ffDBB+nJJ59MV1xxRRGk6tOnT/rNb34zifYMAAAAAAAAAABTosk+3BQOPfTQ9PrrrxdhnajSVKul27TTTpuOOuqoIswzePDg9Pbbb6ccReWk2WefPZ1yyinpiy++SCNGjEh33HFHcaslQlwnn3xyWnjhhWv+/Ygjjii2/bLLLita8d19993Frdpaa62VzjrrrLrKUeUiEHX++ecXrz/99NPrqkLFfgcAAAAAAAAAgLbSIcJN3bp1KyocXXvttenBBx9M77//fhozZkyaccYZ069//eu08sorp2222aYIDX388cdFuGnYsGHpueeeK6oY5aZv375p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fvvt9MMPP6Ru3boVr19zzTXTNttsUzwu+eSTT4r1ljv//POLW7jmmmuaFFQK3333Xd39Umu6CVl99dXT0KFDU48ePVKvXr0afN7IkSPTddddlx599NH00UcfFds5yyyzpGWXXTZtvfXWaYUVVqj3mh122CE9//zzFWNaaKGFivsRqjr11FObNEYAAAAAAAAAAEhTerhp9OjR6YgjjkgPPPBAxfIxY8akV199tbhdffXV6bzzzitCPdU+++yz1K9fv/Thhx9WLP/mm2+K20svvZSuuOKKdNFFF6Vlllmm1cc/99xz192/8cYb02abbZYWXHDBRl+z3HLLFbfGPP300+mggw5KI0aMqLe9cbv33nvTH//4x3T88cenqaeeeiK3AgAAAAAAAAAAWkeHCTeNGzcu7bPPPumpp54qHs8xxxxpiy22SPPPP38aNWpUUc3pwQcfLEJKEWC6+eab0yKLLFKxjoMPPrgu2LT22msXlZpmnnnmovrTQw89VFQxioDQvvvumwYMGJCmn376olrSBRdcUKz3mGOOKV670UYbpY033ri436dPnyZvw2KLLVaM9/333y/GvOWWW6ZNN900bbLJJkWAqUuX5h+u5557Lu2xxx5F27rOnTun9dZbL/3ud78rqld98MEH6Y477iiqT8W/P/30UzrrrLPqXrv//vsX23vOOeekd955J/Xs2TOdcMIJxd9mn332Zo8FAAAAAAAAAACmyHBTtFwrBZvWXXfd1L9//9S1a9e6v2+11VZF+7W99tqraMl2yCGHpH/961+pU6dOxd/ffPPNoo1diNZzf//73yvWv/3226fjjjuuqKgUQaaoDhXhqWh5F+8XAaGSCCjFsuaKscR77LLLLkUYKcJGt956a3GbYYYZioDT8ssvX7S5W3zxxYuwUmNiOw877LBiXTHOqDi18sorVzxn1113TQceeGB65JFH0n333VeMO8JZoVQRKqpdhdK2AgAAAAAAAADApNB4OmYyMXbs2HTllVcW92ebbbZ6waaSCPZEmCe8++676dFHH637W1QxKomKTbXsvffexfojYFQKRbW2CC5FJaioCFUuKjk9/vjj6cwzzyyCWqussko6+uij05AhQxpc1z333JO+/PLLuqpU1cGmMO2006ZTTjmlqFAVLr/88lbfJgAAAAAAAAAAmGIrN7366qvp888/L+5H1aFawaaSqLZ03nnnFfcfe+yxov1c6N69e91zrr/++iJkFG3nyvXu3bsIGLW1NdZYo6gqde2116a77747ffrpp/WeM3z48HTLLbek2267LW233XZFJarq7Y42fGGqqaZKm2++eYPvF8GmqMh0++23p8GDB6f//e9/xbZCLSNGDE8HH7yvnUOW5yZMyVyf22afAgAAAAAA0L46RLjptddeq6hwNGDAgEafHyGg0aNHp0GDBtUtixZss8wyS/r666/Tk08+mdZZZ5203nrrpdVXX72oeBRt4Salnj17pv3337+4RXWmZ555Jj377LPppZdeKraxZNy4cUUIKtrinX/++alLly719ku0k3vuuecafb/x48fX3Y+Ak3ATjZ0rw4cPs4MAMuP6DAAAAAAAQEfUIcJNpdZr4eabby5uTTFs2P8LaEwzzTTpjDPOSHvttVcRfIq/ldY19dRTp2WXXbaobrThhhsWIahJaeGFFy5uO++8c9GC75VXXkmPPPJIuvXWW9N3331XPCda7N10001p++23Lx5///33xa10f5999mny+33zzTdttCV0BNGSsXv3Hu09DKhZYaU8qAlTGtfn1ue6AgAAAAAA0P46RLipFOJprvIKSGGVVVYp2sBddNFF6d///nf64YcfiuU///xzUfkobqeddlrq169fOvDAA1Pnzp3TpBaVmaLKVNz22GOPoh1dVJoK1113XV24qXrbmmNiXkvHF8Gm/v3Pb+9hQD3RLlFVMaZkrs+tz3UFAAAAAACg/XWIcFO0mSu57LLLilZyLTXvvPMWAabjjz++CDNFcOjpp59O77//fl3Q6dJLLy2qg0SwqLWMHDky3Xvvvemrr75Kffr0SRtvvPEEX9O9e/d07rnnFi30otLUhx9+mMaMGVNUoSrfJ0sttVS65ZZbWm2sAAAAAAAAAAAwKUz60kNtoFevXnX3IxzUGqaddtq0xhprpL/97W/pgQceSA8//HDaaaed6v5+zTXXtLhiVC3RXi4CVVE16sYbb2zy66affvqiZV6IwFVpTDPNNFMRcmrNfQIAAAAAAAAAAJNShwg3LbnkknX3n3/++UafO3z48LTPPvukk046Kd1zzz11y1988cV0xRVXFAGjCAlVm2eeedKRRx6Z+vbtWzz+6aefikpJrWWOOeZIM888c3H/lVdeSV988UWz28jNOOOMqWfPnsX9aJm32GKLFfc/++yzNHTo0EbXcfXVV6fDDz88nX/++enTTz+diC0BAAAAAAAAAIDW0SHCTVG5KFq0hQcffLDRcE5UXBowYEDx7+uvv163/I477kinn356uv7669OgQYMafH0pgFSqmlQSYaKScePGNXsbOnXqVBecitZ3Eb5qyno++uij9MILLxT311prrYq/Rbu6kiuvvLLRlnjR3u6uu+4qKkdNN9109cbW0u0CAAAAAAAAAIApOtzUtWvXtMMOOxT3R48eXVRm+vrrr+s978knn0yXXXZZcb9Lly5pxx13rPtbKVgUjj322PTDDz/Ue31UP3rooYeK+7POOmtRzal8DOVhoZbYe++960Ja//73v9O+++6bvvzyywaf/84776Tdd9+9CEPF9uy6664Vf996663rwljR6u6mm26qt44xY8akAw44oK6d3WabbVZX/amkFHaK1nm1qloBAAAAAAAAAEBb6JI6iD322CM98cQT6dVXX01vvvlm2mijjdIWW2xRtGaLtm3Rru7++++vqz60//77p7nnnrvu9auttlpaYYUViucNHjw4rb/++mnLLbdM8847b/rll1+KINEtt9xS1wIugkcRKCrp0aNHEXCKcNWdd96Z+vTpk7p165aWXnrpouVcU8w222zpwgsvTP369Sva3j3yyCNFIGuVVVYpxvarX/2qqKIUgacY51NPPVWMLRx33HFp4YUXrlhfBJtOPvnktN9++xXbHaGt2AcbbLBBEaKKqk+33XZbXaWrCGwdcsgh9cYVy0MEoI455pi06qqrFq9faaWVWnCkAAAAAAAAAABgCgs3TT311EXrtQMPPLAIOX377bc1W7FF+7i99tqrqHhULkJD55xzTlH96I033khfffVV0aKt2lRTTVVUWIqqSNWv33DDDYtgUwSgIkgU4t8///nPzWqxd/PNNxdhpVdeeaWorPTYY48Vt1oi8HT00UcXgaVa1l133WK7jjrqqCKcNHDgwOJWbb755ksXX3xxvapNIYJiMaYQAa+4LbnkkunWW29t8nYBAAAAAAAAAMAUG24KM844Y9F27vHHH0/33HNPevnll4v2dBE8iqpIK664Ytp2223TIossUvP1vXr1KoI7d911V3rwwQfTW2+9lUaMGFEEp+L1K6+8chFqqq6QVBKBpKiWFK3r4n2jklNLWtTF+KKFXISQYlte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7AFoH6ZEn+WMM85IQ4YMSYcffnge06qFTz/9NI+3Pf300+mzzz5Ls88+e1piiSXSVlttlfr27Zs6derUYvs777wzj7m9//77aZZZZkmrrbZaOuyww9Iqq6zSYrthw4al4447Lq244orpjjvuqMlnAZjRVRt7xo0bl26++eb0+OOPp//+97/pu+++y/dhlltuubT55punHXfcMc0666xVn6c+D9NSh7ro3QMA051Ro0algw8+OA/ON2f99dfPyT1zzDFHzdtXKpKSYgDn559/bnJ/796902WXXZbmnnvuJveffPLJ+Sb6pOKc/vrXv6ZVV121yXb/+9//0kYbbZQ7BTHosswyy7T5MwBQm9jx+uuv58Hyr776qsm2MaD++9//Pu2zzz5VfeViD0D7UW3s+PHHH9NRRx2VnnjiiSb3x0SLAQMGpIMOOqiq8xR7ANqHKdFnef7559N+++2XJk6cWLPkpieffDIdffTR+eZ1U5Zddtk86W+xxRZrcv+gQYPSJZdc0uj5jh07posuuihPFGzK//3f/6Utt9wyjRw5Ml199dXpt7/9bZWfBIBqY0/EmWOOOSaNGTOm2S8z7o9EXOjevXubv3B9HqY1yU0AMB2KRKFddtmlfHM5ZmXttNNOaeGFF85Z+ZGhX7qQ3XDDDfNFay3bVypmjh144IF5pnTMHotZYyuttFIaPXp0TliKLP+wzjrrpMGDB6eZZmq4Yu6LL76Y9tprr7y9+uqr53OMtjF4EslLMVvhoYceatQuxEDMFVdckbbddtt0wQUXtOn8Aahd7Pjggw/SzjvvXB58X3LJJfPrxSy0aH/TTTeVB3GOP/74tP/++7fp6xd7ANqPWsSOY489NldtClH5ddddd03dunVLb775Zo5dUcUpnH/++Wm77bZr03mKPQDtw5Tos7zxxhtp7733zpPvQi2Sm6KCbpzXTz/9lJN045xj8mCc9913351effXVfFxU6xg6dGgek6svEpMiQSkSlSIJKsbeIhn4mmuuSV988UWu9BFJwXPOOWej977lllvSqaeemsfpohIVANM29vznP//J911++OGH/O911103T/qOyeRR1e+uu+5K7777bnksL+7LdO3atdXnqc9DIUTlJgBg+jJ06NC6ZZddNv8cfPDBdT/88EOD/aNHj67bdttty8c8/fTTNW1fiZ9++qluww03zO1XWWWVujfeeKPR/t/97nfl97jnnnsavcaJJ56Y922yySZ1EyZMKD//xBNPlNu9+OKLjdp9/fXX+T179OhRN3LkyFafOwCNVRs7dtttt/K+I444IseB+saOHVu3ww475P3x93vEiBGt/jWIPQDtS7Wx45lnnim379+/f92PP/7YYP97771X16dPn7w/HsePH9/qcxR7ANqPWvdZYvyqd+/e5deMn0svvbTq8+zbt29+rRVWWCG/R30TJ06sO/PMM8vvd8UVVzRqP3DgwLxv9dVXrxs3blz5+fg8yy+/fN535513NmoX38f666+f9w8fPrzqzwFA9bGnX79+5fZDhgxp9JX+/PPPdccee2z5mHPOOafVX7s+D0XRuMwBAFB4Dz/8cH6MikVnnnlm6tSpU4P98847b17ObdLja9W+0nP85JNP8vYBBxyQVlxxxQb7Y33n8847r7wc3ZVXXtnoNd56661yZacovVoS60yX/h0zEyYVrxUzsGMd6cmtRQ1A5X/X2xo7XnnllfLs4V/96le5ol7EgfrmmmuuvCxC/H2PGcRRfa+1xB6A9qMWsSOWsS4tsXPWWWel2WabrcH+qOQU1SfC2LFj8zILrSX2ALQPteyzTJgwIV166aXpkEMOyZXHaynOMc41bL/99nlZ8Po6dOiQ+2UR40qxMKrwNjXettpqqzWo3hFVnErL2DU13hbVQz7//PM8TtenT5+afi6AGVG1sef9999P//znP/P2xhtvnHbfffdG7xF9obPPPjstsMAC+d933HFH+uWXX1p1nvo8FIXkJgCYDpWShuJGcumidFIrr7xyefvTTz+taftK3H///eVBlaYuqkPnzp1zAlKIJeqizGp9pVKqk5ZJjRvr88wzT94ulfUuifLZMdgSnYBYpxqA2qgmdkTp6pL99tuv0c3lku7du6cNNtggbz/22GPlpYIqJfYAtB/Vxo5IVnruuefKkyPiuKbEsjzzzTdf3n7wwQdbfZ5iD0D7UKs+S8SeLbbYIl122WVp4sSJaY455kj77rtvzc6zFHfCHnvs0eQxMW5W2hfx8IUXXqhovC2UYuKk423xOa+66qq8PWDAgKo/BwDVx57nn3++fExLS2zH65bajxs3Ln344Yet+vr1eSgKyU0AMB3q0qVLfhw9enR5LeZJ1b+pHDeia9m+EqUZA8stt1yL7ddcc83y9lNPPdXkeX7zzTcNnq+rqysPspSOKRk0aFCeIbfbbrulhRdeuNXnDUDTqokdMZOsZO21127xK+7Vq1d+/PHHH9Mbb7zRql+H2APQflQbO1566aV8U3nSPkdTN4DXWGONvP2vf/0rD/a3htgD0D7Uqs8ybNiw8sSQlVZaKVcFLN1QroVS3IlKHj169Gj2uPqxr/7N85bG28L48eMbHFNyww03pK+//jptuOGG5c8PwLSNPdGXWWaZZdKcc86ZllxyyRbbR9woaW1VQX0eikJyEwBMh0oXspHkU1pqYVKDBw8ub6+77ro1bT85o0aNKl8gx8V1S0plspsqeR2JUeGZZ57JCUslL774Ynl2wgorrFB+/qOPPkq33357mn322XPpbwBqp5rYURogD81VfSopLVca3n333YrPT+wBaF+qjR31Y0gss9OSX//61+UYFxVlKyX2ALQfteyzxESP0047Ld1yyy3lGFMLsYxQ6UZ4jKfFTe3mLLXUUmnmmWducbwtlkKqn+AU42offPBBo/G2+G6uueaaXJ39qKOOqtnnAZjRVRt7okrfvffem15++eXJ9nnee++9Jl9rcvR5KBLJTQAwHdp7771zWetSpaJYMzkGN6Ks9IgRI9Lxxx+fk3xCnz590tZbb13T9pNTmqEWFl100RaPXXDBBcuDMZ999lmDfdtss025EkiUZY31oK+++up05JFHltehXm211crHDxw4MK87vddee6Vu3bq16pwBaFk1saPULvz0008tvk/95Q++/PLLin8tYg9A+1Jt7KhfTXByfZKFFlqoTUtyiz0A7Uet+iz9+vVLjz/+eH4sJRfVSlROKk3+m1xsi/eef/75mxxv22qrrfJYXFTk7d+/f07CispMsR1VD+Om90YbbVQ+PhKborJhLOW6/PLL1/QzAczIpsZ4WSlBqVTFb5555klLLLFExW31eSiSjtP6BACA1lt88cVzks8xxxyTL0yvv/76/FPfLLPMkvr27ZuOPfbYRoMp1bafnPqzvuJiuSXxPnERHxfnY8eObbBvrbXWysvLDR06NJc+LZU/DVFq9fzzz8+zxkozD2KWQpTN3n///Vt1vgBMXjWxY7HFFitvR+nslpYHevPNN9tUJlvsAWhfqo0dY8aMqbhPUn/m8qR9kpaIPQDtR636LD179pxCZ9i62FZaguiLL75oFNti6aIBAwakP//5z7li4amnntqgT3fuueemzp07l9/zuuuuy/27I444oqafB2BGNzXGy8J5552Xfv755wYJrpXS56FIVG4CgOlU79698yBEcyVEu3bt2qAEda3btySqeJTMNttskz2+dEysFz2pM844I/9EyexZZ501n2/MFLvtttsaDBhdcskleXbZPvvs06qyqgBUrq2xo/7gzI033tjs648ePTo99thj5X/XX5J0csQegPal2thRv28xuT5J9DNKmuqTNEfsAWg/pkafpVq1jDsHH3xwHktbeeWVU6dOnfIkwvXXXz8NGTIkbbDBBuXjrrrqqvT999+n7bbbLvf1AJi+Ys/NN9+c7rvvvrwdk8wPOuigVp2jPg9FonITAEyHIsv+hBNOKF+UxkXwpptummdtRZnQu+++O1cyOvPMM9ODDz6YK23EQEWt2k/OL7/80uSNguaUjokl5SYVlZmiCkj8NCdmNTz88MP5ZnskN5U88sgj+dxjFlq8xxprrJGOOuqoya4/DUBj1cSO3/72t7ny00cffVT+23zggQc2GiyJqlAxcF4/BlRK7AFoX6qNHfX7FpPrk9Tf31SfpDliD0D7MTX6LNWqZdwJm2++ef5pTlTsjWSnqOZ0+OGHl5+PyuoDBw7M43FhlVVWSYcddlieDANAcWLPo48+msfpSk4//fS04IILtupXpM9DkUhuAoDpUCz389BDD+XtKB295557Ntgfy7JFtaNYzu3FF19MJ510Uq60Uav2k1N/9lip3GlLSjMNYrCkLS6++OL8GLMOYqZZiMpOJ598ct6OCiIxSy0u5p977rk0ePDgtPrqq7fpvQBmVNXEjvg7fNZZZ6V99903D4r86U9/Sk8++WTaYost0rzzzptGjhyZbrnllvTpp5/m2cKxr9LZyCViD0D7Um3smHRyR0s3gevPfK7kZnGJ2APQfkyNPku1pnbcGTRoUPrpp59Sv3790qKLLpqfe+aZZ3LVp0iYipvr8fPss8+m4cOHpwsvvLDFZCkApl7sicngkRRVSk7q379/rsLXWvo8FIll6QBgOhM3jEs3l3fYYYdGN5dLF8V/+MMfUq9evfK/o8rGu+++W5P2lYjypiUxCDI5pWNaUx2q5KWXXkpPP/10mn/++fNgS2kd6D/+8Y95e8cdd8yfOZKa1ltvvTzD4bjjjmsw4wCAltUidvzmN7/JyU6lv/Ux2zdmjw0YMCBddNFFeaBmq622ytWhSrp06VLxr0bsAWh/qokdrYkL9ZObWnOTWuwBaF+mdJ+lWp07d55q420ff/xxuv3223PbQw45JD8XCU2nnXZafoxqIzHWFt9RjL3FczHJcNy4ca1+L4AZ2ZSIPbfeems6+uijy4mwMZYXkxDbQp+HIpHcBADTmci4L9ljjz2aPS5uMte/+fzEE0/UpH0lunbtWt6e3KBGXGCXSqrGbIS2Vm069NBDyx2A+++/P3333Xd5mbqoIhLVnOK1zz///NSxY8fcIYiZZgBUplaxI2bxxt/oeI3u3bvn6hjdunXLs88uv/zyPJgTf79LInG1UmIPQPvU1thRPy6MHTu2xfeov781fRKxB6D9mZJ9lmrVv5ldSRJR6Zi2jLf95S9/yWN28T0ssMAC+bmo0BRjatHvO/fcc/PrxphbjL3FcuXffvtteRlzAKZN7Im/36ecckp5SdKddtopTwRv6zKq+jwUiWXpAGA6E6VIS5ZbbrkWj+3Ro0d5+5NPPqlJ+0osueSS5e3PP/+8xWNHjRqVJk6cmLcXWWSR1BqRoBQzGaI09i677FJ+/rXXXsuPPXv2bLCsRAy6xLm999576fXXX8+dAwAmr5axI/5mR4Wn5owYMaK8vdRSS1X86xF7ANqvtsSOSeNC3CRozhdffFHebk2fROwBaJ+mVJ+lWpFkFNWb4gb3Z5991uKxUbH8q6++atN42/vvv5+GDRuW3+vAAw8sP//qq6/mxyWWWCLNN9985edj7C0q+MZySTHe1tKEGACmTOyJeyynn356Gjp0aPm5WIouKja1NbEp6PNQJCo3AcB0pq6uruIS1DPN9P9DfcyqqkX7SsRsrdIgx+SWs4tEo5Jll102taVq02GHHdYgiWn06NHl85jUXHPNlR9LAzwATN7UiB31l8ALMfCywgorVNxO7AGYcTUVO5Zeeuny/sn1SUr7o/0yyyxT8fuKPQAzprb2WWqhFN8iAaklH3zwQU5wast42yWXXJJvku+9994Nqj4ZbwMoZuyJv9nHH398g8Smo446Ki8XWk1iU9DnoUgkNwHAdGahhRYqb7/xxhstHvvOO++Ut0uztKptX6k11lgjP7799ttp/PjxzR73wgsvlLf79OlT8es/+uij6d///neeORBrRjd1Y71UEaq+0jrT1V7UA8xIqo0dMbvsyCOPTH379m1xWdAff/wxPfXUU3l7pZVWajJJtSViD0D7UW3sWHXVVdMss8ySt4cPH95s+7jxG9Vgw/LLL99g2YVKiD0A7cPU6rNUqxR3ItGopeTd+uNtpTaVeOutt/Ky5DE5cL/99muwz3gbQDFjT1Rsuueee8p/q+PfMSG8VvR5KArJTQAwnVlrrbXK29dff32LVTaGDBlS/ve6665bk/aV2myzzfJjrO180003NXnMt99+m+68885yKdW4mVCJSFqKWWQhLv4nrQxSWnO6qRLdpedaWpcagIaqjR2xnMFDDz2UlzG47777mm0fbceOHZu3d95551b/GsQegPaj2tgRSUprrrlm3v7HP/7R7PI98dpjxozJ21tssUWrz1PsAWgfplafpVqluBNuuOGGZhN3S/2yLl26tGpML6qkR7/ugAMOyG3rM94GULzYc8cdd5QrNkVi0znnnJN23333mp6nPg9FIbkJAKYzm2yySV5/OTz++OPp8ssvb3RMDEJccMEF5VKlMYhRShyqtn2lNt5447TYYovl7csuuyy99NJLDfZPmDAhl0otXZTvu+++Fb92XOhHZZAoq73llls22t+rV6/8GJWdPvnkk/LzcQ5ff/11eSY3AJWpNnZEPOjZs2fejplkr732WqP2Tz75ZLrooovydvfu3dOOO+7Y6l+P2APQftQiduyzzz7l6q3HHHNMnlwx6RLZZ599dvnGwi677NLq8xR7ANqHqdVnqdbKK69cHtO69dZb0wMPPNCoX3bWWWflZenCHnvskTp16lTRa7/yyiv5M3br1i3tueeezY63jRo1Kr388svl5z/++OP05ptv5m3jbQBTL/bEvY5SfyaccMIJafvtt6/5r0Cfh6LoUBdXOgDAdCWWTYhkoNISa1GKdOutt04LLrhg+vLLL9OwYcPKgwrzzjtvuv322xssK1dt+9LSDv379y8vJ9fUbLGYIR3lT+NyI5aEiJsFq622Wk5ouuWWW8pLF8VzN954Y6MKTE2JSlCR0DRy5MicNBUX1pP65ptv0oYbbpi+//77fDM+ZptF6dYrr7wyv3csZReDP6Vy2gBMXrWx4/nnn8/t68eEGJiP14vS27H0QVTmi31RHSpiw6TEHoAZSy1iR1R6jdnQpZsHMYt54YUXzsvuRIXZ7777Lu8744wz8nIQkxJ7AGYctYg7TakfSw4//PB0xBFHNHtsTNLbaKON8naMacXY2qSi37Xbbrvl8+rQoUPaZptt8uSSGPu66667cpJSiPGvqOgRCbyV2GuvvfJklZNOOintvffeTY7JxTjc559/nuaee+50yCGHpFlnnTVdc8016dNPP81L2cX5zjnnnBW9HwDVxZ4LL7wwXXXVVXk7xuBOPvnkir7SHj16NBiz0+dheiG5CQCmU88++2yefVyqfNSUGMQYNGhQWnrppWvevpIL3hA3DGL2QOlm+KRiZsLVV1/daJ3o5sSstFNOOSW3u+2225o9LgZzTjzxxNwpqC8GdP72t7+VZ5sBULlqY0fEhJhFHIPiTYlYELPR6i+DV5/YAzDjqTZ2/PDDD/lGctwYaErcFI798dMUsQdgxlJt3JkayU3h0UcfTccdd1ye2NeUJZZYIicdRZWPSjz33HP55nokAMeN9Ehaau64gw8+OFdkry9uul9yySXlcwdgyseeSGz96quvWv1Vx9J19StA6fMwveg4rU8AAGibddZZJz3yyCP5wjeWCIpy0zHruGvXrnkZoE033TTttNNOzQ5GVNu+UjEzunfv3um6667LAyBxsR0DHrGkXMws23XXXfO/KxEDJ1GtKQwYMKDFY6P8apTRjhvsMaMtPseaa66Z2zV1wx2Ayas2dkRMiGUKIibEwElUfIoYsNRSS+VB8H79+uUZwNUSewDaj2pjx+yzz54GDx6cl3mICRBvv/12Gj9+fG6z+uqr55vN8ViL89TvAZj+Ta0+S7WigtJ9992Xrr322vTUU0+lL774IifsxnluttlmuQpTpRWbwsUXX5wfDz300BbHAtdee+3097//PScylSpExfcVCVuWpAOYerFnzJgxbUpsqoY+D9Oayk0AAAAAAAAAAEAhzTStTwAAAAAAAAAAAKApkpsAAAAAAAAAAIBCktwEAAAAAAAAAAAUkuQmAAAAAAAAAACgkCQ3AQAAAAAAAAAAhSS5CQAAAAAAAAAAKCTJTQAAAAAAAAAAQCFJbgIAAAAAAAAAAApJchMAAAAAAAAAAFBIkpsAAAAAAAAAAIBCktwEAAAAAAAAAAAUkuQmAAAAAAAAAACgkCQ3AQAAAAAAAAAAhSS5CQAAAAAAAAAAKCTJTQAAAAAAAAAAQCFJbgIAAAAAAAAAAApJchMAAAAAAAAAAFBIkpsAAAAAAAAAAIBCktwEAAAAAAAAAAAUkuQmAAAAAAAAAACgkCQ3AQAAAAAAAAAAhSS5CQAAAAAAAAAAKCTJTQAAAAAAAAAAQCFJbgIAAAAAAAAAAApJchMAAAAAAAAAAJCK6P8BEjBzIauYrFEAAAAASUVORK5CYII=\", \"__metadata__\": {\"image/png\": {\"width\": 1179, \"height\": 381}}}"
+        }
+      ]
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "9ca6baf5d3865612dbcc649635ceb9c1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Les scores m\u00e9dians pour les pour les ensembles d'entra\u00eenement et de test sont respectivement <marimo-tex class=\"arithmatex\">||(91.9\\%||)</marimo-tex> et <marimo-tex class=\"arithmatex\">||(87.9\\%||)</marimo-tex>. Tout d'abord, nous remarquons d'apr\u00e8s le graphique que les variations de scores sont faibles (un \u00e9cart-type d'environ <marimo-tex class=\"arithmatex\">||(0.5\\%||)</marimo-tex> pour l'ensemble de test). Ensuite, la diff\u00e9rence entre les deux scores m\u00e9dian est d'environ <marimo-tex class=\"arithmatex\">||(4\\%||)</marimo-tex>, ce qui montre qu'il n'y a pas de sur-apprentissage apparent de nos mod\u00e8les.</span>\n<span class=\"paragraph\">\u00c0 partir des ces r\u00e9sultats, nous pouvons maintenant calibrer un LightGBM sur le couple <code>(X_train, y_train)</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "451a463513c67c14ce5b05e32d0e241c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<iframe src='./@file/26889-181037-QY3RyTHh.html' width='100%' height='400px' onload='__resizeIframe(this)' frameborder='0'></iframe>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "CcZR",
+      "code_hash": "f40c983512e92592623af1d8cd437eb9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Calculons \u00e9galement les scores sur les ensembles.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "34afd27600bd0e1298c9c3a57eb1ff00",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Score Train : 92.0%\nScore Test : 87.6%\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "zlud",
+      "code_hash": "1acc286ead5166e6667fc2c90ac0be14",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme pr\u00e9vu, les scores sont tr\u00e8s similaires \u00e0 ceux obtenus lors du <marimo-tex class=\"arithmatex\">||(k||)</marimo-tex>-Fold.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "tZnO",
+      "code_hash": "500d619fc7a05276f6a5f36cb086bdc2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"evaluation-du-modele\">\u00c9valuation du mod\u00e8le</h2>\n<span class=\"paragraph\">L'\u00e9valuation du mod\u00e8le est importante, car elle va nous permettre de s'assurer que le mod\u00e8le est suffisamment performant, tout en ayant un comportement pr\u00e9visible.</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention</span>\n<span class=\"paragraph\">Les scores ne doivent pas \u00eatre les seules m\u00e9triques pour \u00e9valuer un mod\u00e8le de Machine Learning.</span>\n</div>\n<span class=\"paragraph\">Outre les scores, le mod\u00e8le doit \u00e9galement satisfaire d'autres contraintes. En effet, dans notre cas d'application orient\u00e9 marketing, nous souhaitons savoir si un client va finaliser un achat lors de son parcours sur la plateforme ECommerce.</span>\n<span class=\"paragraph\">L'objectif ici est <strong>d'inciter l'utilisateur \u00e0 finaliser son panier</strong>. Pour cela, une m\u00e9thode consiste \u00e0 proposer des r\u00e9ductions sur-mesure pour augmenter la probabilit\u00e9 que l'utilisateur termine par un achat. Il s'agit donc d'une probl\u00e9matique de classification binaire. Nous pouvons ainsi faire deux types d'erreurs.</span>\n<ul>\n<li>Un <strong>faux positif</strong> consiste \u00e0 pr\u00e9dire que l'utilisateur va acheter le produit alors qu'en r\u00e9alit\u00e9, il ne finalisera pas l'achat. Dans ce cas, proposer une r\u00e9duction n'a que peu d'impact, puisqu'il y a de forte chances que l'utilisateur ne l'utilise pas.</li>\n<li>Un <strong>faux n\u00e9gatif</strong> consiste \u00e0 pr\u00e9dire que l'utilisateur ne va pas acheter le produit alors qu'en r\u00e9alit\u00e9, il ne finalisera l'achat. Dans ce deuxi\u00e8me cas de figure, donner une r\u00e9duction \u00e0 cet utilisateur implique une perte de b\u00e9n\u00e9fice, puisque l'utilisateur aurait tout de m\u00eame achet\u00e9 le produit, et ce m\u00eame sans code de r\u00e9duction.</li>\n</ul>\n<span class=\"paragraph\">Ici, nous voyons que le faux n\u00e9gatif a <strong>plus d'impact</strong> en terme \u00e9conomique que le faux positif. En effet, il vaut mieux qu'un utilisateur ach\u00e8te \u00e0 prix r\u00e9duit plut\u00f4t qu'il n'ach\u00e8te pas un produit. \u00c0 l'inverse, on a tout int\u00e9r\u00eat \u00e0 ne pas proposer de r\u00e9duction \u00e0 un utilisateur qui ach\u00e8terai un produit m\u00eame sans code de r\u00e9duction.</span>\n<span class=\"paragraph\">Notre objectif, c'est donc de d\u00e9tecter correctement les faux n\u00e9gatifs, puisque ces derniers impactent les b\u00e9n\u00e9fices, contraitement au faux positif.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Comment \u00e9valuer si notre mod\u00e8le a plus tendance \u00e0 produire des faux positifs ou des faux n\u00e9gatifs ?</span>\n</blockquote>\n<span class=\"paragraph\">Pour cela, il faut bien comprendre qu'en classification binaire, la sortie du mod\u00e8le n'est pas une classe (<marimo-tex class=\"arithmatex\">||(0||)</marimo-tex> ou <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>), mais <strong>une probabilit\u00e9</strong> (d'\u00eatre dans chacune des deux classes).</span>\n<span class=\"paragraph\">Il existe implicitement un seuil <marimo-tex class=\"arithmatex\">||(\\alpha \\in [0, 1]||)</marimo-tex> \u00e0 partir duquel on consid\u00e8re que si <marimo-tex class=\"arithmatex\">||(\\mathbb{P}(y = 1 | X=x) \\geq \\alpha||)</marimo-tex> alors la classe pr\u00e9dite est positive. Bien \u00e9videmment, en fonction de ce seuil <marimo-tex class=\"arithmatex\">||(\\alpha||)</marimo-tex>, la part d'observations en faux positif ou faux n\u00e9gatif ne seront pas identiques.</span>\n<span class=\"paragraph\">Regardons quelques statistiques qui se basent sur la <strong>matrice de confusion</strong>.</span>\n<ul>\n<li>La <strong>sp\u00e9cificit\u00e9</strong> repr\u00e9sente la probabilit\u00e9 de pr\u00e9dire un non achat parmi les utilisateurs n'ayant pas achet\u00e9.</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\frac{TN}{FP+TN}||]</marimo-tex><ul>\n<li>La <strong>sensibilit\u00e9</strong> (ou <strong>rappel</strong>) repr\u00e9sente la probabilit\u00e9 de pr\u00e9dire un achat parmi les utilisateurs ayant achet\u00e9.</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\frac{TP}{TP+FN}||]</marimo-tex><ul>\n<li>La <strong>pr\u00e9cision</strong> repr\u00e9sente la probabilit\u00e9 d'avoir des utilisateurs ayant achet\u00e9 parmi les utilisateurs dont un achat a \u00e9t\u00e9 pr\u00e9dit.</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\frac{TP}{TP+FP}||]</marimo-tex><span class=\"paragraph\">Les deux premi\u00e8res mesures s'int\u00e9ressent aux taux <strong>parmi la connaissance th\u00e9orique</strong> du comportement, alors que la derni\u00e8re s'int\u00e9resse au taux <strong>parmi les pr\u00e9dictions du mod\u00e8le</strong>.</span>\n<span class=\"paragraph\">Nous avons dit qu'il est important d'avoir le moins de faux n\u00e9gatif : c'est donc <strong>la sensibilit\u00e9 (ou rappel)</strong> qui doit \u00eatre observ\u00e9e. Un rappel faible signifie que la part de faux n\u00e9gatifs est importante, alors qu'un rappel fort signifie que la part de faux n\u00e9gatifs est proche de <marimo-tex class=\"arithmatex\">||(0||)</marimo-tex>.</span>\n<div class=\"alert alert-block alert-warning\">\n    Le rappel, \u00e0 lui seul, ne peut pas d\u00e9terminer enti\u00e8rement si le mod\u00e8le est performant ! Un mod\u00e8le peut tr\u00e8s bien avoir un rappel tr\u00e8s \u00e9lev\u00e9, mais une pr\u00e9cision tr\u00e8s basse.\n</div>\n\n<span class=\"paragraph\">Cet exemple correspond \u00e0 un mod\u00e8le qui pr\u00e9dirait tout le temps <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex> : il n'y aurait aucun faux n\u00e9gatif (car il ne pr\u00e9dit jamais <marimo-tex class=\"arithmatex\">||(0||)</marimo-tex>), mais la pr\u00e9cision serait tr\u00e8s mauvaise car il y aurait beaucoup de faux positifs. C'est pour cela qu'on utilise \u00e9galement le <strong>F1 score</strong>, qui fait intervenir \u00e0 la fois la pr\u00e9cision et le rappel.</span>\n<marimo-tex class=\"arithmatex\">||[\\text{Score}_{\\text{F1}}=2 \\frac{\\text{Precision} \\times \\text{Rappel}}{\\text{Precision} + \\text{Rappel}}||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xvXZ",
+      "code_hash": "0b1816d5403d70def6388dc649f9309a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Precision Test : 80.5%\nRecall Test : 96.2%\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "CLip",
+      "code_hash": "d2368f4558fc180f6a64ed47db60c51f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous avons un rappel tr\u00e8s \u00e9lev\u00e9, ce qui signifie qu'il y a peu de faux n\u00e9gatifs. En revanche, la pr\u00e9cision est moins bonne : il y plus de faux positifs, notre mod\u00e8le \u00e0 souvent tendance \u00e0 trop pr\u00e9dire un achat alors que ce ne sera pas le cas.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Comment pouvons-nous am\u00e9liorer la pr\u00e9cision ?</span>\n</blockquote>\n<span class=\"paragraph\">L'int\u00e9r\u00eat maintenant, c'est de d\u00e9terminer quels sont les hyper-param\u00e8tres optimaux qui vont nous permettre d'obtenir les meilleurs performances. Pour cela, une pratique courante est <strong>l'AutoML</strong>, qui consiste \u00e0 automatiser l'entra\u00eenement des mod\u00e8les.</span>\n<span class=\"paragraph\">Et tr\u00e8s souvent, en essayant de d\u00e9terminer les meilleurs hyper-param\u00e8tres, plut\u00f4t que d'utiliser une recherche par grille, les <strong>m\u00e9thodes bay\u00e9siennes</strong> sont plus courantes.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "YECM",
+      "code_hash": "57c716be2348a4e9f22f6ce09f776075",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Nous venons de mettre en place notre premier mod\u00e8le pr\u00e9dictif sur nos donn\u00e9es.</span>\n<ul>\n<li>Le jeu de donn\u00e9es a \u00e9t\u00e9 transform\u00e9 pour \u00eatre envoy\u00e9 au mod\u00e8le pr\u00e9dictif.</li>\n<li>Avec un k-Fold, nous avons entra\u00een\u00e9 un LightGBM.</li>\n<li>Nous avons mesur\u00e9 les performances obtenues.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Le r\u00f4le du ML Engineer est, \u00e0 terme, d'automatiser cette \u00e9tape qui consiste \u00e0 trouver le meilleur mod\u00e8le (AutoML). C'est ce que nous allons voir avec <b>l'optimisation bay\u00e9sienne</b>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "APFu",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

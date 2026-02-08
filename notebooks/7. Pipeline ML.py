@@ -1,0 +1,620 @@
+import marimo
+
+__generated_with = "0.19.9"
+app = marimo.App()
+
+
+@app.cell
+def _():
+    import marimo as mo
+
+    return (mo,)
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Comme nous venons de le voir, Kedro est un outil puissant. Le premier pipeline que nous avons construit permettait d'encoder les données pour qu'elles soit utilisées par un modèle. Pour continuer à construire le pipeline ML, nous allons définir ici le **pipeline d'entraînement de modèles**, qui pourra être combiné avec celui que nous avons déjà fait sur l'encodage.
+
+    <blockquote><p>🙋 <b>Ce que nous allons faire</b></p>
+    <ul>
+        <li>Développer le pipeline d'entraînement de modèles</li>
+        <li>Construire le pipeline ML de la collecte des données jusqu'à la modélisation</li>
+        <li>Appliquer les bonnes pratiques de développement</li>
+    </ul>
+    </blockquote>
+
+    <img src="https://media.giphy.com/media/l46CwEYnbFtFfjZNS/giphy.gif" />
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Entraînement du modèle
+
+    Nous avions appliqué de l'AutoML sur un LightGBM avec des Jupyter Notebooks (Bon dans notre cas sous Marimo). (En tout cas pour les classes concernées cela correspond à l'optimisation des hyper-paramètres ainsi que sur l'explicabilité des modèles).
+
+    Notre objectif est maintenant de le faire directement dans le projet Kedro. Nous allons construire un pipeline nommé `training` qui est chargé de de déterminer un modèle optimal.
+
+    /// admonition |
+
+    Dans la construction, le pipeline <code>training</code> intervient après le pipeline <code>processing</code>, mais l'intérêt de séparer le pipeline ML en deux est de pouvoir exécuter un seul des deux pipelines au besoin.
+    ///
+
+    Nous n'allons pas créer de dossier `training`, nous allons à la place utiliser les commandes de `kedro` pour créer une pipeline que l'on nomme `training`.
+
+    Pour cela utilisez la commande suivante :
+    ```
+    uv run kedro pipeline create training
+    ```
+
+    Notre premier fichier `nodes.py` contient toutes les fonctions nécessaires pour entraîner le module. Pour améliorer la productivité et faciliter la maintenance du code, nous allons y créer trois fonctions.
+
+    - La première fonction `train_model` va entraîner une instance de modèle selon des hyper-paramètres spécifiques sur un ensemble d'entraînement.
+    - La seconde fonction `optimize_hyp` va déterminer les hyper-paramètres qui maximisent le score d'un modèle à partir d'une métrique spécifique.
+    - La dernière fonction `auto_ml` sera ensuite utilisée par le node Kedro pour entraîner un modèle optimisé.
+
+    Commençons par importer les librairies nécessaires aux fonctions que nous développerons.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
+    import numpy as np
+    import pandas as pd
+
+    from collections.abc import Callable
+
+    from sklearn.base import BaseEstimator, clone
+    from sklearn.metrics import f1_score
+    from sklearn.model_selection import RepeatedKFold
+
+    from lightgbm.sklearn import LGBMClassifier
+
+    from hyperopt import hp, tpe, fmin
+
+    import warnings
+    warnings.filterwarnings('ignore')
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Créons une variable `MODELS` dans laquelle nous allons spécifier une liste de modèles candidats. Pour commencer, nous n'utiliserons qu'un seul modèle LightGBM, mais nous pourrions également calibrer d'autres modèles comme XGBoost, CatBoost, Random Forest. Nous définissons un dictionnaire pour chaque modèle.
+
+    - `name` est le nom du modèle.
+    - `class` est l'objet Python permettant d'instancier le modèle.
+    - `params` représente l'espace de recherche pour l'optimisation des hyper-paramètres.
+    - `override_schemas` est un champ qui contient les hyper-paramètres dont le type doit être modifié avant d'entraîner le modèle.
+
+    Par exemple, l'hyper-paramètre `max_depth` doit être entier, mais un point de l'espace peut produire un flottant ($10.0$ au lieu de $10$). Dans ce cas, il faut forcer la conversion en entier pour éviter une erreur générée par LightGBM.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
+    MODELS = [
+        {
+            "name": "LightGBM",
+            "class": LGBMClassifier,
+            "params": {
+                "objective": "binary",
+                "verbose": -1,
+                "learning_rate": hp.uniform("learning_rate", 0.001, 1),
+                "num_iterations": hp.quniform("num_iterations", 100, 1000, 20),
+                "max_depth": hp.quniform("max_depth", 4, 12, 6),
+                "num_leaves": hp.quniform("num_leaves", 8, 128, 10),
+                "colsample_bytree": hp.uniform("colsample_bytree", 0.3, 1),
+                "subsample": hp.uniform("subsample", 0.5, 1),
+                "min_child_samples": hp.quniform("min_child_samples", 1, 20, 10),
+                "reg_alpha": hp.choice("reg_alpha", [0, 1e-1, 1, 2, 5, 10]),
+                "reg_lambda": hp.choice("reg_lambda", [0, 1e-1, 1, 2, 5, 10]),
+            },
+            "override_schemas": {
+                "num_leaves": int,
+                "min_child_samples": int,
+                "max_depth": int,
+                "num_iterations": int,
+            },
+        }
+    ]
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via `"class"`, le TY de astral nous reverra l'erreur suivante :
+    ```
+    Error at model_conf = next(m for m in MODELS if isinstance(instance, m["class"]))
+    Argument to function `isinstance` is incorrect: Expected `type | UnionType | tuple[Divergent, ...]`, found `Unknown | str | <class 'LGBMClassifier'> | dict[Unknown | str, Unknown | str | int] | dict[Unknown | str, Unknown | <class 'int'>]` (ty invalid-argument-type)
+    ```
+
+    Nous allons devoir créer une fonction qui vérifie le typage afin que faire taire cette erreur lancé par `ty`
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```python
+    def get_model_config(instance: BaseEstimator) -> dict:
+        "\"\"
+        Returns the configuration dictionary for the given model instance.
+        "\"\"
+        if isinstance(instance, LGBMClassifier):
+            return MODELS[0]  # Or match by type
+        raise ValueError(f"Unsupported model: {type(instance)}")
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Bien que le pipeline d'entraînement du modèle ne possédera qu'un node, nous pouvons tout à fait créer plusieurs fonctions dans le fichier `nodes.py` qui vont être appelées par la fonction du node.
+
+    Commençons par la première fonction `train_model`.
+
+    ```py
+    def train_model(
+        instance: BaseEstimator,
+        training_set: tuple[np.ndarray, np.ndarray],
+        params: dict | None = None,
+    ) -> BaseEstimator:
+        "\"\"
+        Trains a new instance of model with supplied training set and hyper-parameters.
+        "\"\"
+        model_conf = get_model_config(instance)
+        params = params or {}
+        model_conf = next(m for m in MODELS if isinstance(instance, model_conf["class"]))
+        override_schemas = model_conf["override_schemas"]
+
+        for p in params:
+            if p in override_schemas:
+                params[p] = override_schemas[p](params[p])
+        model = clone(instance)
+        model.set_params(**params)
+        model.fit(*training_set)
+        return model
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Comme nous l'avons évoqué plus haut, nous forçons la conversion de certains hyper-paramètres. On récupère les noms des hyper-paramètres dont le type est surchargé, puis ils sont convertis vers le type cible (ici, uniquement des entiers). Le reste de la fonction est explicitive, car il s'agit juste d'instancier le modèle et d'appeler la fonction `fit`.
+
+    Voyons maintenant la deuxième fonction `optimize_hyp`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```py
+    def optimize_hyp(
+        instance: BaseEstimator,
+        dataset: Tuple[np.ndarray, np.ndarray],
+        search_space: Dict,
+        metric: Callable[[Any, Any], float],
+        max_evals: int = 40,
+    ) -> dict:
+        \"\"\"
+        Trains model's instances on hyper-parameters search space and returns most accurate
+        hyper-parameters based on eval set.
+        \"\"\"
+        X, y = dataset
+
+        def objective(params):
+            rep_kfold = RepeatedKFold(n_splits=4, n_repeats=1)
+            scores_test = []
+            for train_I, test_I in rep_kfold.split(X):
+                X_fold_train = X.iloc[train_I, :]
+                y_fold_train = y.iloc[train_I].values.flatten()
+                X_fold_test = X.iloc[test_I, :]
+                y_fold_test = y.iloc[test_I].values.flatten()
+                # On entraîne une instance du modèle avec les paramètres params
+                model = train_model(
+                    instance=instance,
+                    training_set=(X_fold_train, y_fold_train),
+                    params=params
+                )
+                # On calcule le score du modèle sur le test
+                scores_test.append(
+                    metric(y_fold_test, model.predict(X_fold_test))
+                )
+
+            return np.mean(scores_test)
+
+        return fmin(fn=objective, space=search_space, algo=tpe.suggest, max_evals=max_evals)
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Tout d'abord, nous récupérons la base d'apprentissage $(X, y)$ à partir de l'argument `dataset`. Nous définissons ensuite la fonction `objective` dont on cherche une minimisation. À chaque évaluation, elle réalise un $k$-Fold sur le modèle candidat, puis stocke le score, calculée à partir de la métrique, dans la liste `scores_test`.
+
+    Cette liste contient tous les scores sur les ensembles de test du $k$-Fold. Ici, nous aurons uniquement $4$ scores à chaque exécution de la fonction. Nous retournons donc le score moyen des modèles sur les ensembles de test.
+
+    Pour terminer, nous retournons le résultat de `fmin`, c'est-à-dire le jeu d'hyper-paramètres qui maximise la fonction `objective`.
+
+    Enfin, la dernière fonction `auto_ml`, qui sera utilisée par le node Kedro.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```py
+     def auto_ml(
+        X_train: np.ndarray,
+        y_train: np.ndarray,
+        X_test: np.ndarray,
+        y_test: np.ndarray,
+        max_evals: int = 40
+    ) -> dict[str, BaseEstimator]:
+        \"\"\"
+        Runs training of multiple model instances and select the most accurated based on objective function.
+        \"\"\"
+        X = pd.concat((X_train, X_test))
+        y = pd.concat((y_train, y_test))
+
+        opt_models = []
+        for model_specs in MODELS:
+            # Finding best hyper-parameters with bayesian optimization
+            optimum_params = optimize_hyp(
+                model_specs["class"](),
+                dataset=(X, y),
+                search_space=model_specs["params"],
+                metric=lambda x, y: -f1_score(x, y),
+                max_evals=max_evals
+            )
+            print("done")
+            # Training the supposed best model with found hyper-parameters
+            model = train_model(
+                model_specs["class"](),
+                training_set=(X_train, y_train),
+                params=optimum_params,
+            )
+            opt_models.append(
+                {
+                    "model": model,
+                    "name": model_specs["name"],
+                    "params": optimum_params,
+                    "score": f1_score(y_test, model.predict(X_test)),
+                }
+            )
+
+        # In case we have multiple models
+        best_model = max(opt_models, key=lambda x: x["score"])
+        return dict(model=best_model)
+
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Il s'agit simplement d'une exéuction séquencée en plusieurs étapes. Pour chaque modèle candidat que l'on souhaite optimiser, il y a trois étapes.
+
+    - On détermine les hyper-paramètres optimaux avec `optimize_hyp` sur la base d'apprentissage $(X, y)$.
+    - Une fois les hyper-paramètres optimaux trouvés, une instance du modèle est calibré avec ces derniers sur le sous-échantillon d'entraînement.
+    - Le score du modèle est calculé sur le sous-échantillon de test et stocké dans une liste.
+
+    À la fin, la liste `opt_models` contiendra tous les modèles optimisé de chaque modèle candidat. Si l'on souhaite tester un LightGBM, un XGBoost et un CatBoost, alors `opt_models` contiendra trois éléments, chacun étant le modèle optimisé de la classe d'algorithme.
+
+    Pour terminer, on tourne le meilleur modèle parmi tous les modèles optimisés.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Création du pipeline
+
+    Dernière étape : construire le pipeline dans le fichier `pipeline.py`. Avant toute chose, nous allons définir le modèle (optimisé) dans le Data Catalog afin de l'enregistrer une fois entraîné. On utilise le type `pickle.PickleDataset` pour enregistrer un modèle au format binaire sur le disque.
+
+    ```
+    test_ratio: 0.3
+    automl_max_evals: 10
+    ```
+
+    Pour la pipeline, il n'y a qu'un seul node à définir:
+
+    ```py
+    from kedro.pipeline import Node, Pipeline  # noqa
+    from .nodes import auto_ml
+
+    def create_pipeline(**kwargs) -> Pipeline:
+        return Pipeline([
+            Node(auto_ml,
+                 [
+                    "X_train",
+                    "y_train",
+                    "X_test",
+                    "y_test",
+                    "params:automl_max_evals"
+                ],
+                dict(model="model"),)
+        ])
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/kedro3.png" />
+
+    Comme nous l'avions fait pour le pipeline `processing`, nous devons définir le pipeline dans le fichier `hooks.py`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Il ne reste plus qu'à exécuter le pipeline. Nous allons au total entraîner 40 modèles puisque nous avons un $4$-Fold et 10 itérations : le temps d'exécution sera d'environ 3 à 5 minutes.
+
+    ```
+    kedro run --pipeline training
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Linting et Refactoring
+
+    À partir de maintenant, les codes qui vont être produits seront utilisés dans des environnements de production. Il est **nécessaire** que le code respecte les normes de PEP 8, telles que nous les avions vues avec `flake8` et `black`. Installons ces deux packages.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    `uv pip install flake8 black`
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Nous allons ensuite créer deux fichiers.
+
+    - Le fichier `.flake8` à la racine du projet configure les paramètres propres à `flake8`. En particulier, nous pouvons par exemple ignorer certaines erreurs de PEP 8 ou, à l'inverse, ajouter ses propres spécifications.
+    - Le fichier `.toml`, lui aussi à la racine du projet, configure les paramètres pour `black`. À noter que dans les deux fichiers, il est important de préciser la même taille pour les lignes. Là où `flake8` générera une erreur, `black` découpera la ligne actuelle en plusieurs.
+
+    Commençons par le fichier `.flake8`.
+
+    ```
+    [flake8]
+    max-line-length = 120
+    max-complexity = 16
+    exclude = .git,.ipython,__pycache__,venv,build,dist
+    ```
+    Nous choisissons volontairement un nombre de caractères maximal à 120. La complexité, qui est un calcul réalisé en fonction du nombre d'identations maximales et de variables utilisées, est fixée à 16. Enfin, nous définissons les dossiers et fichiers à exclure de l'analyse.
+
+    Le contenu du fichier `.toml` est très similaire.
+
+    ```
+    [tool.black]
+    line-length = 120
+    include = '\.pyi?$'
+    exclude = '''
+    /(
+        \.git
+      | venv
+      | build
+      | dist
+      | conf
+    )/
+    '''
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    La seule différence est que l'on choisit également d'y inclure certains fichiers dont l'extension est `.pyi`. Exécutons tout d'abord `flake8`.
+
+    ```
+    ./src/purchase_predict/hooks.py:42:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/training/pipeline.py:5:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/training/pipeline.py:20:6: W292 no newline at end of file
+    ./src/purchase_predict/pipelines/training/nodes.py:43:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/training/nodes.py:61:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/training/nodes.py:96:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/training/nodes.py:137:34: W292 no newline at end of file
+    ./src/purchase_predict/pipelines/loading/pipeline.py:8:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/loading/pipeline.py:17:6: W292 no newline at end of file
+    ./src/purchase_predict/pipelines/loading/nodes.py:9:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/loading/nodes.py:27:14: W292 no newline at end of file
+    ./src/purchase_predict/pipelines/processing/pipeline.py:8:1: E302 expected 2 blank lines, found 1
+    ./src/purchase_predict/pipelines/processing/pipeline.py:27:6: W292 no newline at end of file
+    ./src/purchase_predict/pipelines/processing/nodes.py:10:1: E302 expected 2 blank lines, found 1
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Nous remarquons que la majorité des erreurs et avertissements peuvent être corrigés par un formatage de code avec `black`.
+
+    ```
+    black .
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/loading/pipeline.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/hooks.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/loading/nodes.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/processing/pipeline.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/processing/nodes.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/training/pipeline.py
+    reformatted /home/jovyan/purchase_predict/src/setup.py
+    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/training/nodes.py
+    All done! ✨ 🍰 ✨
+    8 files reformatted, 10 files left unchanged.
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    En exécutant à nouveau `flake8`, il ne devrait y avoir aucune sortie console, signifiant que tous les codes sources respectent PEP 8.
+
+    > ❓ Est-ce que l'on doit tout le temps exécuter ces deux commandes ?
+
+    Les bonnes pratiques en développement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus adéquat ici serait d'exécuter automatiquement `black` puis `flake8` à chaque commit de Git. Il y aurait alors deux possibilités.
+
+    - Le code ne respecte pas la norme PEP 8, et le commit n'est pas accepté.
+    - Le code respecte la norme PEP 8, et le commit est accepté **en local**.
+
+    Il faudra ensuite pousser le code local vers le dépôt distant. Et tout ceci peut être réalisé avec `pre-commit`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    `pip install pre-commit`
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
+    repos:
+    -   repo: https://github.com/psf/black
+        rev: stable
+        hooks:
+        - id: black
+          language_version: python3.12
+    -   repo: https://github.com/PyCQA/flake8
+        rev: 7.3.0
+        hooks:
+        - id: flake8
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Pour initialiser l'environnement et installer les déclencheurs, il suffit d'exécuter `pre-commit install` dans la console. Cette opération nécessite quelques dizaines de secondes. Dorénavant, à chaque commit, `black` puis `flake8` sont exécutés et cela garantit que le code qui sera par la suite poussé vers le dépôt distant respecte la norme PEP 8.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
+    git add .
+    git commit -am "Added linting and refactoring"
+    ```
+
+    ```
+    black................................................(no files to check)Skipped
+    flake8...............................................(no files to check)Skipped
+    On branch master
+    nothing to commit, working tree clean
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Dorénavant, à la moindre modification de fichier, lors d'un commit, tous les codes Python seront inspectés.
+    ```
+    black....................................................................Passed
+    flake8...................................................................Passed
+    [master c6ff4a6] Added linting and refactoring
+     1 file changed, 1 deletion(-)
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    git push google master
+    À noter qu'à chaque nouveau terminal, il faut relancer l'agent SSH et lui spécifier la clée privée pour pouvoir avoir les droits sur le dépôt distant.
+    ```
+    eval "$(ssh-agent -s)"
+    chmod 600 ~/ssh/git_key
+    ssh-add ~/ssh/git_key
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## ✔️ Conclusion
+
+    Notre pipeline ML est enfin réalisé avec Kedro.
+
+    - Tout d'abord, nous avons construit le pipeline qui entraîne des modèles.
+    - Ensuite, nous avons combiné une partie des pipelines (encodage et entraînement) en un seul.
+    - Pour finir, nous avons appliqué les bonnes pratiques de développement en vérifiant les codes Python avec la norme PEP 8.
+
+    > ➡️ Au programme des prochaines activités : La création de notre dernière pipeline collect, permettant de récupérer un fichier depuis le datalake S3 de AWS, et ensuite nous parlerons de tests logicielle
+    """)
+    return
+
+
+if __name__ == "__main__":
+    app.run()
