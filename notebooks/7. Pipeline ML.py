@@ -175,19 +175,19 @@ def _(mo):
     def train_model(
         instance: BaseEstimator,
         training_set: tuple[np.ndarray, np.ndarray],
-        params: dict | None = None,
+        params: dict[str, Any] | None = None,
     ) -> BaseEstimator:
         "\"\"
         Trains a new instance of model with supplied training set and hyper-parameters.
         "\"\"
         model_conf = get_model_config(instance)
         params = params or {}
-        model_conf = next(m for m in MODELS if isinstance(instance, model_conf["class"]))
-        override_schemas = model_conf["override_schemas"]
 
+        override_schemas = model_conf.get("override_schemas", {})
         for p in params:
             if p in override_schemas:
                 params[p] = override_schemas[p](params[p])
+
         model = clone(instance)
         model.set_params(**params)
         model.fit(*training_set)
@@ -213,15 +213,15 @@ def _(mo):
     ```py
     def optimize_hyp(
         instance: BaseEstimator,
-        dataset: Tuple[np.ndarray, np.ndarray],
-        search_space: Dict,
+        dataset: tuple[pd.DataFrame, pd.Series],
+        search_space: dict,
         metric: Callable[[Any, Any], float],
         max_evals: int = 40,
     ) -> dict:
-        \"\"\"
+        "\"\"
         Trains model's instances on hyper-parameters search space and returns most accurate
         hyper-parameters based on eval set.
-        \"\"\"
+        "\"\"
         X, y = dataset
 
         def objective(params):
@@ -236,12 +236,10 @@ def _(mo):
                 model = train_model(
                     instance=instance,
                     training_set=(X_fold_train, y_fold_train),
-                    params=params
+                    params=params,
                 )
                 # On calcule le score du modèle sur le test
-                scores_test.append(
-                    metric(y_fold_test, model.predict(X_fold_test))
-                )
+                scores_test.append(metric(y_fold_test, model.predict(X_fold_test)))  # type: ignore[union-attr]
 
             return np.mean(scores_test)
 
@@ -340,6 +338,15 @@ def _(mo):
 
     Dernière étape : construire le pipeline dans le fichier `pipeline.py`. Avant toute chose, nous allons définir le modèle (optimisé) dans le Data Catalog afin de l'enregistrer une fois entraîné. On utilise le type `pickle.PickleDataset` pour enregistrer un modèle au format binaire sur le disque.
 
+    Ce qui donne
+
+    ```
+    model:
+      type: pickle.PickleDataset
+      filepath: data/06_model/model.pkl
+    ```
+
+    et dans le `parameters.yml`
     ```
     test_ratio: 0.3
     automl_max_evals: 10
@@ -386,6 +393,219 @@ def _(mo):
     ```
     kedro run --pipeline training
     ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    On installera les packages nécessaires avec `uv add lightgbm hyperopt` en vérifiant que l'on soit bien dans l'environnement virtuel.
+
+    /// attention |
+    Pour mettre à jour la visualisation des pipelines, il faut relancer le processus <code>uv run kedro viz</code> dans un terminal (on le stoppera au préalable avec <code>Ctrl+C</code>).
+    ///
+
+    ![alt](public/kedro3.png)
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Pipeline de chargement
+
+    Dans le pipeline `processing`, on suppose que le jeu de données `primary.csv` existe déjà. Or, il s'agit pour l'instant du jeu de données **de l'échantillon**, et non de celui calculé sur un historique de 7 jours. Nous devons au préalable créer un troisième pipeline qui interviendra en tout premier.
+
+    Nous allons créer une pipeline loading à l'aide des commandes suivantes :
+    ```
+    uv run kedro pipeline create loading
+    ```
+
+    Nous allons avoir le noeud suivant :
+
+    ```python
+    import pandas as pd
+    import glob
+
+    from google.cloud import storage
+
+
+    def load_csv_from_bucket(project: str, bucket_path: str) -> pd.DataFrame:
+        "\"\"
+        Loads multiple CSV files from bucket (as generated from Spark).
+        "\"\"
+        storage_client = storage.Client()
+        bucket_name = bucket_path.split("/")[0]
+        folder = "/".join(bucket_path.split("/")[1:]) + "/part-"
+
+        for blob in storage_client.list_blobs(bucket_name, prefix=folder):
+            filename = blob.name.split("/")[-1]
+            if filename[-3:] == "csv":
+                blob.download_to_filename("/tmp/" + filename)
+
+        all_files = glob.glob("/tmp/*.csv")
+        li = []
+
+        for filename in all_files:
+            df = pd.read_csv(filename, index_col=None, sep=",")
+            li.append(df)
+
+        df = pd.concat(li, axis=0, ignore_index=True)
+        return df
+    ```
+
+    Comme vous l'avez remarqué, nous utilisons Google Cloud Plateform pour ce TP. De ce fait, nous devons installer les paquets de GCP
+
+    ```
+    uv add google-cloud-storage
+    ```
+
+    Avec `storage_client`, nous téléchargeons en local dans le dossier `/tmp` (dossier de fichiers temporaires) tous les fichiers CSV dans le bucket spécifié. À l'aide de `glob`, nous parcourons tous ces fichiers téléchargés et les concaténons dans un seul et unique DataFrame `df`.
+
+    Puisqu'il n'y a qu'un seul noeud, le pipeline est rapide à définir.
+
+    ```python
+    from .nodes import load_csv_from_bucket
+
+    def create_pipeline(**kwargs):
+        return Pipeline(
+            [
+                Node(
+                    load_csv_from_bucket,
+                    ["params:gcp_project_id", "params:gcs_primary_folder"],
+                    "primary",
+                )
+            ]
+        )
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Nous allons rajouter deux paramètres dans le fichier `parameters.yml`.
+
+    - Le paramètre `gcp_project_id` contenant le nom du projet Google Cloud.
+    - Le paramètre `gcs_primary_folder` qui donne **le dossier** contenant les fichiers CSV transformés, prêts à être encodés.
+    ```
+    gcp_project_id: "<PROJET_GCP>"
+    gcs_primary_folder: "<NOM_DU_BUCKET>/primary.csv"
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    En lançant la commande
+    ```
+    uv run kedro run --pipeline loading
+    ```
+
+    On se retrouve face à l'erreur suivante :
+    ```
+    DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see
+    https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+    ```
+
+    Nous devons configurer les crédentials de Google en local pour pouvoir faire fonctionner la pipeline de chargement.
+
+    Mais avant de faire ces étapes, il faudra réaliser les actions suivantes:
+    1. Créer son compte Google Cloud Plateform.
+    /// attention |
+    Au 8 février 2026, Google Cloud Plateform demande la fourniture d'une carte bleu, sous paiement de 10e, remboursable sur demande, afin de d'activer les essaies.
+    ///
+    /// Danger |
+    En aucun cas vous devez cliquer sur un bouton similaire à "passer en compte payant" sous peine de facturation supplémentaire.
+    ///
+    3. Créer un bucket sur Google Cloud Storage (Le service équivalent sur AWS est S3)
+        - Pour cela, il faut taper dans la barre de recherche S3, et cliquer sur `Bucket`, puis sur `Créer`, et laisser les paramètres par défault.
+    4. Uploader les fichiers csv de "primary.csv" vers le bucket que vous venez de créer
+     - Pour cela, il faut aller dans bucket, Importer des fichiers
+     - Ouvrir un Terminal GCP et tapper les commande suivante (à adapter)
+    ```
+    gsutil cp gs://purchase_predict/primary.zip /tmp
+    mkdir -p /tmp/primary
+    unzip /tmp/primary.zip
+    gsutil cp -r unzipped_content gs://purchase_predict/primary/
+    ```
+    5. Générer un Service Account pour le projet avec les accès à Google Cloud Storage
+
+    6. Créer une clée d'authentification pour le PC Local
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Création d'un compte de service
+
+    Une règle de sécurité en Cloud Computing consiste à créer des **rôles** en fonction des services et des cas d'utilisation. Sous GCP, les **comptes de services** permettent de définir des rôles aux applications qui vont faire appel à certains services, avec un certain niveau d'habilitation tout en garantissant une sécurité élevée.
+
+    Nous allons nommer ce compte de service `purchase-predict` avec le rôle *Lecteur des objets de l'espace de stockage*, ce qui autorisera la lecture des données depuis l'extérieur.
+
+    ![](public/pipeline_ml2.png)
+
+    La description du compte de service n'est pas obligatoire, mais elle permet de présenter rapidement quelles applications vont utiliser ce compte de service car cela n'est pas toujours clair lorsqu'il y en a beaucoup.
+
+    ![alt](public/pipeline_ml3.png)
+
+    En sécurité du Cloud, il faut adopter le **principe du moindre privilège** : il faut donner uniquement les accès nécessaires, c'est-à-dire juste ce qu'il faut pour que l'application fonctionne, jamais plus.
+
+    Après avoir crée le compte de service, nous pouvons créer une clé au format JSON et la télécharger.
+
+    <div class="alert alert-block alert-danger">
+        La clé du compte de service est équivalent à un mot de passe. Il ne faut jamais la divulguer ou la laisser dans un projet où Git ajouterai ce fichier à un dépôt distant.
+    </div>
+
+    Heureusement pour nous, Kedro a prévu de cas de figure. Tous les mots de passes et clés de services, lorsqu'ils sont utilisé sur des environnement de développement, doivent être placés dans le dossier `conf/local`, qui est ignoré par Git. Ajoutons le fichier `service-account.json` dans ce dossier en insérant le contenu de la clé JSON téléchargée.
+
+    Il reste maintenant à spécifier le chemin d'accès à la clé du compte de service dans la variable d'environnement `GOOGLE_APPLICATION_CREDENTIALS`. À noter que cette manipulation sera nécessaire **lorsque l'on démarre un nouveau terminal**.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Pour intéger la clée
+    ```
+    export GOOGLE_APPLICATION_CREDENTIALS="conf/local/service-account.json"
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Tout a bien fonctionné : le fichier `primary.csv` correspond bien au jeu de données construit avec PySpark.
+
+    Au total, nous comptabilisons trois pipelines.
+
+    - Le pipeline `loading` qui charger les fichiers CSV depuis le bucket Cloud Storage pour créer le fichier `primary.csv`.
+    - Le pipeline `processing` qui va encoder le jeu de données `primary.csv`.
+    - Le pipeline `training` qui va entraîner un modèle.
+
+    L'avantage de la représentation de ces trois pipelines est **la flexibilité**. Si je souhaite ajouter un XGBoost par exemple, je n'aurai besoin que de relance le pipeline `training`. Si je change de méthodes d'encodages, je n'aurai pas besoin de relancer le pipeline `loading`. L'autre aspect important est **l'homogénéité des traitements** : en regroupant toutes les opérations dans trois pipelines, nous nous assurons que les données au tout début de la chaîne vont subir exactement le même traitement, quelle que soit la date d'exécution ou les données en entrée.
+
+    Nous avons donc une pipeline globale, permettant de récupérer les données depuis GCS, nettoyer les données, entrainer un modèle via une recherche des meilleurs hyperparamètres.
+
+    ![](public/pipeline_ml4.png)
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Linting et Refactoring
     """)
     return
 

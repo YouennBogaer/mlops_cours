@@ -195,6 +195,8 @@ def _(os, pd):
 def _(mo):
     mo.md(r"""
     Définissons l'espace de recherche qui sera utilisé par l'optimiseur.
+
+    Comme le projet sera vérifié par ty, nous devons créer une classe `ModelSpec` afin
     """)
     return
 
@@ -203,10 +205,20 @@ def _(mo):
 def _():
     from lightgbm.sklearn import LGBMClassifier
     from hyperopt import hp, tpe, fmin
+    from typing import Any, TypedDict
+    from collections.abc import Callable
 
-    MODEL_SPECS = {
+
+
+    class ModelSpec(TypedDict, total=True):
+        name: str
+        model_class: Callable[..., Any]  # Covers LGBMClassifier()
+        params: dict[str, Any]  # Accepts hp.uniform etc.
+        override_schemas: dict[str, type]
+    
+    MODEL_SPECS: list[ModelSpec] = {
         "name": "LightGBM",
-        "class": LGBMClassifier,
+        "model_class": LGBMClassifier,
         "max_evals": 20,
         "params": {
             "learning_rate": hp.uniform("learning_rate", 0.001, 1),
@@ -249,7 +261,7 @@ def _(mo):
 
 
 @app.cell
-def _(LGBMClassifier, MODEL_SPECS, X, fmin, np, tpe, y):
+def _(LGBMClassifier, MODEL_SPECS: "list[ModelSpec]", X, fmin, np, tpe, y):
     from sklearn.model_selection import RepeatedKFold
 
     def optimize_hyp(instance, training_set, search_space, metric, evals=10):
@@ -293,14 +305,14 @@ def _(mo):
 
 
 @app.cell
-def _(MODEL_SPECS, X_train, optimize_hyp, y_train):
+def _(MODEL_SPECS: "list[ModelSpec]", X_train, optimize_hyp, y_train):
     from sklearn.metrics import f1_score
 
     import warnings
     warnings.filterwarnings('ignore')
 
     optimum_params = optimize_hyp(
-        MODEL_SPECS['class'],
+        MODEL_SPECS['model_class'],
         training_set=(X_train, y_train),
         search_space=MODEL_SPECS["params"],
         metric=lambda x, y: -f1_score(x, y), # Problème de minimisation = inverse du score
@@ -332,7 +344,13 @@ def _(mo):
 
 
 @app.cell
-def _(LGBMClassifier, MODEL_SPECS, X_train, optimum_params, y_train):
+def _(
+    LGBMClassifier,
+    MODEL_SPECS: "list[ModelSpec]",
+    X_train,
+    optimum_params,
+    y_train,
+):
     # Chaque paramètres dont le schéma est surchargé est casté vers le bon type
     for param in MODEL_SPECS['override_schemas']:
         cast_instance = MODEL_SPECS['override_schemas'][param]
