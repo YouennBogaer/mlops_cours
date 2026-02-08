@@ -344,12 +344,25 @@
     },
     {
       "id": "qdjU",
-      "code_hash": "61bd2042c1f24a4014dbcd72490976db",
+      "code_hash": "3d47826e5544543badda5c08265cc869",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons cr\u00e9er un fichier <code>ruff.toml</code> qui aurat les propri\u00e9t\u00e9s suivantes\n<div class=\"language-text codehilite\"><pre><span></span><code>line-length = 120\n</code></pre></div></span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons cr\u00e9er un fichier <code>ruff.toml</code> qui aurat les propri\u00e9t\u00e9s suivantes\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>line-length = 120\nmax-complexity = 16\nexclude = [&quot;.git&quot;, &quot;.ipython&quot;, &quot;__pycache__&quot;, &quot;venv&quot;, &quot;build&quot;, &quot;dist&quot;]\n</code></pre></div></span>\n<span class=\"paragraph\">Nous choisissons volontairement un nombre de caract\u00e8res maximal \u00e0 120. La complexit\u00e9, qui est un calcul r\u00e9alis\u00e9 en fonction du nombre d'identations maximales et de variables utilis\u00e9es, est fix\u00e9e \u00e0 16. Enfin, nous d\u00e9finissons les dossiers et fichiers \u00e0 exclure de l'analyse.</span>\n<span class=\"paragraph\">Executons ruff</span>\n<span class=\"paragraph\"><div class=\"language-text codehilite\"><pre><span></span><code>uv run ruff check src\n</code></pre></div>\nDes erreurs li\u00e9e \u00e0 la syntaxe devrait s'afficher</span>\n<span class=\"paragraph\">En ex\u00e9cutant \u00e0 nouveau <code>ruff</code> en ajoutant le <code>--fix</code>, le programme ruff applique automatiquement les correctifs</span>\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>Fixed 1 error:\n\n<span class=\"k\">-</span> src/purchase_predict/pipelines/processing/nodes.py:\n    1 \u00d7 F401 (unused-import)\n\nFound 1 error (1 fixed, 0 remaining).\n</code></pre></div>\n<span class=\"paragraph\">En lan\u00e7ant \u00e0 nouveau la commande <code>ruff</code> initial, le message suivant devrait appara\u00eetre: \n<div class=\"language-text codehilite\"><pre><span></span><code>All checks passed!\n</code></pre></div>\nsignifiant que tous les codes sources respectent PEP 8.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Est-ce que l'on doit tout le temps ex\u00e9cuter ces deux commandes ?</span>\n</blockquote>\n<span class=\"paragraph\">Les bonnes pratiques en d\u00e9veloppement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus ad\u00e9quat ici serait d'ex\u00e9cuter automatiquement <code>ruff check src --fix</code> \u00e0 chaque commit de Git. Il y aurait alors deux possibilit\u00e9s.</span>\n<ul>\n<li>Le code ne respecte pas la norme PEP 8, et le commit n'est pas accept\u00e9.</li>\n<li>Le code respecte la norme PEP 8, et le commit est accept\u00e9 <strong>en local</strong>.</li>\n</ul>\n<span class=\"paragraph\">Il faudra ensuite pousser le code local vers le d\u00e9p\u00f4t distant. Et tout ceci peut \u00eatre r\u00e9alis\u00e9 avec <code>pre-commit</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "taNJ",
+      "code_hash": "078e8c27c48ba225d275f0537c75aaed",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"pre-commit\">Pre-commit</h3></span>"
           }
         }
       ],
@@ -357,174 +370,25 @@
     },
     {
       "id": "dqQF",
-      "code_hash": null,
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ZHCJ",
-      "code_hash": "69cc4a0401cfcc564409cb09d17c4349",
+      "code_hash": "a41e8a416b8c5ad78f36f113abb35c8b",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"linting-et-refactoring\">Linting et Refactoring</h2>\n<span class=\"paragraph\">\u00c0 partir de maintenant, les codes qui vont \u00eatre produits seront utilis\u00e9s dans des environnements de production. Il est <strong>n\u00e9cessaire</strong> que le code respecte les normes de PEP 8, telles que nous les avions vues avec <code>flake8</code> et <code>black</code>. Installons ces deux packages.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La premi\u00e8re action est de l'installer via uv\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add pre-commit\n</code></pre></div></span></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "ROlb",
-      "code_hash": "f327bf9eea2fcbfc0150066fa4f457d7",
+      "id": "EuGI",
+      "code_hash": "02a9459680a1641999f6be2ce6dc218c",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><code>uv pip install flake8 black</code></span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "qnkX",
-      "code_hash": "6cadb8b7149ee08def1e57704617df30",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons ensuite cr\u00e9er deux fichiers.</span>\n<ul>\n<li>Le fichier <code>.flake8</code> \u00e0 la racine du projet configure les param\u00e8tres propres \u00e0 <code>flake8</code>. En particulier, nous pouvons par exemple ignorer certaines erreurs de PEP 8 ou, \u00e0 l'inverse, ajouter ses propres sp\u00e9cifications.</li>\n<li>Le fichier <code>.toml</code>, lui aussi \u00e0 la racine du projet, configure les param\u00e8tres pour <code>black</code>. \u00c0 noter que dans les deux fichiers, il est important de pr\u00e9ciser la m\u00eame taille pour les lignes. L\u00e0 o\u00f9 <code>flake8</code> g\u00e9n\u00e9rera une erreur, <code>black</code> d\u00e9coupera la ligne actuelle en plusieurs.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons par le fichier <code>.flake8</code>.</span>\n<span class=\"paragraph\"><div class=\"language-ini codehilite\"><pre><span></span><code><span class=\"k\">[flake8]</span>\n<span class=\"na\">max-line-length</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">120</span>\n<span class=\"na\">max-complexity</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">16</span>\n<span class=\"na\">exclude</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">.git,.ipython,__pycache__,venv,build,dist</span>\n</code></pre></div>\nNous choisissons volontairement un nombre de caract\u00e8res maximal \u00e0 120. La complexit\u00e9, qui est un calcul r\u00e9alis\u00e9 en fonction du nombre d'identations maximales et de variables utilis\u00e9es, est fix\u00e9e \u00e0 16. Enfin, nous d\u00e9finissons les dossiers et fichiers \u00e0 exclure de l'analyse.</span>\n<span class=\"paragraph\">Le contenu du fichier <code>.toml</code> est tr\u00e8s similaire.</span>\n<div class=\"language-ini codehilite\"><pre><span></span><code><span class=\"k\">[tool.black]</span>\n<span class=\"na\">line-length</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">120</span>\n<span class=\"na\">include</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">&#39;\\.pyi?$&#39;</span>\n<span class=\"na\">exclude</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"s\">&#39;&#39;</span><span class=\"na\">&#39;</span>\n<span class=\"na\">/(</span>\n<span class=\"w\">    </span><span class=\"na\">\\.git</span>\n<span class=\"w\">  </span><span class=\"na\">| venv</span>\n<span class=\"w\">  </span><span class=\"na\">| build</span>\n<span class=\"w\">  </span><span class=\"na\">| dist</span>\n<span class=\"w\">  </span><span class=\"na\">| conf</span>\n<span class=\"na\">)/</span>\n<span class=\"na\">&#39;&#39;&#39;</span>\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "TqIu",
-      "code_hash": "a3942daaebb8f17242ad391ab7706d8e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La seule diff\u00e9rence est que l'on choisit \u00e9galement d'y inclure certains fichiers dont l'extension est <code>.pyi</code>. Ex\u00e9cutons tout d'abord <code>flake8</code>.</span>\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">hooks</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">42</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">5</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">20</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">43</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">61</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">96</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">137</span><span class=\"p\">:</span><span class=\"mi\">34</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">8</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">17</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">9</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">27</span><span class=\"p\">:</span><span class=\"mi\">14</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">8</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">27</span><span class=\"p\">:</span><span class=\"mi\">6</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">W292</span><span class=\"w\"> </span><span class=\"n\">no</span><span class=\"w\"> </span><span class=\"n\">newline</span><span class=\"w\"> </span><span class=\"n\">at</span><span class=\"w\"> </span><span class=\"n\">end</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">file</span>\n<span class=\"o\">./</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"p\">:</span><span class=\"mi\">10</span><span class=\"p\">:</span><span class=\"mi\">1</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">E302</span><span class=\"w\"> </span><span class=\"n\">expected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">blank</span><span class=\"w\"> </span><span class=\"n\">lines</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"w\"> </span><span class=\"mi\">1</span>\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Vxnm",
-      "code_hash": "09a3f7803dc0eeaef9f3f45b5303fc37",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous remarquons que la majorit\u00e9 des erreurs et avertissements peuvent \u00eatre corrig\u00e9s par un formatage de code avec <code>black</code>.</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>black .\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "DnEU",
-      "code_hash": "6532d2a42dad91927ca6af1b3c376514",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">hooks</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">setup</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">reformatted</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">home</span><span class=\"o\">/</span><span class=\"n\">jovyan</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span>\n<span class=\"n\">All</span><span class=\"w\"> </span><span class=\"n\">done</span><span class=\"o\">!</span><span class=\"w\"> </span><span class=\"err\">\u2728</span><span class=\"w\"> </span><span class=\"err\">\ud83c\udf70</span><span class=\"w\"> </span><span class=\"err\">\u2728</span>\n<span class=\"mi\">8</span><span class=\"w\"> </span><span class=\"n\">files</span><span class=\"w\"> </span><span class=\"n\">reformatted</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"w\"> </span><span class=\"n\">files</span><span class=\"w\"> </span><span class=\"n\">left</span><span class=\"w\"> </span><span class=\"n\">unchanged</span><span class=\"o\">.</span>\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ulZA",
-      "code_hash": "675cdd6273b1682b22a5d76a56c75e79",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En ex\u00e9cutant \u00e0 nouveau <code>flake8</code>, il ne devrait y avoir aucune sortie console, signifiant que tous les codes sources respectent PEP 8.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Est-ce que l'on doit tout le temps ex\u00e9cuter ces deux commandes ?</span>\n</blockquote>\n<span class=\"paragraph\">Les bonnes pratiques en d\u00e9veloppement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus ad\u00e9quat ici serait d'ex\u00e9cuter automatiquement <code>black</code> puis <code>flake8</code> \u00e0 chaque commit de Git. Il y aurait alors deux possibilit\u00e9s.</span>\n<ul>\n<li>Le code ne respecte pas la norme PEP 8, et le commit n'est pas accept\u00e9.</li>\n<li>Le code respecte la norme PEP 8, et le commit est accept\u00e9 <strong>en local</strong>.</li>\n</ul>\n<span class=\"paragraph\">Il faudra ensuite pousser le code local vers le d\u00e9p\u00f4t distant. Et tout ceci peut \u00eatre r\u00e9alis\u00e9 avec <code>pre-commit</code>.</span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ecfG",
-      "code_hash": "58f113cfac8ac1f5ac1e9d3b744137e6",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><code>pip install pre-commit</code></span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "Pvdt",
-      "code_hash": "0d90be79756691062a65f6fd582d5ab5",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>repos:\n\n<span class=\"k\">-</span>   repo: https://github.com/psf/black\n    rev: stable\n    hooks:\n\n    <span class=\"k\">-</span> id: black\n      language_version: python3.12\n\n<span class=\"k\">-</span>   repo: https://github.com/PyCQA/flake8\n    rev: 7.3.0\n    hooks:\n\n    <span class=\"k\">-</span> id: flake8\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ZBYS",
-      "code_hash": "e7a9b7599a6ab2e0167839e3aa9aec4d",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour initialiser l'environnement et installer les d\u00e9clencheurs, il suffit d'ex\u00e9cuter <code>pre-commit install</code> dans la console. Cette op\u00e9ration n\u00e9cessite quelques dizaines de secondes. Dor\u00e9navant, \u00e0 chaque commit, <code>black</code> puis <code>flake8</code> sont ex\u00e9cut\u00e9s et cela garantit que le code qui sera par la suite pouss\u00e9 vers le d\u00e9p\u00f4t distant respecte la norme PEP 8.</span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "aLJB",
-      "code_hash": "1b74047a5fb698a80ad33c45899c87b7",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-text codehilite\"><pre><span></span><code>git add .\ngit commit -am &quot;Added linting and refactoring&quot;\n</code></pre></div>\n<div class=\"language-text codehilite\"><pre><span></span><code>black................................................(no files to check)Skipped\nflake8...............................................(no files to check)Skipped\nOn branch master\nnothing to commit, working tree clean\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "nHfw",
-      "code_hash": "f1b623da457b0dc4ff7e5d591451d147",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dor\u00e9navant, \u00e0 la moindre modification de fichier, lors d'un commit, tous les codes Python seront inspect\u00e9s.\n<div class=\"language-objective-c codehilite\"><pre><span></span><code><span class=\"n\">black</span><span class=\"p\">....................................................................</span><span class=\"n\">Passed</span>\n<span class=\"n\">flake8</span><span class=\"p\">...................................................................</span><span class=\"n\">Passed</span>\n<span class=\"p\">[</span><span class=\"n\">master</span><span class=\"w\"> </span><span class=\"n\">c6ff4a6</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"n\">Added</span><span class=\"w\"> </span><span class=\"n\">linting</span><span class=\"w\"> </span><span class=\"n\">and</span><span class=\"w\"> </span><span class=\"n\">refactoring</span>\n<span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"n\">file</span><span class=\"w\"> </span><span class=\"n\">changed</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"n\">deletion</span><span class=\"p\">(</span><span class=\"o\">-</span><span class=\"p\">)</span>\n</code></pre></div></span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "xXTn",
-      "code_hash": "47dff06f77d961a9421605aa80e5e1c6",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">git push google master\n\u00c0 noter qu'\u00e0 chaque nouveau terminal, il faut relancer l'agent SSH et lui sp\u00e9cifier la cl\u00e9e priv\u00e9e pour pouvoir avoir les droits sur le d\u00e9p\u00f4t distant.\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>eval &quot;$(ssh-agent -s)&quot;\nchmod 600 ~/ssh/git_key\nssh-add ~/ssh/git_key\n</code></pre></div></span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ensuite, nous allons le configurer \u00e0 l'aide de la commande\n<div class=\"language-text codehilite\"><pre><span></span><code>uv run pre-commit install\n</code></pre></div></span>\n<span class=\"paragraph\">Le message suivant devrait s'afficher\n<div class=\"language-text codehilite\"><pre><span></span><code>pre-commit installed at .git/hooks/pre-commit\n</code></pre></div></span>\n<span class=\"paragraph\">Pour int\u00e9grer ruff dans notre pre-commit, nous devons cr\u00e9er un nouveau fichier nomm\u00e9 <code>.pre-commit-config.yaml</code></span>\n<div class=\"language-carbon codehilite\"><pre><span></span><code><span class=\"nx\">repos</span><span class=\"p\">:</span>\n\n<span class=\"w\">    </span><span class=\"o\">-</span><span class=\"w\"> </span><span class=\"nx\">repo</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">https</span><span class=\"p\">:</span><span class=\"c1\">//github.com/astral-sh/ruff-pre-commit</span>\n<span class=\"w\">    </span><span class=\"err\">#</span><span class=\"w\"> </span><span class=\"nx\">Ruff</span><span class=\"w\"> </span><span class=\"nx\">version</span><span class=\"p\">.</span>\n<span class=\"w\">    </span><span class=\"nx\">rev</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">v0</span><span class=\"m m-Double\">.15.0</span>\n<span class=\"w\">    </span><span class=\"nx\">hooks</span><span class=\"p\">:</span>\n<span class=\"w\">      </span><span class=\"err\">#</span><span class=\"w\"> </span><span class=\"nx\">Run</span><span class=\"w\"> </span><span class=\"nx\">the</span><span class=\"w\"> </span><span class=\"nx\">linter</span><span class=\"p\">.</span>\n\n<span class=\"w\">            </span><span class=\"o\">-</span><span class=\"w\"> </span><span class=\"nx\">id</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">ruff</span><span class=\"o\">-</span><span class=\"nx\">check</span>\n<span class=\"w\">        </span><span class=\"nx\">types_or</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"nx\">python</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"nx\">pyi</span><span class=\"p\">]</span>\n<span class=\"w\">        </span><span class=\"err\">#</span><span class=\"w\"> </span><span class=\"nx\">args</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"o\">--</span><span class=\"nx\">fix</span><span class=\"p\">]</span><span class=\"w\"> </span><span class=\"err\">#</span><span class=\"w\"> </span><span class=\"nx\">Permet</span><span class=\"w\"> </span><span class=\"nx\">d</span><span class=\"err\">&#39;</span><span class=\"nx\">appliquer</span><span class=\"w\"> </span><span class=\"nx\">le</span><span class=\"w\"> </span><span class=\"nx\">fix</span><span class=\"w\"> </span><span class=\"nx\">automatiquement</span>\n<span class=\"w\">      </span><span class=\"err\">#</span><span class=\"w\"> </span><span class=\"nx\">Run</span><span class=\"w\"> </span><span class=\"nx\">the</span><span class=\"w\"> </span><span class=\"nx\">formatter</span><span class=\"p\">.</span>\n\n<span class=\"w\">            </span><span class=\"o\">-</span><span class=\"w\"> </span><span class=\"nx\">id</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">ruff</span><span class=\"o\">-</span><span class=\"nx\">format</span>\n<span class=\"w\">        </span><span class=\"nx\">types_or</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"nx\">python</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"nx\">pyi</span><span class=\"p\">]</span>\n</code></pre></div>\n<span class=\"paragraph\">On va pouvoir dor\u00e9navant le tester : \n<div class=\"language-text codehilite\"><pre><span></span><code>git add .\ngit commit -am &quot;Added linting and refactoring&quot;\n</code></pre></div></span>\n<span class=\"paragraph\">pour avoir le r\u00e9sultat suivant\n<div class=\"language-text codehilite\"><pre><span></span><code>ruff check...............................................................Passed\nruff format..............................................................Passed\n</code></pre></div></span>\n<span class=\"paragraph\">Dor\u00e9navant, \u00e0 la moindre modification de fichier, lors d'un commit, tous les codes Python seront inspect\u00e9s.</span>\n<span class=\"paragraph\">Il nous manque la derni\u00e8re touche finale, c'est de push notre r\u00e9pertoire vers Github</span>\n<div class=\"language-text codehilite\"><pre><span></span><code>git push\n</code></pre></div></span>"
           }
         }
       ],
@@ -532,15 +396,21 @@
     },
     {
       "id": "AjVT",
-      "code_hash": "ea995615e4e269d18e30880205f187d1",
+      "code_hash": "3acfbb08fba56dc5afa323cf16426c0d",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Notre pipeline ML est enfin r\u00e9alis\u00e9 avec Kedro.</span>\n<ul>\n<li>Tout d'abord, nous avons construit le pipeline qui entra\u00eene des mod\u00e8les.</li>\n<li>Ensuite, nous avons combin\u00e9 une partie des pipelines (encodage et entra\u00eenement) en un seul.</li>\n<li>Pour finir, nous avons appliqu\u00e9 les bonnes pratiques de d\u00e9veloppement en v\u00e9rifiant les codes Python avec la norme PEP 8.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Au programme des prochaines activit\u00e9s : La cr\u00e9ation de notre derni\u00e8re pipeline collect, permettant de r\u00e9cup\u00e9rer un fichier depuis le datalake S3 de AWS, et ensuite nous parlerons de tests logicielle</span>\n</blockquote></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Notre pipeline ML est enfin r\u00e9alis\u00e9 avec Kedro.</span>\n<ul>\n<li>Tout d'abord, nous avons construit le pipeline qui entra\u00eene des mod\u00e8les.</li>\n<li>Ensuite, nous avons combin\u00e9 une partie des pipelines (encodage et entra\u00eenement) en un seul.</li>\n<li>Pour finir, nous avons appliqu\u00e9 les bonnes pratiques de d\u00e9veloppement en v\u00e9rifiant les codes Python avec la norme PEP 8.</li>\n</ul></span>"
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "ktzf",
+      "code_hash": null,
+      "outputs": [],
       "console": []
     }
   ]

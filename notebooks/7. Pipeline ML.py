@@ -628,138 +628,39 @@ def _(mo):
     Nous allons créer un fichier `ruff.toml` qui aurat les propriétés suivantes
     ```
     line-length = 120
-
-
-    ```
-    """)
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Linting et Refactoring
-
-    À partir de maintenant, les codes qui vont être produits seront utilisés dans des environnements de production. Il est **nécessaire** que le code respecte les normes de PEP 8, telles que nous les avions vues avec `flake8` et `black`. Installons ces deux packages.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    `uv pip install flake8 black`
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Nous allons ensuite créer deux fichiers.
-
-    - Le fichier `.flake8` à la racine du projet configure les paramètres propres à `flake8`. En particulier, nous pouvons par exemple ignorer certaines erreurs de PEP 8 ou, à l'inverse, ajouter ses propres spécifications.
-    - Le fichier `.toml`, lui aussi à la racine du projet, configure les paramètres pour `black`. À noter que dans les deux fichiers, il est important de préciser la même taille pour les lignes. Là où `flake8` générera une erreur, `black` découpera la ligne actuelle en plusieurs.
-
-    Commençons par le fichier `.flake8`.
-
-    ```
-    [flake8]
-    max-line-length = 120
     max-complexity = 16
-    exclude = .git,.ipython,__pycache__,venv,build,dist
+    exclude = [".git", ".ipython", "__pycache__", "venv", "build", "dist"]
     ```
+
     Nous choisissons volontairement un nombre de caractères maximal à 120. La complexité, qui est un calcul réalisé en fonction du nombre d'identations maximales et de variables utilisées, est fixée à 16. Enfin, nous définissons les dossiers et fichiers à exclure de l'analyse.
 
-    Le contenu du fichier `.toml` est très similaire.
+
+    Executons ruff
 
     ```
-    [tool.black]
-    line-length = 120
-    include = '\.pyi?$'
-    exclude = '''
-    /(
-        \.git
-      | venv
-      | build
-      | dist
-      | conf
-    )/
-    '''
+    uv run ruff check src
     ```
-    """)
-    return
+    Des erreurs liée à la syntaxe devrait s'afficher
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    La seule différence est que l'on choisit également d'y inclure certains fichiers dont l'extension est `.pyi`. Exécutons tout d'abord `flake8`.
+    En exécutant à nouveau `ruff` en ajoutant le `--fix`, le programme ruff applique automatiquement les correctifs
 
     ```
-    ./src/purchase_predict/hooks.py:42:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/training/pipeline.py:5:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/training/pipeline.py:20:6: W292 no newline at end of file
-    ./src/purchase_predict/pipelines/training/nodes.py:43:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/training/nodes.py:61:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/training/nodes.py:96:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/training/nodes.py:137:34: W292 no newline at end of file
-    ./src/purchase_predict/pipelines/loading/pipeline.py:8:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/loading/pipeline.py:17:6: W292 no newline at end of file
-    ./src/purchase_predict/pipelines/loading/nodes.py:9:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/loading/nodes.py:27:14: W292 no newline at end of file
-    ./src/purchase_predict/pipelines/processing/pipeline.py:8:1: E302 expected 2 blank lines, found 1
-    ./src/purchase_predict/pipelines/processing/pipeline.py:27:6: W292 no newline at end of file
-    ./src/purchase_predict/pipelines/processing/nodes.py:10:1: E302 expected 2 blank lines, found 1
+    Fixed 1 error:
+    - src/purchase_predict/pipelines/processing/nodes.py:
+        1 × F401 (unused-import)
+
+    Found 1 error (1 fixed, 0 remaining).
     ```
-    """)
-    return
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Nous remarquons que la majorité des erreurs et avertissements peuvent être corrigés par un formatage de code avec `black`.
-
+    En lançant à nouveau la commande `ruff` initial, le message suivant devrait apparaître:
     ```
-    black .
+    All checks passed!
     ```
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ```
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/loading/pipeline.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/hooks.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/loading/nodes.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/processing/pipeline.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/processing/nodes.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/training/pipeline.py
-    reformatted /home/jovyan/purchase_predict/src/setup.py
-    reformatted /home/jovyan/purchase_predict/src/purchase_predict/pipelines/training/nodes.py
-    All done! ✨ 🍰 ✨
-    8 files reformatted, 10 files left unchanged.
-    ```
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    En exécutant à nouveau `flake8`, il ne devrait y avoir aucune sortie console, signifiant que tous les codes sources respectent PEP 8.
+    signifiant que tous les codes sources respectent PEP 8.
 
     > ❓ Est-ce que l'on doit tout le temps exécuter ces deux commandes ?
 
-    Les bonnes pratiques en développement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus adéquat ici serait d'exécuter automatiquement `black` puis `flake8` à chaque commit de Git. Il y aurait alors deux possibilités.
+    Les bonnes pratiques en développement logiciel, c'est de toujours publier un code qui respecte au maximum les normes, notamment PEP 8 dans le cas de Python. Le plus adéquat ici serait d'exécuter automatiquement `ruff check src --fix` à chaque commit de Git. Il y aurait alors deux possibilités.
 
     - Le code ne respecte pas la norme PEP 8, et le commit n'est pas accepté.
     - Le code respecte la norme PEP 8, et le commit est accepté **en local**.
@@ -772,7 +673,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    `pip install pre-commit`
+    ### Pre-commit
     """)
     return
 
@@ -780,71 +681,66 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    La première action est de l'installer via uv
+    ```
+    uv add pre-commit
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Ensuite, nous allons le configurer à l'aide de la commande
+    ```
+    uv run pre-commit install
+    ```
+
+
+    Le message suivant devrait s'afficher
+    ```
+    pre-commit installed at .git/hooks/pre-commit
+    ```
+
+
+    Pour intégrer ruff dans notre pre-commit, nous devons créer un nouveau fichier nommé `.pre-commit-config.yaml`
+
     ```
     repos:
-    -   repo: https://github.com/psf/black
-        rev: stable
+      - repo: https://github.com/astral-sh/ruff-pre-commit
+        # Ruff version.
+        rev: v0.15.0
         hooks:
-        - id: black
-          language_version: python3.12
-    -   repo: https://github.com/PyCQA/flake8
-        rev: 7.3.0
-        hooks:
-        - id: flake8
+          # Run the linter.
+
+          - id: ruff-check
+            types_or: [python, pyi]
+            # args: [--fix] # Permet d'appliquer le fix automatiquement
+          # Run the formatter.
+
+          - id: ruff-format
+            types_or: [python, pyi]
     ```
-    """)
-    return
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Pour initialiser l'environnement et installer les déclencheurs, il suffit d'exécuter `pre-commit install` dans la console. Cette opération nécessite quelques dizaines de secondes. Dorénavant, à chaque commit, `black` puis `flake8` sont exécutés et cela garantit que le code qui sera par la suite poussé vers le dépôt distant respecte la norme PEP 8.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
+    On va pouvoir dorénavant le tester :
     ```
     git add .
     git commit -am "Added linting and refactoring"
     ```
 
+    pour avoir le résultat suivant
     ```
-    black................................................(no files to check)Skipped
-    flake8...............................................(no files to check)Skipped
-    On branch master
-    nothing to commit, working tree clean
+    ruff check...............................................................Passed
+    ruff format..............................................................Passed
     ```
-    """)
-    return
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
     Dorénavant, à la moindre modification de fichier, lors d'un commit, tous les codes Python seront inspectés.
-    ```
-    black....................................................................Passed
-    flake8...................................................................Passed
-    [master c6ff4a6] Added linting and refactoring
-     1 file changed, 1 deletion(-)
-    ```
-    """)
-    return
 
+    Il nous manque la dernière touche finale, c'est de push notre répertoire vers Github
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    git push google master
-    À noter qu'à chaque nouveau terminal, il faut relancer l'agent SSH et lui spécifier la clée privée pour pouvoir avoir les droits sur le dépôt distant.
     ```
-    eval "$(ssh-agent -s)"
-    chmod 600 ~/ssh/git_key
-    ssh-add ~/ssh/git_key
+    git push
     ```
     """)
     return
@@ -860,9 +756,12 @@ def _(mo):
     - Tout d'abord, nous avons construit le pipeline qui entraîne des modèles.
     - Ensuite, nous avons combiné une partie des pipelines (encodage et entraînement) en un seul.
     - Pour finir, nous avons appliqué les bonnes pratiques de développement en vérifiant les codes Python avec la norme PEP 8.
-
-    > ➡️ Au programme des prochaines activités : La création de notre dernière pipeline collect, permettant de récupérer un fichier depuis le datalake S3 de AWS, et ensuite nous parlerons de tests logicielle
     """)
+    return
+
+
+@app.cell
+def _():
     return
 
 
