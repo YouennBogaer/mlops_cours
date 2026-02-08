@@ -478,7 +478,7 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ```python
-    from kedro.pipeline import Pipeline, node
+    from kedro.pipeline import Pipeline, Node
 
     from .nodes import encode_features, split_dataset
 
@@ -486,12 +486,12 @@ def _(mo):
     def create_pipeline(**kwargs) -> Pipeline:
         return Pipeline(
             [
-                node(
+                Node(
                     encode_features,
                     "primary",
                     dict(features="dataset", transform_pipeline="transform_pipeline"),
                 ),
-                node(
+                Node(
                     split_dataset,
                     ["dataset", "params:test_ratio"],
                     dict(

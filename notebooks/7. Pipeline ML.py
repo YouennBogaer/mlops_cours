@@ -75,7 +75,8 @@ def _(mo):
     from sklearn.model_selection import RepeatedKFold
 
     from lightgbm.sklearn import LGBMClassifier
-
+    
+    from typing import Any
     from hyperopt import hp, tpe, fmin
 
     import warnings
@@ -379,8 +380,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/kedro3.png" />
-
-    Comme nous l'avions fait pour le pipeline `processing`, nous devons définir le pipeline dans le fichier `hooks.py`.
+    
+    On installera les packages nécessaires avec `uv add lightgbm hyperopt` en vérifiant que l'on soit bien dans l'environnement virtuel.
     """)
     return
 
@@ -391,7 +392,7 @@ def _(mo):
     Il ne reste plus qu'à exécuter le pipeline. Nous allons au total entraîner 40 modèles puisque nous avons un $4$-Fold et 10 itérations : le temps d'exécution sera d'environ 3 à 5 minutes.
 
     ```
-    kedro run --pipeline training
+    uv run kedro run --pipeline training
     ```
     """)
     return
@@ -400,7 +401,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    On installera les packages nécessaires avec `uv add lightgbm hyperopt` en vérifiant que l'on soit bien dans l'environnement virtuel.
 
     /// attention |
     Pour mettre à jour la visualisation des pipelines, il faut relancer le processus <code>uv run kedro viz</code> dans un terminal (on le stoppera au préalable avec <code>Ctrl+C</code>).
@@ -467,6 +467,7 @@ def _(mo):
     Puisqu'il n'y a qu'un seul noeud, le pipeline est rapide à définir.
 
     ```python
+    from kedro.pipeline import Pipeline, Node
     from .nodes import load_csv_from_bucket
 
     def create_pipeline(**kwargs):
@@ -574,9 +575,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Pour intéger la clée
+    Pour intéger la clée sur linux
     ```
     export GOOGLE_APPLICATION_CREDENTIALS="conf/local/service-account.json"
+    ```
+    
+    Pour intéger la clée sur windows
+    ```
+    set GOOGLE_APPLICATION_CREDENTIALS=conf/local/service-account.json
     ```
     """)
     return
@@ -625,12 +631,19 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Nous allons créer un fichier `ruff.toml` qui aurat les propriétés suivantes
+    Nous allons créer un fichier `ruff.toml` a la racine qui aurat les propriétés suivantes
     ```
     line-length = 120
-    max-complexity = 16
-    exclude = [".git", ".ipython", "__pycache__", "venv", "build", "dist"]
     ```
+    """)
+    return
+
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Linting et Refactoring
 
     Nous choisissons volontairement un nombre de caractères maximal à 120. La complexité, qui est un calcul réalisé en fonction du nombre d'identations maximales et de variables utilisées, est fixée à 16. Enfin, nous définissons les dossiers et fichiers à exclure de l'analyse.
 
