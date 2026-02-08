@@ -539,7 +539,7 @@ def _(mo):
     ```
 
 
-    Nous exécutons ensuite la pipeline avec la commande `uv run kedro run --pipeline processing` Mais nous allons avoir l'erreur suivante :
+    Nous exécutons ensuite la pipeline avec la commande `uv run kedro run --pipelines processing` Mais nous allons avoir l'erreur suivante :
     ```
     DatasetError: Dataset 'CSVDataset' not found in 'pandas'. Make sure the dataset name is correct.
     Hint: If you are trying to use a dataset from `kedro-datasets`, make sure that the package is installed in your current environment. You can do so
