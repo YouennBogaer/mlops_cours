@@ -609,7 +609,7 @@ def _(mo):
     Pour lancer le serveur de visualisation, il suffit d'exécuter la commande suivante (attention de vérifier que l'environnement virtuel est bien activé).
 
     ```
-    uv kedro viz run --port 4141
+    uv run kedro viz run --port 4141
     ```
 
     Une fois lancé, nous pouvons y accéder [par ce lien](http://localhost:4141) :
