@@ -37,7 +37,7 @@ def _(mo):
 
     Avant de rentrer dans le détails des tests d'algorithmes de Machine Learning, décrivons tout d'abord les bonnes pratiques héritées du développement logiciel.
 
-    ## Tests logiciels
+    ## 1. Tests logiciels
 
     Dans ce contexte, une suite de tests inclut habituellement trois composantes.
 
@@ -51,9 +51,9 @@ def _(mo):
     - **Toujours écrire des tests** pour de nouvelles fonctionnalités.
     - Lorsque l'on corrige un bug, **toujours écrire le test** et l'appliquer sur la correction.
 
-    ## Tests de modèles de Machine Learning
+    ## 2. Tests de modèles de Machine Learning
 
-    Essayons maintenant de transposer ce que nous venons de voir pour tester les modèles de Machine Learning. Une fois un modèle de Machine Learning calibré, nousz souhaiterions obtenir un rapport d'évaluation contenant les informations suivantes.
+    Essayons maintenant de transposer ce que nous venons de voir pour tester les modèles de Machine Learning. Une fois un modèle de Machine Learning calibré, nous souhaiterions obtenir un rapport d'évaluation contenant les informations suivantes.
 
     - Performances avec des métriques définies sur des sous-ensembles (`X_test` par exemple).
     - Graphes de validation : courbe PR, courbe ROC, densité des classes, courbe de calibration.
@@ -76,7 +76,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Tests unitaires
+    ## 3. Tests unitaires
 
     Commençons par introduire les tests unitaires avec `pytest`. Il s'agit d'une librairie qui permet de **faciliter la mise en place et l'exécution** des tests de code sous Python. Bien que les tests unitaires puissent être réalisés *from scratch*, `pytest` améliore la productivité et apporte des fonctionnalités très utiles.
 
@@ -89,6 +89,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     Exécutons le code avec `pytest` en spécifiant le chemin d'accès au fichier.
+
+    Pour cela, nous allons créer un fichier `pytest_1.py` dans un dossier de votre choix.
 
     ```
     # Ecrire dans un fichier indépendant du projet nommé pytest_1.py
@@ -109,6 +111,13 @@ def _(mo):
          assert argmax([7]) == 0
          assert argmax([]) == None
     ```
+
+    Ensuite, nous allons l'installer à l'aide de `UV` :
+    ```
+    uv add pytest
+    ```
+
+    Et nous exécutons la commande suivante pour lancer les tests
     """)
     return
 
@@ -136,7 +145,7 @@ def _(mo):
     C'est de cette manière que `pytest` exécute naturellement la fonction `test_argmax` sans avoir eu besoin de la spécifier comme argument. Dans certains cas, nous pouvons être amené à éviter volontairement l'exécution d'une fonction. Dans ce cas, il suffit d'ajouter le décorateur `pytest.mark.skip`.
 
     ```
-    # pytest_2.py
+    # Remplacez le contenu de pytest_1.py par le code suivant
     import pytest
 
     def argmax(liste):
@@ -165,6 +174,8 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     Comme nous pouvons le voir, 100% des tests ont réussi car le seul test présent a été ignoré (*skipped*). Voyons maintenant un autre fichier Python dont le test unitaire va volontairement générer une erreur.
+
+    Ecrivez le code suivant dans un fichier nommé `pytest_2.py`
 
     ```py
     def argmin(liste):
@@ -236,7 +247,7 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ```
-    pytest /tmp/pytest_2.py -v
+    pytest pytest_2.py -v
     ```
     """)
     return
@@ -249,11 +260,13 @@ def _(mo):
 
     En pratique, les tests unitaires doivent être exécutés une fois les données envoyés vers le dépôt Git. En revanche, il est déconseillé de les exécuter lors du pre-commit, car ce dernier doit être rapide. Les tests unitaires, notamment ceux incluant des tests pour les modèles, peuvent prendre du temps ce qui n'est pas conseillé pour les pre-commits.
 
-    ##Les fixtures
+    ## 4. Les fixtures
 
     Imaginons que l'on souhaite utiliser des données/paramètres uniquement pour les tests unitaires. Si l'on regarde bien, les deux fonctions `test_argmin` et `test_argmax` utilisent les mêmes listes pour tester les deux fonctions. Nous pourrions tout à fait définir des catalogues de référence pour les tests unitaires qui seront utilisés à chaque fois. C'est à cela que servent **les fixtures**.
 
     Regardons le code suivant qui n'utilise pas de fixture. Nous allons simplement créer une liste `test_data` qui sera utilisée par les deux fonctions de test.
+
+    Remplacez le code de `pytest_2.py` par celui là
     """)
     return
 
@@ -303,7 +316,7 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ```
-    pytest /tmp/pytest_2.py -v
+    pytest pytest_2.py -v
     ```
     """)
     return
@@ -374,7 +387,7 @@ def _(mo):
 
     Ainsi, à chaque exécution de `pytest`, ce sera en réalité `test_data()` qui sera passé comme paramètre pour les fonctions `test_argmin` et `test_argmax` (et non la fonction `test_data` elle-même). Cette méthode permet d'instancier plus efficacement les initialisations pour les tests, sans compromettre le reste du code qui lui n'aura pas besoin des tests dans un environnement de production.
 
-    Exécutons maintenant `pytest`.
+    Exécutons maintenant `pytest`. (N'oubliez pas de remplacer à nouveau de contenu du code de `pytest_2.py` par ce code ci-dessus)
     """)
     return
 
@@ -399,7 +412,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Intégration des tests unitaires dans Kedro
+    ## 5. Intégration des tests unitaires dans Kedro
 
     Intégrons les tests unitaires et du modèle dans notre projet Kedro. En regardant la structure du projet, nous pouvons observer le dossier `tests` qui contient le fichier `test_run.py`.
     """)
@@ -421,9 +434,7 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Pour exécuter proprement les tests avec Kedro, il faut que la structure des fichiers des tests soit identique à celle utilisée dans `src/purchase_predict`. Nous devons donc créer deux dossiers `loading`, `training` et `processing` dans `src/tests/pipelines` pour répliquer l'architecture à l'identique.
-
-    Commençons par le dossier `loading` qui charge les fichiers CSV depuis Cloud Storage. Au préalable, nous allons installer les dépendances de Kedro pour effectuer les tests unitaires (qui contient `pytest` notamment).
+    Pour exécuter proprement les tests avec Kedro, il faut que la structure des fichiers des tests soit identique à celle utilisée dans `src/purchase_predict`. Nous devons donc créer deux dossiers `processing` dans `src/tests/pipelines` pour répliquer l'architecture à l'identique. Vous avez du remarqué qu'en utilisant `pipeline create`, ces dossiers sont automatiquement crées notament avec `training` et `loading`.
     """)
     return
 
@@ -439,7 +450,7 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Tests sur les nodes
+    ## 6. Tests sur les nodes
 
     Avant de développer nos tests unitaires, créons sur le bucket Cloud Storage des **données de tests**. Dans le dossier `primary/` du bucket, nous allons créer un dossier `data-test.csv/`.
 
@@ -508,29 +519,66 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
-    kedro test
-    """,
-    name="_"
-)
+@app.cell
+def _(pytest):
+    pytest
+    return
 
 
-app._unparsable_cell(
-    r"""
-    ========================= test session starts =========================
-    platform linux -- Python 3.8.5, pytest-6.1.2, py-1.10.0, pluggy-0.13.1
-    rootdir: /home/jovyan/purchase_predict, configfile: pyproject.toml
-    plugins: mock-1.13.0, cov-2.11.0
-    collected 2 items                                                                                                 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```log
+    =============================================== test session starts ===============================================
+    platform darwin -- Python 3.12.12, pytest-7.4.4, pluggy-1.6.0
+    rootdir: /Users/noobzik/Documents/Kaggle/purchase-predict
+    configfile: pyproject.toml
+    testpaths: tests, unit
+    plugins: anyio-4.12.1, asyncio-0.23.8, cov-6.3.0
+    asyncio: mode=Mode.STRICT
+    collected 2 items
 
-    src/tests/test_run.py .                        [ 50%]
-    src/tests/pipelines/loading/test_nodes.py .    [100%]
+    tests/pipelines/loading/test_nodes.py .                                                                     [ 50%]
+    unit/test_1.py .                                                                                            [100%]
 
-    ========================== 2 passed in 1.94s ==========================
-    """,
-    name="_"
-)
+    ================================================= tests coverage ==================================================
+    ________________________________ coverage: platform darwin, python 3.12.12-final-0 ________________________________
+
+    Name                                                    Stmts   Miss  Cover   Missing
+    -------------------------------------------------------------------------------------
+    src/purchase_predict/__init__.py                            1      0   100%
+    src/purchase_predict/__main__.py                           14     14     0%   5-25
+    src/purchase_predict/pipeline_registry.py                   7      7     0%   3-17
+    src/purchase_predict/pipelines/__init__.py                  0      0   100%
+    src/purchase_predict/pipelines/loading/__init__.py          3      0   100%
+    src/purchase_predict/pipelines/loading/nodes.py            18      0   100%
+    src/purchase_predict/pipelines/loading/pipeline.py          4      1    75%   11
+    src/purchase_predict/pipelines/processing/__init__.py       3      3     0%   1-5
+    src/purchase_predict/pipelines/processing/nodes.py         20     20     0%   1-36
+    src/purchase_predict/pipelines/processing/pipeline.py       4      4     0%   1-7
+    src/purchase_predict/pipelines/training/__init__.py         3      3     0%   6-10
+    src/purchase_predict/pipelines/training/nodes.py           60     60     0%   6-165
+    src/purchase_predict/pipelines/training/pipeline.py         5      5     0%   6-14
+    src/purchase_predict/settings.py                            1      1     0%   31
+    -------------------------------------------------------------------------------------
+    TOTAL                                                     143    118    17%
+    ================================================ 2 passed in 7.66s ================================================
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    En cas d'erreur de type :
+    ```log
+    google.api_core.exceptions.Forbidden: 403 GET https://storage.googleapis.com/storage/v1/b/purchase-predict/o?projection=noAcl&prefix=test%2Fpart-&prettyPrint=false: purchase-predict@esgi-352608.iam.gserviceaccount.com does not have storage.objects.list access to the Google Cloud Storage bucket. Permission 'storage.objects.list' denied on resource (or it may not exist).
+    ```
+
+    Verifiez que votre service account mentionée dans les logs possède bien le rôle de `Lecteur d'objets Storage` en allant depuis `IAM & Admin` --> `IAM` --> `Votre service account` --> `Crayon` --> `Ajouter rôle` --> `Lecteur d'objets Storage`.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -555,7 +603,7 @@ def _(load_csv_from_bucket, pd):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ##Tests sur les pipelines
+    ## 6. Tests sur les pipelines
 
     En plus de tests unitaires sur les nodes, il est également possible d'effectuer des tests unitaires sur les pipelines. Cela permet, par exemple, de s'assurer du bon déroulement du pipeline en fonction de plusieurs situations (données incomplètes ou manquantes, mauvaise configuration de paramètres). En respectant le même principe que pour les nodes, nous allons créer le fichier `test_pipeline.py`.
     """)
@@ -588,7 +636,7 @@ def _(mo):
 
 @app.cell
 def _(pytest):
-    from kedro.io import DataCatalog, MemoryDataSet
+    from kedro.io import DataCatalog, MemoryDataset
 
     @pytest.fixture(scope='module')
     def project_id_1():
@@ -600,7 +648,7 @@ def _(pytest):
 
     @pytest.fixture(scope='module')
     def catalog_test(project_id, primary_folder):
-        catalog = DataCatalog({'params:gcp_project_id': MemoryDataSet(project_id), 'params:gcs_primary_folder': MemoryDataSet(primary_folder)})
+        catalog = DataCatalog({'params:gcp_project_id': MemoryDataset(project_id), 'params:gcs_primary_folder': MemoryDataset(primary_folder)})
         return catalog
 
     return
@@ -644,22 +692,49 @@ app._unparsable_cell(
 )
 
 
-app._unparsable_cell(
-    r"""
-    ========================= test session starts =========================
-    platform linux -- Python 3.8.5, pytest-6.1.2, py-1.10.0, pluggy-0.13.1
-    rootdir: /home/jovyan/purchase_predict, configfile: pyproject.toml
-    plugins: mock-1.13.0, cov-2.11.0
-    collected 2 items                                                                                                 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```log
+    ╰─ uv run pytest                                                                                                ─╯
+    =============================================== test session starts ===============================================
+    platform darwin -- Python 3.12.12, pytest-7.4.4, pluggy-1.6.0
+    rootdir: /Users/noobzik/Documents/Kaggle/purchase-predict
+    configfile: pyproject.toml
+    testpaths: tests, unit
+    plugins: anyio-4.12.1, asyncio-0.23.8, cov-6.3.0
+    asyncio: mode=Mode.STRICT
+    collected 4 items
 
-    src/tests/test_run.py .                          [ 33%]
-    src/tests/pipelines/loading/test_nodes.py .      [ 66%]
-    src/tests/pipelines/loading/test_pipeline.py .   [100%]
+    tests/pipelines/loading/test_nodes.py ..                                                                    [ 50%]
+    tests/pipelines/loading/test_pipeline.py .                                                                  [ 75%]
+    unit/test_1.py .                                                                                            [100%]
 
-    ========================== 3 passed in 2.17s ==========================
-    """,
-    name="_"
-)
+    ================================================= tests coverage ==================================================
+    ________________________________ coverage: platform darwin, python 3.12.12-final-0 ________________________________
+
+    Name                                                    Stmts   Miss  Cover   Missing
+    -------------------------------------------------------------------------------------
+    src/purchase_predict/__init__.py                            1      0   100%
+    src/purchase_predict/__main__.py                           14     14     0%   5-25
+    src/purchase_predict/pipeline_registry.py                   7      7     0%   3-17
+    src/purchase_predict/pipelines/__init__.py                  0      0   100%
+    src/purchase_predict/pipelines/loading/__init__.py          3      0   100%
+    src/purchase_predict/pipelines/loading/nodes.py            18      0   100%
+    src/purchase_predict/pipelines/loading/pipeline.py          4      0   100%
+    src/purchase_predict/pipelines/processing/__init__.py       3      3     0%   1-5
+    src/purchase_predict/pipelines/processing/nodes.py         20     20     0%   1-36
+    src/purchase_predict/pipelines/processing/pipeline.py       4      4     0%   1-7
+    src/purchase_predict/pipelines/training/__init__.py         3      3     0%   6-10
+    src/purchase_predict/pipelines/training/nodes.py           60     60     0%   6-165
+    src/purchase_predict/pipelines/training/pipeline.py         5      5     0%   6-14
+    src/purchase_predict/settings.py                            1      1     0%   31
+    -------------------------------------------------------------------------------------
+    TOTAL                                                     143    117    18%
+    =============================================== 4 passed in 14.98s ================================================
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
