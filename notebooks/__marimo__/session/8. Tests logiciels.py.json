@@ -1,0 +1,509 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "990f9e271798ba4bfa504641f6289f39",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dans l'univers du d\u00e9veloppement logiciel, les tests sont omni-pr\u00e9sents. Ils permettent de v\u00e9rifier que le logiciel ou l'application d\u00e9velopp\u00e9e adopte correctement le comportement attendu, ne produit pas de bugs ou s'int\u00e8gre efficacement dans un environnement existant.</span>\n<span class=\"paragraph\">Mais comment transposer tous ces tests de d\u00e9veloppement logiciel au cas o\u00f9 l'on entra\u00eene et fait intervenir des mod\u00e8les de Machine Learning ?</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>Comprendre pourquoi il est important de tester son code et son mod\u00e8le</li>\n    <li>Appliquer les tests usuels de d\u00e9veloppement logiciel</li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/Rd6sn03ncIklmprvy6/giphy.gif\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "61bc0c443f8a2f3344b1a88c7a073181",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"tester-des-applications\">Tester des applications</h2>\n<span class=\"paragraph\">Avant de rentrer dans le d\u00e9tails des tests d'algorithmes de Machine Learning, d\u00e9crivons tout d'abord les bonnes pratiques h\u00e9rit\u00e9es du d\u00e9veloppement logiciel.</span>\n<h2 id=\"1-tests-logiciels\">1. Tests logiciels</h2>\n<span class=\"paragraph\">Dans ce contexte, une suite de tests inclut habituellement trois composantes.</span>\n<ul>\n<li>Les <strong>tests unitaires</strong>, o\u00f9 l'on s'assurer qu'une portion atomique du code fonctionne correctement (par exemple, une fonction). En r\u00e8gle g\u00e9n\u00e9rale, ce sont des tests rapides et faciles \u00e0 mettre en place.</li>\n<li>Les <strong>tests de r\u00e9gression</strong>, o\u00f9 l'on doit s'assurer que le d\u00e9veloppement d'une nouvelle fonctionnalit\u00e9 ne va pas faire survenir un bug d\u00e9j\u00e0 rencontr\u00e9 par le pass\u00e9.</li>\n<li>Les <strong>tests d'int\u00e9gration</strong>, o\u00f9 on cherche \u00e0 voir si la fonctionnalit\u00e9 d\u00e9velopp\u00e9e va \u00eatre correctement int\u00e9gr\u00e9 dans l'application sans g\u00e9n\u00e9rer des erreurs dues \u00e0 son interaction avec d'autres composantes. Ces erreurs sont en pratique plus difficiles \u00e0 pr\u00e9venir, d'o\u00f9 la difficult\u00e9 de construire des tests d'int\u00e9gration efficaces.</li>\n</ul>\n<span class=\"paragraph\">Dans les faits, les bonnes pratiques n\u00e9cessitent de suivre plusieurs conventions. En travail collaboratif, notamment avec <code>git</code>, les r\u00e8gles de base suivantes sont appliqu\u00e9es.</span>\n<ul>\n<li>Ne <strong>jamais fusionner de branches</strong> si les tests ne sont pas valides.</li>\n<li><strong>Toujours \u00e9crire des tests</strong> pour de nouvelles fonctionnalit\u00e9s.</li>\n<li>Lorsque l'on corrige un bug, <strong>toujours \u00e9crire le test</strong> et l'appliquer sur la correction.</li>\n</ul>\n<h2 id=\"2-tests-de-modeles-de-machine-learning\">2. Tests de mod\u00e8les de Machine Learning</h2>\n<span class=\"paragraph\">Essayons maintenant de transposer ce que nous venons de voir pour tester les mod\u00e8les de Machine Learning. Une fois un mod\u00e8le de Machine Learning calibr\u00e9, nous souhaiterions obtenir un rapport d'\u00e9valuation contenant les informations suivantes.</span>\n<ul>\n<li>Performances avec des m\u00e9triques d\u00e9finies sur des sous-ensembles (<code>X_test</code> par exemple).</li>\n<li>Graphes de validation : courbe PR, courbe ROC, densit\u00e9 des classes, courbe de calibration.</li>\n<li>Audit du mod\u00e8le avec des mod\u00e8les d'interpr\u00e9tabilit\u00e9 (PDP, valeurs de Shapley).</li>\n<li>Sous-population o\u00f9 le mod\u00e8le g\u00e9n\u00e8re des faux-positifs ou faux-n\u00e9gatifs avec un fort degr\u00e9 de confiance.</li>\n</ul>\n<span class=\"paragraph\">Par ailleurs, on y retrouve \u00e9galement d'autres bonnes pratiques qui s'inscrivent toujours dans une logique de d\u00e9marche de qualit\u00e9.</span>\n<ul>\n<li><strong>Toujours sauvegarder</strong> les hyper-param\u00e8tres, sous-\u00e9chantillons utilis\u00e9s et le mod\u00e8le entra\u00een\u00e9.</li>\n<li>Mettre \u00e0 jour un environnement de production avec <strong>un mod\u00e8le aux meilleures performances</strong> ou selon un seuil minimal.</li>\n</ul>\n<span class=\"paragraph\">Face \u00e0 ces besoins de tester, nous pouvons voir que calculer des performances sur un sous-\u00e9chantillon ou afficher des courbes n'est pas suffisant pour s'assurer que le mod\u00e8le est \u00ab valide \u00bb. Pour les syst\u00e8mes de Machine Learning, nous devrions effectuer deux m\u00e9thodes en parall\u00e8le.</span>\n<ul>\n<li><strong>L'\u00e9valuation de mod\u00e8le</strong>, o\u00f9 l'on calcule ses performances, audite son fonctionnement et affiche des courbes.</li>\n<li>Le <strong>test de mod\u00e8le</strong> o\u00f9 l'on d\u00e9veloppe des tests explicites pour v\u00e9rifier que le comportement du mod\u00e8le est bien celui attendu.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "b191472c8d9dc3454f5c31465de2f0a6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"3-tests-unitaires\">3. Tests unitaires</h2>\n<span class=\"paragraph\">Commen\u00e7ons par introduire les tests unitaires avec <code>pytest</code>. Il s'agit d'une librairie qui permet de <strong>faciliter la mise en place et l'ex\u00e9cution</strong> des tests de code sous Python. Bien que les tests unitaires puissent \u00eatre r\u00e9alis\u00e9s <em>from scratch</em>, <code>pytest</code> am\u00e9liore la productivit\u00e9 et apporte des fonctionnalit\u00e9s tr\u00e8s utiles.</span>\n<span class=\"paragraph\">Testons la librairie sur le premier fichier suivant. Nous avons cod\u00e9 la fonction <code>argmax</code> qui cherche \u00e0 obtenir la position du plus grand \u00e9l\u00e9ment d'une liste. Nous codons \u00e9galement la fonction <code>test_argmax</code> qui va tester unitairement la fonction <code>argmax</code> sur plusieurs exemples : cela refl\u00e8te du comportement attendu de la fonction.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "940d9f777fa9991a5bed648425b2a5f7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ex\u00e9cutons le code avec <code>pytest</code> en sp\u00e9cifiant le chemin d'acc\u00e8s au fichier.</span>\n<span class=\"paragraph\">Pour cela, nous allons cr\u00e9er un fichier <code>pytest_1.py</code> dans un dossier de votre choix.</span>\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"c1\"># Ecrire dans un fichier ind\u00e9pendant du projet nomm\u00e9 pytest_1.py</span>\n<span class=\"n\">def</span><span class=\"w\"> </span><span class=\"n\">argmax</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n<span class=\"w\">     </span><span class=\"k\">if</span><span class=\"w\"> </span><span class=\"n\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span><span class=\"w\"> </span><span class=\"o\">==</span><span class=\"w\"> </span><span class=\"mi\">0</span><span class=\"p\">:</span>\n<span class=\"w\">         </span><span class=\"k\">return</span><span class=\"w\"> </span><span class=\"n\">None</span>\n\n<span class=\"w\">     </span><span class=\"n\">idx_max</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"mi\">0</span>\n<span class=\"w\">     </span><span class=\"n\">value_max</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n<span class=\"w\">     </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">i</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">x</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"n\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n<span class=\"w\">         </span><span class=\"k\">if</span><span class=\"w\"> </span><span class=\"n\">x</span><span class=\"w\"> </span><span class=\"o\">&gt;</span><span class=\"w\"> </span><span class=\"n\">value_max</span><span class=\"p\">:</span>\n<span class=\"w\">             </span><span class=\"n\">value_max</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">x</span>\n<span class=\"w\">             </span><span class=\"n\">idx_max</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">i</span>\n<span class=\"w\">     </span><span class=\"k\">return</span><span class=\"w\"> </span><span class=\"n\">idx_max</span>\n\n<span class=\"n\">def</span><span class=\"w\"> </span><span class=\"n\">test_argmax</span><span class=\"p\">():</span>\n<span class=\"w\">     </span><span class=\"nb\">assert</span><span class=\"w\"> </span><span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">9</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">6</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">3</span><span class=\"p\">])</span><span class=\"w\"> </span><span class=\"o\">==</span><span class=\"w\"> </span><span class=\"mi\">3</span>\n<span class=\"w\">     </span><span class=\"nb\">assert</span><span class=\"w\"> </span><span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">7</span><span class=\"p\">])</span><span class=\"w\"> </span><span class=\"o\">==</span><span class=\"w\"> </span><span class=\"mi\">0</span>\n<span class=\"w\">     </span><span class=\"nb\">assert</span><span class=\"w\"> </span><span class=\"n\">argmax</span><span class=\"p\">([])</span><span class=\"w\"> </span><span class=\"o\">==</span><span class=\"w\"> </span><span class=\"n\">None</span>\n</code></pre></div>\n<span class=\"paragraph\">Ensuite, nous allons l'installer \u00e0 l'aide de <code>UV</code> :\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add pytest\nuv add pytest-cov\n</code></pre></div></span>\n<span class=\"paragraph\">Et nous ex\u00e9cutons la commande suivante pour lancer les tests</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "6af645ce0b1bf399fe3513308b630b92",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><div class=\"language-text codehilite\"><pre><span></span><code>uv run pytest\n</code></pre></div>\nou\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>ou uv run pytest (chemin absolue de pytest_1.py)\n</code></pre></div></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "57dde5886e55bc8faf49d69cc5880df9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En ex\u00e9cutant cette commande, <code>pytest</code> effectue une <strong>d\u00e9couverte automatique</strong> des tests.</span>\n<ul>\n<li>Il va d'abord rechercher tous les fichiers dont le nom commence par <code>test*</code> si on lui fournit un dossier.</li>\n<li>Pour chaque classe/fonction du fichier, si l'objet commence par <code>test*</code>, alors ce dernier sera instanci\u00e9 (dans le cas d'une fonction) et les fonctions seront ex\u00e9cut\u00e9es (pour les deux).</li>\n</ul>\n<span class=\"paragraph\">Cette d\u00e9couverte des tests permet de simplifier la mise en place des tests : plus besoin de sp\u00e9cifier tous les tests dans un fichier, qui lui-m\u00eame effectue des importations. Nous pouvons imaginer que pour chaque <em>module</em>, il y ait un fichier <code>test.py</code> qui regroupe tous les tests unitaires li\u00e9s \u00e0 ce module. De mani\u00e8re g\u00e9n\u00e9rale, il est plus appropri\u00e9 de cr\u00e9er un fichier sp\u00e9cifique pour les tests unitaires plut\u00f4t que de les ins\u00e9rer dans le code qui fournit la logique \u00e0 l'application.</span>\n<span class=\"paragraph\">C'est de cette mani\u00e8re que <code>pytest</code> ex\u00e9cute naturellement la fonction <code>test_argmax</code> sans avoir eu besoin de la sp\u00e9cifier comme argument. Dans certains cas, nous pouvons \u00eatre amen\u00e9 \u00e0 \u00e9viter volontairement l'ex\u00e9cution d'une fonction. Dans ce cas, il suffit d'ajouter le d\u00e9corateur <code>pytest.mark.skip</code>.</span>\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"c1\"># Remplacez le contenu de pytest_1.py par le code suivant</span>\n<span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">pytest</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmax</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&gt;</span> <span class=\"n\">value_max</span><span class=\"p\">:</span>\n            <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_max</span>\n\n<span class=\"nd\">@pytest</span><span class=\"o\">.</span><span class=\"n\">mark</span><span class=\"o\">.</span><span class=\"n\">skip</span>\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmax</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">3</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">7</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">0</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([])</span> <span class=\"o\">==</span> <span class=\"kc\">None</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "20d19a6bb53f6693d42ed667c10af860",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme nous pouvons le voir, 100% des tests ont r\u00e9ussi car le seul test pr\u00e9sent a \u00e9t\u00e9 ignor\u00e9 (<em>skipped</em>). Voyons maintenant un autre fichier Python dont le test unitaire va volontairement g\u00e9n\u00e9rer une erreur.</span>\n<span class=\"paragraph\">Ecrivez le code suivant dans un fichier nomm\u00e9 <code>pytest_2.py</code></span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmin</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&lt;</span> <span class=\"n\">value_min</span><span class=\"p\">:</span>\n            <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"n\">i</span> <span class=\"o\">+</span> <span class=\"mi\">1</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_min</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmin</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">2</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([</span><span class=\"mi\">7</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">0</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([])</span> <span class=\"o\">==</span> <span class=\"kc\">None</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "d356d78fd2578df3d130118c8ddf8e22",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">D'apr\u00e8s la sortie g\u00e9n\u00e9r\u00e9e par <code>pytest</code>, les tests du fichier <code>/tmp/pytest_2.py</code> ont \u00e9chou\u00e9s. Si l'on regarde en d\u00e9taille l'ex\u00e9cution de <code>test_argmin</code>, nous avons un <code>assert 3 == 2</code>, ce qui signifie que notre test unitaire a \u00e9chou\u00e9. Corrigeons la fonction <code>argmin</code> et ajoutons la fonction <code>argmax</code> avec son test unitaire associ\u00e9.</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmin</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&lt;</span> <span class=\"n\">value_min</span><span class=\"p\">:</span>\n            <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_min</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmax</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&gt;</span> <span class=\"n\">value_max</span><span class=\"p\">:</span>\n            <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_max</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmin</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">2</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([</span><span class=\"mi\">7</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">0</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">([])</span> <span class=\"o\">==</span> <span class=\"kc\">None</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmax</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">3</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([</span><span class=\"mi\">7</span><span class=\"p\">])</span> <span class=\"o\">==</span> <span class=\"mi\">0</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">([])</span> <span class=\"o\">==</span> <span class=\"kc\">None</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "594d0a0219674e79b4eea385bf7dfb8f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>pytest pytest_2.py -v\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "748ae04d4e8011dad10aa3b9c6a2253c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Le param\u00e8tre <code>-v</code> permet d'afficher plus de d\u00e9tails concernant les tests. Puisque deux fonctions sont nomm\u00e9es <code>test*</code>, il y a deux tests effectu\u00e9s par <code>pytest</code>. Cette option permet d'obtenir un d\u00e9tail pour chaque test cod\u00e9, simplifiant ensuite le d\u00e9boggage de l'application.</span>\n<span class=\"paragraph\">En pratique, les tests unitaires doivent \u00eatre ex\u00e9cut\u00e9s une fois les donn\u00e9es envoy\u00e9s vers le d\u00e9p\u00f4t Git. En revanche, il est d\u00e9conseill\u00e9 de les ex\u00e9cuter lors du pre-commit, car ce dernier doit \u00eatre rapide. Les tests unitaires, notamment ceux incluant des tests pour les mod\u00e8les, peuvent prendre du temps ce qui n'est pas conseill\u00e9 pour les pre-commits.</span>\n<h2 id=\"4-les-fixtures\">4. Les fixtures</h2>\n<span class=\"paragraph\">Imaginons que l'on souhaite utiliser des donn\u00e9es/param\u00e8tres uniquement pour les tests unitaires. Si l'on regarde bien, les deux fonctions <code>test_argmin</code> et <code>test_argmax</code> utilisent les m\u00eames listes pour tester les deux fonctions. Nous pourrions tout \u00e0 fait d\u00e9finir des catalogues de r\u00e9f\u00e9rence pour les tests unitaires qui seront utilis\u00e9s \u00e0 chaque fois. C'est \u00e0 cela que servent <strong>les fixtures</strong>.</span>\n<span class=\"paragraph\">Regardons le code suivant qui n'utilise pas de fixture. Nous allons simplement cr\u00e9er une liste <code>test_data</code> qui sera utilis\u00e9e par les deux fonctions de test.</span>\n<span class=\"paragraph\">Remplacez le code de <code>pytest_2.py</code> par celui l\u00e0</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "dcee9e3f1792d9cd993eac0b98b4d356",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"c1\"># Pas bien !</span>\n<span class=\"n\">test_data</span> <span class=\"o\">=</span> <span class=\"p\">[</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">]</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmin</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&lt;</span> <span class=\"n\">value_min</span><span class=\"p\">:</span>\n            <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_min</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmax</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&gt;</span> <span class=\"n\">value_max</span><span class=\"p\">:</span>\n            <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_max</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmin</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">2</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmax</span><span class=\"p\">():</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">3</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "594d0a0219674e79b4eea385bf7dfb8f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>pytest pytest_2.py -v\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "7d33828d0b175fcf5a8e1caa78401f5d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Bien que le test ait fonctionn\u00e9, cela n'est pas une bonne pratique, car nous allons obligatoirement d\u00e9finir cette variable globale en m\u00e9moire \u00e0 chaque ex\u00e9cution du code, alors qu'elle n'est utilis\u00e9e que pour les tests unitaires. Dans ce cas de figure, il est pr\u00e9f\u00e9rable de cr\u00e9er des fixtures.</span>\n<span class=\"paragraph\">Les fixtures d\u00e9finissent un environnement dans lequel nous allons pouvoir tester notre code. Dans beaucoup de situations, il nous faut initialiser certaines variables avant de lancer les tests unitaires. Les fixtures sous <code>pytest</code> sont des fonctions qui sont utilis\u00e9s comme <strong>param\u00e8tres</strong> des fonctions de tests unitaires.</span>\n<span class=\"paragraph\">Regardons le code suivant.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "6f7fe36551e313b77b3ff9a41f219d51",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">pytest</span>\n\n<span class=\"nd\">@pytest</span><span class=\"o\">.</span><span class=\"n\">fixture</span>\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_data</span><span class=\"p\">():</span>\n    <span class=\"k\">return</span> <span class=\"p\">[</span><span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">9</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">,</span> <span class=\"mi\">3</span><span class=\"p\">]</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmin</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&lt;</span> <span class=\"n\">value_min</span><span class=\"p\">:</span>\n            <span class=\"n\">value_min</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_min</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_min</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">argmax</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n    <span class=\"k\">if</span> <span class=\"nb\">len</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">0</span><span class=\"p\">:</span>\n        <span class=\"k\">return</span> <span class=\"kc\">None</span>\n\n    <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"mi\">0</span>\n    <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>\n    <span class=\"k\">for</span> <span class=\"n\">i</span><span class=\"p\">,</span> <span class=\"n\">x</span> <span class=\"ow\">in</span> <span class=\"nb\">enumerate</span><span class=\"p\">(</span><span class=\"n\">liste</span><span class=\"p\">):</span>\n        <span class=\"k\">if</span> <span class=\"n\">x</span> <span class=\"o\">&gt;</span> <span class=\"n\">value_max</span><span class=\"p\">:</span>\n            <span class=\"n\">value_max</span> <span class=\"o\">=</span> <span class=\"n\">x</span>\n            <span class=\"n\">idx_max</span> <span class=\"o\">=</span> <span class=\"n\">i</span>\n    <span class=\"k\">return</span> <span class=\"n\">idx_max</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmin</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">):</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmin</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">2</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">test_argmax</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">):</span>\n    <span class=\"k\">assert</span> <span class=\"n\">argmax</span><span class=\"p\">(</span><span class=\"n\">test_data</span><span class=\"p\">)</span> <span class=\"o\">==</span> <span class=\"mi\">3</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "b6f1d1e43436462c542738a067d3eb7f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Tout d'abord, nous d\u00e9finissons la fonction <code>test_data</code> comme fixture \u00e0 l'aide du d\u00e9corateur de fonctions <code>@pytest.fixture</code>. Cette fonction va renvoyer une liste qui correspond \u00e0 la liste de r\u00e9f\u00e9rence pour tester les deux fonctions. Ensuite, dans les fonctions de tests unitaires, nous allons r\u00e9cup\u00e9rer comme param\u00e8tre cette m\u00eame fonction <code>test_data</code>. Mais attention : lorsque l'on ex\u00e9cutera <code>pytest</code>, ce dernier va automatiquement remplacer le param\u00e8tre <code>test_data</code> (qui est suppos\u00e9 \u00eatre une fonction car fixture) par le r\u00e9sultat de cette fonction.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/tests4.png\" /></span>\n<span class=\"paragraph\">Ainsi, \u00e0 chaque ex\u00e9cution de <code>pytest</code>, ce sera en r\u00e9alit\u00e9 <code>test_data()</code> qui sera pass\u00e9 comme param\u00e8tre pour les fonctions <code>test_argmin</code> et <code>test_argmax</code> (et non la fonction <code>test_data</code> elle-m\u00eame). Cette m\u00e9thode permet d'instancier plus efficacement les initialisations pour les tests, sans compromettre le reste du code qui lui n'aura pas besoin des tests dans un environnement de production.</span>\n<span class=\"paragraph\">Ex\u00e9cutons maintenant <code>pytest</code>. (N'oubliez pas de remplacer \u00e0 nouveau de contenu du code de <code>pytest_2.py</code> par ce code ci-dessus)</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "adc52619a5431f310b7391b1056cf18e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "289e2176b7b947b2a6501ae74b0e355e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Tout a correctement fonctionn\u00e9. L'int\u00e9r\u00eat de ce syst\u00e8me est de pouvoir ensuite centraliser l'initialisation des variables et des donn\u00e9es pour les tests, \u00e9vitant ainsi les duplicata de codes que l'on conna\u00eet d\u00e9j\u00e0 bien hors des tests.</span>\n<span class=\"paragraph\">Maintenant que nous avons vu les points essentiels de <code>pytest</code>, nous pouvons dor\u00e9navant int\u00e9grer les tests unitaires dans notre projet Kedro. Et un avantage non n\u00e9gligeable est que Kedro supporte nativement <code>pytest</code> pour les tests unitaires : il dispose m\u00eame de la commande <code>kedro test</code>. \ud83d\ude42</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "3ab3542a669289e04794d47fae3a9024",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"5-integration-des-tests-unitaires-dans-kedro\">5. Int\u00e9gration des tests unitaires dans Kedro</h2>\n<span class=\"paragraph\">Int\u00e9grons les tests unitaires et du mod\u00e8le dans notre projet Kedro. En regardant la structure du projet, nous pouvons observer le dossier <code>tests</code> qui contient le fichier <code>test_run.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "7789174592fe97cd4172b5dc544368e2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"n\">This</span> <span class=\"n\">module</span> <span class=\"n\">contains</span> <span class=\"n\">example</span> <span class=\"n\">tests</span> <span class=\"k\">for</span> <span class=\"n\">a</span> <span class=\"n\">Kedro</span> <span class=\"n\">project</span><span class=\"o\">.</span>\n<span class=\"n\">Tests</span> <span class=\"n\">should</span> <span class=\"n\">be</span> <span class=\"n\">placed</span> <span class=\"ow\">in</span> <span class=\"err\">``</span><span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">tests</span><span class=\"err\">``</span><span class=\"p\">,</span> <span class=\"ow\">in</span> <span class=\"n\">modules</span> <span class=\"n\">that</span> <span class=\"n\">mirror</span> <span class=\"n\">your</span>\n<span class=\"n\">project</span><span class=\"s1\">&#39;s structure, and in files named test_*.py.</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "f1eef6b2e9c1be1742162ac442548e94",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour ex\u00e9cuter proprement les tests avec Kedro, il faut que la structure des fichiers des tests soit identique \u00e0 celle utilis\u00e9e dans <code>src/purchase_predict</code> mais dans un dossier tests situ\u00e9 a la racine. Nous devons donc cr\u00e9er un dossier <code>tests</code> qui contient lui meme un dossier <code>pipeline</code> puis dans ce meme dossier cr\u00e9e le dossier <code>processing</code> pour r\u00e9pliquer l'architecture \u00e0 l'identique. Vous avez du remarqu\u00e9 qu'en utilisant <code>pipeline create</code>, ces dossiers sont automatiquement cr\u00e9es notament avec <code>training</code> et <code>loading</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iYEb",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "f75a7a50d1ef5fb2326e1e1073853552",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "c83c30cd065ae9de21b1820d08300376",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"6-tests-sur-les-nodes\">6. Tests sur les nodes</h2>\n<span class=\"paragraph\">Avant de d\u00e9velopper nos tests unitaires, cr\u00e9ons sur le bucket Cloud Storage des <strong>donn\u00e9es de tests</strong>. Dans le bucket, nous allons cr\u00e9er un dossier <code>data-test.csv/</code>.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/tests1.png\" /></span>\n<span class=\"paragraph\">Ensuite, pour alimenter ce dossier, nous allons copier deux fichiers CSV d\u00e9j\u00e0 pr\u00e9sents dans <code>primary.csv/</code> vers <code>data-test.csv/</code>.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/tests2_1.png\" />\nHabituellement, avec Kedro, nous pouvons effectuer deux s\u00e9ries de tests.</span>\n<ul>\n<li>Les tests sur les nodes et les fonctions qu'utilisent les nodes. Par exemple, pour l'entra\u00eenement, le fichier <code>nodes.py</code> contient des fonctions qui ne sont pas directement utilis\u00e9s par les nodes mais qui sont appel\u00e9s par les fonctions des nodes.</li>\n<li>Les tests sur les pipelines, permettant de les tester en fonction de plusieurs formats d'entr\u00e9e ou sous forme d'ex\u00e9cution partielles.</li>\n</ul>\n<span class=\"paragraph\">Dans le pipeline <code>loading</code> cr\u00e9ons le fichier <code>test_nodes.py</code>. Seule la fonction <code>load_csv_from_bucket</code> est pr\u00e9sente : nous allons uniquement tester cette derni\u00e8re.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "4923bcc09693ac063571901dd7deb7e3",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "728deb2b92a2e51b84551d2824708c14",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous d\u00e9finissons la fonction <code>test_load_csv_from_bucket</code> avec les m\u00eames param\u00e8tres que la fonction <code>load_csv_from_bucket</code>.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Mais nous n'avons pas d\u00e9fini les fixtures ici ?</span>\n</blockquote>\n<span class=\"paragraph\">En effet, il faudrait que les param\u00e8tres <code>project_id</code> et <code>primary_folder</code> soient des fixtures avec des fonctions de m\u00eame nom. Or, ici, nous n'en avons pas cr\u00e9\u00e9e. Il y a une raison \u00e0 cela : plus tard, nous allons \u00e9galement cr\u00e9er un fichier de test pour le pipeline. Pour \u00e9viter des redondances de d\u00e9finitions de fixtures, nous allons d\u00e9finir les fixtures dans un fichier sp\u00e9cifique, qui derri\u00e8re sera automatiquement ex\u00e9cut\u00e9 par <code>pytest</code>.</span>\n<span class=\"paragraph\">D'apr\u00e8s <a href=\"https://docs.pytest.org/en/stable/fixture.html#conftest-py-sharing-fixture-functions\" target=\"_blank\">la documentation</a> de <code>pytest</code> sur les fixtures, nous pouvons les centraliser dans un fichier nomm\u00e9 <code>conftest.py</code> qui sera automatiquement ex\u00e9cut\u00e9 avant les tests unitaires. Nous en cr\u00e9ons un dans le dossier <code>loading</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "250c9081d049424258d277593fe03d34",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "8299cdce31ba61c0f305f33e25d3d85e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L'argument <code>scope=\"module\"</code> permet de sp\u00e9cifier que les fixtures seront accessibles \u00e0 l'int\u00e9rieur de <code>purchase_predict</code>. Il ne reste plus qu'\u00e0 lancer les test avec Kedro.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "5a748c120135eca0627c0c3b4985e917",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "f3875c92c54847b28d069477814c8695",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"o\">===============================================</span><span class=\"w\"> </span><span class=\"n\">test</span><span class=\"w\"> </span><span class=\"n\">session</span><span class=\"w\"> </span><span class=\"n\">starts</span><span class=\"w\"> </span><span class=\"o\">===============================================</span>\n<span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"w\"> </span><span class=\"n\">Python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pytest</span><span class=\"o\">-</span><span class=\"mf\">7.4</span><span class=\"o\">.</span><span class=\"mi\">4</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pluggy</span><span class=\"o\">-</span><span class=\"mf\">1.6</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">rootdir</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">Users</span><span class=\"o\">/</span><span class=\"n\">noobzik</span><span class=\"o\">/</span><span class=\"n\">Documents</span><span class=\"o\">/</span><span class=\"n\">Kaggle</span><span class=\"o\">/</span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span>\n<span class=\"n\">configfile</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">pyproject</span><span class=\"o\">.</span><span class=\"n\">toml</span>\n<span class=\"n\">testpaths</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">unit</span>\n<span class=\"n\">plugins</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">anyio</span><span class=\"o\">-</span><span class=\"mf\">4.12</span><span class=\"o\">.</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">asyncio</span><span class=\"o\">-</span><span class=\"mf\">0.23</span><span class=\"o\">.</span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">cov</span><span class=\"o\">-</span><span class=\"mf\">6.3</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">asyncio</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">mode</span><span class=\"o\">=</span><span class=\"n\">Mode</span><span class=\"o\">.</span><span class=\"n\">STRICT</span>\n<span class=\"n\">collected</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">items</span>\n\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">test_nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                     </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">50</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">unit</span><span class=\"o\">/</span><span class=\"n\">test_1</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                                            </span><span class=\"p\">[</span><span class=\"mi\">100</span><span class=\"o\">%</span><span class=\"p\">]</span>\n\n<span class=\"o\">=================================================</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"w\"> </span><span class=\"o\">==================================================</span>\n<span class=\"n\">________________________________</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"o\">-</span><span class=\"n\">final</span><span class=\"o\">-</span><span class=\"mi\">0</span><span class=\"w\"> </span><span class=\"n\">________________________________</span>\n\n<span class=\"n\">Name</span><span class=\"w\">                                                    </span><span class=\"n\">Stmts</span><span class=\"w\">   </span><span class=\"n\">Miss</span><span class=\"w\">  </span><span class=\"n\">Cover</span><span class=\"w\">   </span><span class=\"n\">Missing</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__main__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                           </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">5</span><span class=\"o\">-</span><span class=\"mi\">25</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipeline_registry</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                   </span><span class=\"mi\">7</span><span class=\"w\">      </span><span class=\"mi\">7</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">3</span><span class=\"o\">-</span><span class=\"mi\">17</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                  </span><span class=\"mi\">0</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">            </span><span class=\"mi\">18</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">1</span><span class=\"w\">    </span><span class=\"mi\">75</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">11</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">3</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">5</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">20</span><span class=\"w\">     </span><span class=\"mi\">20</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">36</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">4</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">7</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">3</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">10</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">           </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">165</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">5</span><span class=\"w\">      </span><span class=\"mi\">5</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">14</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">settings</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">1</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">31</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">TOTAL</span><span class=\"w\">                                                     </span><span class=\"mi\">143</span><span class=\"w\">    </span><span class=\"mi\">118</span><span class=\"w\">    </span><span class=\"mi\">17</span><span class=\"o\">%</span>\n<span class=\"o\">================================================</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"w\"> </span><span class=\"n\">passed</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"mf\">7.66</span><span class=\"n\">s</span><span class=\"w\"> </span><span class=\"o\">================================================</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "31c84df714051b0863074bb928cf48e1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En cas d'erreur de type :\n<div class=\"language-tsql codehilite\"><pre><span></span><code><span class=\"n\">google</span><span class=\"p\">.</span><span class=\"n\">api_core</span><span class=\"p\">.</span><span class=\"n\">exceptions</span><span class=\"p\">.</span><span class=\"nl\">Forbidden</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">403</span><span class=\"w\"> </span><span class=\"k\">GET</span><span class=\"w\"> </span><span class=\"nl\">https</span><span class=\"p\">:</span><span class=\"o\">//</span><span class=\"n\">storage</span><span class=\"p\">.</span><span class=\"n\">googleapis</span><span class=\"p\">.</span><span class=\"n\">com</span><span class=\"o\">/</span><span class=\"n\">storage</span><span class=\"o\">/</span><span class=\"n\">v1</span><span class=\"o\">/</span><span class=\"n\">b</span><span class=\"o\">/</span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span><span class=\"o\">/</span><span class=\"n\">o</span><span class=\"vm\">?</span><span class=\"n\">projection</span><span class=\"o\">=</span><span class=\"n\">noAcl</span><span class=\"o\">&amp;</span><span class=\"k\">prefix</span><span class=\"o\">=</span><span class=\"n\">test</span><span class=\"o\">%</span><span class=\"mi\">2</span><span class=\"n\">Fpart</span><span class=\"o\">-&amp;</span><span class=\"n\">prettyPrint</span><span class=\"o\">=</span><span class=\"k\">false</span><span class=\"err\">:</span><span class=\"w\"> </span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span><span class=\"nv\">@esgi</span><span class=\"o\">-</span><span class=\"mf\">352608.</span><span class=\"n\">iam</span><span class=\"p\">.</span><span class=\"n\">gserviceaccount</span><span class=\"p\">.</span><span class=\"n\">com</span><span class=\"w\"> </span><span class=\"n\">does</span><span class=\"w\"> </span><span class=\"ow\">not</span><span class=\"w\"> </span><span class=\"n\">have</span><span class=\"w\"> </span><span class=\"n\">storage</span><span class=\"p\">.</span><span class=\"n\">objects</span><span class=\"p\">.</span><span class=\"n\">list</span><span class=\"w\"> </span><span class=\"n\">access</span><span class=\"w\"> </span><span class=\"k\">to</span><span class=\"w\"> </span><span class=\"n\">the</span><span class=\"w\"> </span><span class=\"n\">Google</span><span class=\"w\"> </span><span class=\"n\">Cloud</span><span class=\"w\"> </span><span class=\"n\">Storage</span><span class=\"w\"> </span><span class=\"n\">bucket</span><span class=\"p\">.</span><span class=\"w\"> </span><span class=\"n\">Permission</span><span class=\"w\"> </span><span class=\"s1\">&#39;storage.objects.list&#39;</span><span class=\"w\"> </span><span class=\"n\">denied</span><span class=\"w\"> </span><span class=\"k\">on</span><span class=\"w\"> </span><span class=\"n\">resource</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"ow\">or</span><span class=\"w\"> </span><span class=\"n\">it</span><span class=\"w\"> </span><span class=\"n\">may</span><span class=\"w\"> </span><span class=\"ow\">not</span><span class=\"w\"> </span><span class=\"n\">exist</span><span class=\"p\">).</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Verifiez que votre service account mention\u00e9e dans les logs poss\u00e8de bien le r\u00f4le de <code>Lecteur d'objets Storage</code> en allant depuis <code>IAM &amp; Admin</code> --&gt; <code>IAM</code> --&gt; <code>Votre service account</code> --&gt; <code>Crayon</code> --&gt; <code>Ajouter r\u00f4le</code> --&gt; <code>Lecteur d'objets Storage</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "dfb5147d0741e470d9f414552c66e197",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Au tout d\u00e9but, <code>pytest</code> ex\u00e9cute le test sur <code>test_run.py</code>, qui montre un exemple de test unitaire avec Kedro. Ensuite, il ex\u00e9cute le seul autre fichier de test pr\u00e9sent <code>test_nodes.py</code>. Puisqu'il n'y a aucun probl\u00e8me, cela signifie que le code n'a pas g\u00e9n\u00e9r\u00e9 d'erreurs et que, en th\u00e9orie, nous avons correctement r\u00e9ussi \u00e0 impl\u00e9menter la fonction de test avec Kedro. C'est alors que nous pouvons rajouter des tests et des conditions dans la fonction.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "e176495db444ffb7a21e8f6e63d2a624",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "73ebf8438b18584e7cd7f3cc1e481727",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"6-tests-sur-les-pipelines\">6. Tests sur les pipelines</h2>\n<span class=\"paragraph\">En plus de tests unitaires sur les nodes, il est \u00e9galement possible d'effectuer des tests unitaires sur les pipelines. Cela permet, par exemple, de s'assurer du bon d\u00e9roulement du pipeline en fonction de plusieurs situations (donn\u00e9es incompl\u00e8tes ou manquantes, mauvaise configuration de param\u00e8tres). En respectant le m\u00eame principe que pour les nodes, nous allons cr\u00e9er le fichier <code>test_pipeline.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "1c26761357feebf84078d1ec23fd7438",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "f9684d4aaac25b3c0cc8d0693a21c718",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous r\u00e9cup\u00e9rons la fonction <code>create_pipeline</code> permettant de cr\u00e9er le pipeline que nous souhaitons tester. Dans le test unitaire, nous instancions un <code>SequentialRunner</code>, qui ex\u00e9cutera le pipeline de mani\u00e8re s\u00e9quentielle. Ensuite, nous cr\u00e9ons une instance du pipeline et enfin nous ex\u00e9cuter ce dernier. Remarquons la variable <code>catalog_test</code> : il s'agit d'un catalogue de donn\u00e9es sp\u00e9cifiquement cr\u00e9e pour le test. Plut\u00f4t que d'utiliser celui par d\u00e9faut dans le fichier <code>catalog.yml</code>, nous allons pouvoir sp\u00e9cifier des donn\u00e9es propres aux tests qui ne va pas perturber le catalogue d\u00e9j\u00e0 pr\u00e9sent.</span>\n<span class=\"paragraph\">Le catalogue de donn\u00e9es repr\u00e9sente lui aussi une fixture que nous rajoutons dans <code>conftest.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "cd46e7ce82b409f43b142aacd9189e6c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "08556a975162da21db451c84aab44882",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cette fonction retourne un <code>DataCatalog</code> qui sera envoy\u00e9 en entr\u00e9e au pipeline.</span>\n<div class=\"alert alert-block alert-warning\">\n    Il faut respecter les noms des variables sp\u00e9cifi\u00e9s dans le pipeline.\n</div>\n\n<span class=\"paragraph\">Pour rappel, le pipeline <code>loading</code> \u00e9tait d\u00e9fini de la mani\u00e8re suivante.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "e6ee5c3f89593a3e262db2c61875489f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "6c7adc4eb934cb40c7d0db7a1b39d8df",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L\u00e0-aussi, <code>pytest</code> remplacera <code>catalog_test</code> par la fixture associ\u00e9e et permettra d'initialiser correctement l'environnement de test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "cc2a7e51c4e19b4aa8b87de4eac4dc20",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "884b118e9c7333ec73ee54bc03377984",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"err\">\u2570\u2500</span><span class=\"w\"> </span><span class=\"n\">uv</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"n\">pytest</span><span class=\"w\">                                                                                                </span><span class=\"err\">\u2500\u256f</span>\n<span class=\"o\">===============================================</span><span class=\"w\"> </span><span class=\"n\">test</span><span class=\"w\"> </span><span class=\"n\">session</span><span class=\"w\"> </span><span class=\"n\">starts</span><span class=\"w\"> </span><span class=\"o\">===============================================</span>\n<span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"w\"> </span><span class=\"n\">Python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pytest</span><span class=\"o\">-</span><span class=\"mf\">7.4</span><span class=\"o\">.</span><span class=\"mi\">4</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pluggy</span><span class=\"o\">-</span><span class=\"mf\">1.6</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">rootdir</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">Users</span><span class=\"o\">/</span><span class=\"n\">noobzik</span><span class=\"o\">/</span><span class=\"n\">Documents</span><span class=\"o\">/</span><span class=\"n\">Kaggle</span><span class=\"o\">/</span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span>\n<span class=\"n\">configfile</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">pyproject</span><span class=\"o\">.</span><span class=\"n\">toml</span>\n<span class=\"n\">testpaths</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">unit</span>\n<span class=\"n\">plugins</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">anyio</span><span class=\"o\">-</span><span class=\"mf\">4.12</span><span class=\"o\">.</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">asyncio</span><span class=\"o\">-</span><span class=\"mf\">0.23</span><span class=\"o\">.</span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">cov</span><span class=\"o\">-</span><span class=\"mf\">6.3</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">asyncio</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">mode</span><span class=\"o\">=</span><span class=\"n\">Mode</span><span class=\"o\">.</span><span class=\"n\">STRICT</span>\n<span class=\"n\">collected</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"w\"> </span><span class=\"n\">items</span>\n\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">test_nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">..</span><span class=\"w\">                                                                    </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">50</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">test_pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                  </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">75</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">unit</span><span class=\"o\">/</span><span class=\"n\">test_1</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                                            </span><span class=\"p\">[</span><span class=\"mi\">100</span><span class=\"o\">%</span><span class=\"p\">]</span>\n\n<span class=\"o\">=================================================</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"w\"> </span><span class=\"o\">==================================================</span>\n<span class=\"n\">________________________________</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"o\">-</span><span class=\"n\">final</span><span class=\"o\">-</span><span class=\"mi\">0</span><span class=\"w\"> </span><span class=\"n\">________________________________</span>\n\n<span class=\"n\">Name</span><span class=\"w\">                                                    </span><span class=\"n\">Stmts</span><span class=\"w\">   </span><span class=\"n\">Miss</span><span class=\"w\">  </span><span class=\"n\">Cover</span><span class=\"w\">   </span><span class=\"n\">Missing</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__main__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                           </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">5</span><span class=\"o\">-</span><span class=\"mi\">25</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipeline_registry</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                   </span><span class=\"mi\">7</span><span class=\"w\">      </span><span class=\"mi\">7</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">3</span><span class=\"o\">-</span><span class=\"mi\">17</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                  </span><span class=\"mi\">0</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">            </span><span class=\"mi\">18</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">3</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">5</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">20</span><span class=\"w\">     </span><span class=\"mi\">20</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">36</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">4</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">1</span><span class=\"o\">-</span><span class=\"mi\">7</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">3</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">10</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">           </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">165</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">5</span><span class=\"w\">      </span><span class=\"mi\">5</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">14</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">settings</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">1</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">31</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">TOTAL</span><span class=\"w\">                                                     </span><span class=\"mi\">143</span><span class=\"w\">    </span><span class=\"mi\">117</span><span class=\"w\">    </span><span class=\"mi\">18</span><span class=\"o\">%</span>\n<span class=\"o\">===============================================</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"w\"> </span><span class=\"n\">passed</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"mf\">14.98</span><span class=\"n\">s</span><span class=\"w\"> </span><span class=\"o\">================================================</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "5605266ffdee5851224aef491b49c68c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Le pipeline a \u00e9t\u00e9 ex\u00e9cut\u00e9 sans probl\u00e8me. Nous pouvons l\u00e0-aussi r\u00e9diger des tests pour le pipeline, qui en soit seront quasi-identiques \u00e0 ceux du node car ce pipeline ne contient qu'un seul node et ce dernier n'appelle pas d'autres fonctions.</span>\n<span class=\"paragraph\">on peut donc remplacer le test_pipeline.py du dossier loading dans les tests par:</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "120f2e216255f60e4d9ec8cc4dfbec38",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "7dc1f755fe86fcb0dd5a797e9109420a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"conclusion\">\u2714\ufe0f Conclusion</h1>\n<span class=\"paragraph\">Peut-\u00eatre il s'agit de ton premier test unitaire avec Python : dans tous les cas, tu sais maintenant en \u00e9crire, et c'est une tr\u00e8s bonne pratique !</span>\n<ul>\n<li>Nous avons vu pourquoi les tests logiciels \u00e9taient indispensables.</li>\n<li>Nous avons r\u00e9dig\u00e9 plusieurs tests unitaires pour le pipeline de collecte des donn\u00e9es.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Il nous reste maintenant \u00e0 d\u00e9finir et r\u00e9diger les <b>tests sur le mod\u00e8le de Machine Learning</b>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
