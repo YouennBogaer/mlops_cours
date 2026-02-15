@@ -115,6 +115,7 @@ def _(mo):
     Ensuite, nous allons l'installer à l'aide de `UV` :
     ```
     uv add pytest
+    uv add pytest-cov
     ```
 
     Et nous exécutons la commande suivante pour lancer les tests
@@ -126,7 +127,11 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ```
-    pytest pytest_1.py
+    uv run pytest
+    ```
+    ou
+    ```
+    ou uv run pytest (chemin absolue de pytest_1.py)
     ```
     """)
     return
@@ -434,9 +439,55 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Pour exécuter proprement les tests avec Kedro, il faut que la structure des fichiers des tests soit identique à celle utilisée dans `src/purchase_predict`. Nous devons donc créer deux dossiers `processing` dans `src/tests/pipelines` pour répliquer l'architecture à l'identique. Vous avez du remarqué qu'en utilisant `pipeline create`, ces dossiers sont automatiquement crées notament avec `training` et `loading`.
+    Pour exécuter proprement les tests avec Kedro, il faut que la structure des fichiers des tests soit identique à celle utilisée dans `src/purchase_predict` mais dans un dossier tests situé a la racine. Nous devons donc créer un dossier `tests` qui contient lui meme un dossier `pipeline` puis dans ce meme dossier crée le dossier `processing` pour répliquer l'architecture à l'identique. Vous avez du remarqué qu'en utilisant `pipeline create`, ces dossiers sont automatiquement crées notament avec `training` et `loading`.
     """)
     return
+
+
+app._unparsable_cell(
+    r"""
+    project-root/
+    │
+    ├── src/
+    │   └── purchase_predict/
+    │       ├── pipeline/
+    │       │   ├── loading/
+    │       │   │   ├── __init__.py
+    │       │   │   ├── nodes.py
+    │       │   │   └── pipeline.py
+    │       │   │
+    │       │   ├── processing/
+    │       │   │   ├── __init__.py
+    │       │   │   ├── nodes.py
+    │       │   │   └── pipeline.py
+    │       │   │
+    │       │   ├── training/
+    │       │   │   ├── __init__.py
+    │       │   │   ├── nodes.py
+    │       │   │   └── pipeline.py
+    │       │   │
+    │       │   └── __init__.py
+    │       │
+    │       ├── __init__.py
+    │       ├── __main__.py
+    │       ├── pipeline_registry.py
+    │       └── settings.py
+    │
+    └── tests/
+        ├── pipeline/
+        │   ├── loading/
+        │   │   ├── __init__.py
+        │   │   └── test_pipeline.py
+        │   │
+        │   ├── training/
+        │   │   ├── __init__.py
+        │   │   └── test_pipeline.py
+        │   │
+        │   ├── __init__.py
+        │   └── test_run.py
+    """,
+    name="_"
+)
 
 
 app._unparsable_cell(
@@ -452,11 +503,11 @@ def _(mo):
     mo.md(r"""
     ## 6. Tests sur les nodes
 
-    Avant de développer nos tests unitaires, créons sur le bucket Cloud Storage des **données de tests**. Dans le dossier `primary/` du bucket, nous allons créer un dossier `data-test.csv/`.
+    Avant de développer nos tests unitaires, créons sur le bucket Cloud Storage des **données de tests**. Dans le bucket, nous allons créer un dossier `data-test.csv/`.
 
     ![alt](public/tests1.png)
 
-    Ensuite, pour alimenter ce dossier, nous allons copier deux fichiers CSV déjà présents dans `data.csv/` vers `data-test.csv/`.
+    Ensuite, pour alimenter ce dossier, nous allons copier deux fichiers CSV déjà présents dans `primary.csv/` vers `data-test.csv/`.
 
     ![alt](public/tests2_1.png)
     Habituellement, avec Kedro, nous pouvons effectuer deux séries de tests.
@@ -464,7 +515,7 @@ def _(mo):
     - Les tests sur les nodes et les fonctions qu'utilisent les nodes. Par exemple, pour l'entraînement, le fichier `nodes.py` contient des fonctions qui ne sont pas directement utilisés par les nodes mais qui sont appelés par les fonctions des nodes.
     - Les tests sur les pipelines, permettant de les tester en fonction de plusieurs formats d'entrée ou sous forme d'exécution partielles.
 
-    Créons tout d'abord le fichier `test_nodes.py`. Dans le pipeline `loading`, seule la fonction `load_csv_from_bucket` est présente : nous allons uniquement tester cette dernière.
+    Dans le pipeline `loading` créons le fichier `test_nodes.py`. Seule la fonction `load_csv_from_bucket` est présente : nous allons uniquement tester cette dernière.
     """)
     return
 
@@ -506,7 +557,7 @@ def _():
 
     @pytest.fixture(scope="module")
     def primary_folder():
-        return "<NOM_DU_BUCKET>/primary/data-test.csv"
+        return "<NOM_DU_BUCKET>/data-test.csv"
 
     return (pytest,)
 
@@ -519,10 +570,12 @@ def _(mo):
     return
 
 
-@app.cell
-def _(pytest):
-    pytest
-    return
+app._unparsable_cell(
+    r"""
+    uv run pytest
+    """,
+    name="_"
+)
 
 
 @app.cell(hide_code=True)
@@ -621,7 +674,7 @@ def _():
         pipeline = create_pipeline()
         pipeline_output = runner.run(pipeline, catalog_test)
 
-    return (SequentialRunner,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -673,7 +726,7 @@ def _(Pipeline, load_csv_from_bucket, node):
     def create_pipeline_1(**kwargs):
         return Pipeline([node(load_csv_from_bucket, ['params:gcp_project_id', 'params:gcs_primary_folder'], 'primary')])
 
-    return (create_pipeline_1,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -741,22 +794,30 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     Le pipeline a été exécuté sans problème. Nous pouvons là-aussi rédiger des tests pour le pipeline, qui en soit seront quasi-identiques à ceux du node car ce pipeline ne contient qu'un seul node et ce dernier n'appelle pas d'autres fonctions.
+
+    on peut donc remplacer le test_pipeline.py du dossier loading dans les tests par:
     """)
     return
 
 
 @app.cell
-def _(SequentialRunner, create_pipeline_1, pd):
-    def test_pipeline_1(catalog_test):
-        runner = SequentialRunner()
-        pipeline = create_pipeline_1()
-        pipeline_output = runner.run(pipeline, catalog_test)
-        df = pipeline_output['primary']
-        assert type(df) == pd.DataFrame
-        assert df.shape[1] == 16
-        assert 'purchased' in df
+def _():
+    import pandas as pd
+    from kedro.runner import SequentialRunner
 
-    return
+    from purchase_predict.pipelines.loading.pipeline import create_pipeline
+
+
+    def test_pipeline(catalog_test):
+        runner = SequentialRunner()
+        pipeline = create_pipeline()
+        pipeline_output = runner.run(pipeline, catalog_test)
+        df = pipeline_output["primary"].load()
+        assert type(df) is pd.DataFrame
+        assert df.shape[1] == 16
+        assert "purchased" in df
+
+    return (pd,)
 
 
 @app.cell(hide_code=True)
