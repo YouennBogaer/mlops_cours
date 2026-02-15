@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = "==3.12.*"
 dependencies = [
+    "google-cloud>=0.34.0",
+    "google-cloud-storage>=3.9.0",
     "hyperopt>=0.2.7",
     "jupyterlab>=4.5.1",
     "lightgbm>=4.6.0",
