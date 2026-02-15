@@ -8,12 +8,11 @@ __generated_with = "0.19.9"
 app = marimo.App()
 
 
-app._unparsable_cell(
-    r"""
-        import marimo as mo
-    """,
-    name="_"
-)
+@app.cell
+def _():
+    import marimo as mo
+
+    return (mo,)
 
 
 @app.cell(hide_code=True)
@@ -150,12 +149,16 @@ def _(mo):
 
 
 @app.cell
-def _(encode_features, pd):
+def _(LabelEncoder, encode_features, pd):
     BALANCE_THRESHOLD = 0.1
     MIN_SAMPLES = 5000
 
     def test_encode_features(dataset_not_encoded):
-        df = encode_features(dataset_not_encoded)["features"]
+        encoded: dict[str, pd.DataFrame | dict[str, LabelEncoder]] = encode_features(dataset_not_encoded)
+        features_value = encoded["features"]
+        assert isinstance(features_value, pd.DataFrame), "Expected DataFrame for features"
+        df: pd.DataFrame = features_value  # Now type-safe
+
         # Checking column 'purchased' that all values are either 0 or 1
         assert df["purchased"].isin([0, 1]).all()
         # Checking that all columns are numeric
@@ -339,7 +342,7 @@ def _():
         y_train = pipeline_output["y_train"].load()
         X_test = pipeline_output["X_test"].load()
         y_test = pipeline_output["y_test"].load()
-    
+
         assert X_train.shape[0] == y_train.shape[0]
         assert X_test.shape[0] == y_test.shape[0]
 
