@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.1"
 app = marimo.App()
 
 
@@ -295,10 +295,22 @@ def _(mo):
     mo.md(r"""
     ## Installation sur un serveur
 
+    ## Première étape : Créer un service account spécifique à MLFlow
+
+    Les paramètres part défaut du Service Account de Compute Engine n'est pas adapté pour le serveur MLFlow. Nous avons besoin d'accéder à plusieurs services de GCP en même temps.
+
+    Voici donc la configuration à avoir pour le service account de Mlflow
+
+    ![alt](public/mlflow_service_account.png)
+
+    ## La mise en place de la VM G1-Small de MLflow
+
     Pour être pleinement exploité, MLflow **doit être installé sur un serveur** : en plus de pouvoir collaborer à plusieurs, cela permettra de l'intégrer dans un écosystème avec un système de stockage de fichiers et de processus automatisés.
 
     Lançons une VM depuis Google Cloud avec Debian 12 avec une instance de type `g1-small`.
     - Pour cela, il faut cliquer sur `N1`et dans type de machine, il faut cliquer `Coeur Partagé` `g1-small`
+    - Ensuite autorisuer le traffic HTTP et HTTPS
+    - Et ne surtout pas oublier de changer le Service Account vers MLFlow que nous vennons de créer. Oublier de le faire vous impose de supprimer la VM et recommencer la création de la VM.
 
     ![alt](public/ec2-1.png)
 
@@ -451,7 +463,7 @@ def _(mo):
 def _(mlflow, os):
     from google.cloud import storage
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('notebooks/mlflow.json')
-    mlflow.set_tracking_uri('http://136.113.17.234:80')
+    mlflow.set_tracking_uri('http://136.114.127.11:80')
     # Authentification à Google Cloud avec la clé correspondant au compte de service MLflow
     # Nouvel URI de l'interface MLflow
     client_1 = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
