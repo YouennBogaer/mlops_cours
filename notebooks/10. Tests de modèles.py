@@ -4,15 +4,17 @@
 
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.1"
 app = marimo.App()
 
 
 @app.cell
 def _():
     import marimo as mo
+    import pandas as pd
 
-    return (mo,)
+
+    return mo, pd
 
 
 @app.cell(hide_code=True)
@@ -111,15 +113,14 @@ def _(mo):
 
 @app.cell
 def _():
-    import pandas as pd
-
+    # n'oubliez pas d'inclure : import pandas as pd
     from purchase_predict.pipelines.processing.nodes import encode_features
 
     def test_encode_features(dataset_not_encoded):
         df = encode_features(dataset_not_encoded)["features"]
         print(df.head())
 
-    return encode_features, pd
+    return (encode_features,)
 
 
 @app.cell(hide_code=True)
@@ -441,14 +442,11 @@ def _(pd):
     import os
     import joblib
     import shap
-    model = joblib.load(os.path.expanduser('data/model.pkl'))
-    X_test = pd.read_csv(os.path.expanduser('data/X_test.csv'))
-    y_test = pd.read_csv(os.path.expanduser('data/y_test.csv')).values.flatten()
-    explainer = shap.TreeExplainer(model)
-    X_shap = X_test.copy()
-    # On calcul ici les valeurs de Shapley
-    shap_values = explainer.shap_values(X_shap)[1]
-    return X_shap, X_test, explainer, model, shap, shap_values
+
+    model = joblib.load(os.path.expanduser('notebooks/data/model.pkl'))
+    X_test = pd.read_csv(os.path.expanduser('notebooks/data/X_test.csv'))
+    y_test = pd.read_csv(os.path.expanduser('notebooks/data/y_test.csv')).values.flatten()
+    return X_test, model, shap
 
 
 @app.cell(hide_code=True)
@@ -545,6 +543,26 @@ def _(mo):
 
 
 @app.cell
+def _():
+    return
+
+
+@app.cell
+def _(X_test_price, model, shap):
+    explainer = shap.TreeExplainer(model)
+    X_shap = X_test_price.copy()
+    # On calcul ici les valeurs de Shapley
+    shap_values = explainer.shap_values(X_shap)
+    return X_shap, explainer, shap_values
+
+
+@app.cell
+def _(shap_values):
+    shap_values
+    return
+
+
+@app.cell
 def _(X_shap, idxs, shap, shap_values):
     shap.summary_plot(shap_values[idxs, :], X_shap.loc[idxs, :], plot_size=0.8)
     return
@@ -625,7 +643,7 @@ def _(mo):
 
 @app.cell
 def _(explainer, shap, shap_values, x_unit_2):
-    shap.force_plot(explainer.expected_value[0], shap_values[375, :], x_unit_2, matplotlib=True)
+    shap.force_plot(explainer.expected_value, shap_values[375, :], x_unit_2, matplotlib=True)
     return
 
 
@@ -713,7 +731,7 @@ def _(X_test, model):
 
 @app.cell
 def _(explainer, shap, shap_values, x_unit_5):
-    shap.force_plot(explainer.expected_value[0], shap_values[4720, :], x_unit_5, matplotlib=True)
+    shap.force_plot(explainer.expected_value, shap_values[4720, :], x_unit_5, matplotlib=True)
     return
 
 
@@ -751,16 +769,8 @@ def _(mo):
     Au même titre que les tests unitaires sont réalisés pour les fonctions de collecte et de transformation de données, les tests unitaires pour le modèle consistent à vérifier que ce dernier prédit la bonne réponse pour des observations qui sont supposées être parfaitement classifiées.
 
     Une méthode consiste à calculer des **prototypes** : il s'agit d'observations qui *représentent le plus* les données. En d'autres termes, il s'agit d'un concept proches des centres de clusters formés par les observations. Et un algorithme non-supervisé permettant de détecter les prototypes est le **k-médoïde**, proche des k-moyennes dans son fonctionnement mais qui calcule le <a href="https://en.wikipedia.org/wiki/Medoid" target="_blank">médoïde</a>, point d'un cluster dont la distance avec tous les autres points est la plus petite.
-    """)
-    return
 
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ```
-    uv add scikit-learn-extra
-    ```
+    Comme la méthode des k-méloide n'est pas encore disponible dans la librairie principale de scikit-learn, nous devrions la télécharger depuis les extras de scikit-learn. Cependant, elle possède un problème de compatibilité avec la nouvelle version de numpy, ce qui nous contraint à utiliser KMeans pour le moment. Les résultats du tests risquent d'être faussé.
     """)
     return
 
@@ -775,11 +785,12 @@ def _(mo):
 
 @app.cell
 def _(X_test):
-    from sklearn_extra.cluster import KMedoids
+    from sklearn.cluster import KMeans
 
-    kmed = KMedoids(n_clusters=10)
-    kmed.fit(X_test)
-    return (kmed,)
+    kmeans = KMeans(n_clusters=10, random_state=30)
+    clusters = kmeans.fit_predict(X_test)
+    centroids = kmeans.cluster_centers_   
+    return (centroids,)
 
 
 @app.cell(hide_code=True)
@@ -791,9 +802,9 @@ def _(mo):
 
 
 @app.cell
-def _(X_test, kmed, pd):
+def _(X_test, centroids, pd):
     X_prototypes = pd.DataFrame(
-        data=kmed.cluster_centers_,
+        data=centroids,
         columns=X_test.columns
     )
     X_prototypes
@@ -811,17 +822,15 @@ def _(mo):
 
 
 @app.cell
-def _(kmed, model):
-    model.predict_proba(kmed.cluster_centers_)
+def _(centroids, model):
+    model.predict_proba(centroids)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Là-aussi, à part la première observation, toutes les autres sont prédites dans la classe positive. La dernière observation est, quant-à-elle, plus difficile à quantifier du fait des deux probabilités très proches.
-
-    Nous pourrions ainsi extraire plusieurs prototypes de ce DataFrame. Attention néanmoins, car ces données représentent uniquement un historique d'une journée, alors qu'en pratique, celles qui seront utilisées pour calibrer le modèle représentent un historique de 7 jours.
+    On se rend compte que toute les observations sont prédites dans la classe positive. Attention néanmoins, car ces données représentent uniquement un historique d'une journée, alors qu'en pratique, celles qui seront utilisées pour calibrer le modèle représentent un historique de 7 jours.
     """)
     return
 
