@@ -2,3 +2,4 @@ notebooks/purchase-predict/
 notebooks/data
 .idea
 data
+uv.lock

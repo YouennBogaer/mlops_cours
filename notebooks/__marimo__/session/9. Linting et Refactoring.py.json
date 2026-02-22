@@ -1,0 +1,526 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "56dbc55ce23f449409a6c3e5b558872b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">S'il y a bien quelque chose que l'on r\u00e9p\u00e8te souvent lorsqu'il s'agit du d\u00e9veloppement de code source, c'est de <strong>coder proprement</strong>. Oui mais, comment faire ? Comment d\u00e9cide-t-on de la \u00ab propret\u00e9 d'un code \u00bb ? Existe-il des conventions, des normes et si oui, qu'elles sont-elles ?</span>\n<span class=\"paragraph\">Autant de question que nous allons aborder deux concepts de programmation, pas si r\u00e9cents mais toujours aussi important de nos jours : le <strong>linting</strong> et le <strong>refactoring</strong> !</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>D\u00e9couvrir la norme PEP 8 du langage Python</li>\n    <li>Effectuer une analyse statique de code avec <code>ruff</code></li>\n    <li>Utiliser un formateur de code avec <code>ruff</code></li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/h1zJMhT5XOT927e0aw/giphy.gif\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "5b6465930329f22fa54b3d5b9cf44192",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"la-norme-pep-8\">La norme PEP 8</h2>\n<span class=\"paragraph\">Si tu as d\u00e9j\u00e0 recherch\u00e9 de l'aide sur Google par rapport \u00e0 un probl\u00e8me Python, peut \u00eatre que l'expression <em>PEP 8</em> ne t'es pas \u00e9trang\u00e8re. Et pour cause : il s'agit de la norme Python qui sp\u00e9cifie quelles sont les bonnes pratiques en terme de style de code.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi 8 ? Et d'ailleurs, \u00e7a veut dire quoi PEP ?</span>\n</blockquote>\n<span class=\"paragraph\">Revenons \u00e0 l'origine du langage Python : il a \u00e9t\u00e9 initialement construit par une personne, Guido van Rossum, en 1991. Bien \u00e9videmment, au fur et \u00e0 mesure que le langage gagne en popularit\u00e9, de plus en plus de d\u00e9veloppeurs exp\u00e9riment\u00e9s viennent pr\u00eater main forte \u00e0 Guido pour am\u00e9liorer le langage Python et y ajouter de nouvelles fonctionnalit\u00e9s.</span>\n<span class=\"paragraph\">Mais voil\u00e0, comment s'organiser correctement lorsque des dizaines, centaines voir milliers de personnes travaillent ensemble ? Dans la plupart du temps, le plus simple est le <strong>commentaire</strong> : un utilisateur souhaite qu'une nouvelle fonctionnalit\u00e9 soit pr\u00e9sente, il va donc proposer une am\u00e9lioration, la justifier et la d\u00e9tailler. Habituellement, on appelle cela des <strong>RFC</strong> (<em>Requests for comments</em>), et ces demandes sont centralis\u00e9es dans des documents de sp\u00e9cifications techniques.</span>\n<span class=\"paragraph\"><strong>PEP</strong> (pour <em>Python Enhancement Proposals</em>), c'est justement les propositions d'am\u00e9liorations pour le langage Python. Et <a href=\"https://www.python.org/dev/peps/pep-0008/\" target=\"_blank\">PEP 8</a>, c'est donc la huiti\u00e8me proposition d'am\u00e9lioration (ordre chronologique) qui fut \u00e9mise en juillet 2001. Et PEP 8, dont le nom est <strong>Style Guide for Python Code</strong>, fournit un v\u00e9ritable guide sur diverses bonnes pratiques.</span>\n<ul>\n<li>Structurer efficacement son code (espaces, retours \u00e0 la ligne, taille maximum de ligne).</li>\n<li>Adopter les conventions de nommage des variables.</li>\n<li>Commenter correctement son code.</li>\n<li>Utiliser la Docstring pour cr\u00e9er une documentation (extension via <a href=\"https://www.python.org/dev/peps/pep-0257/\" target=\"_blank\">PEP 257</a>).</li>\n</ul>\n<span class=\"paragraph\">Suivre la PEP 8, c'est <strong>suivre les recommandations officielles</strong> pour \u00e9crire du code qui respecte un format adopt\u00e9 par le plus grand nombre.</span>\n<div class=\"alert alert-block alert-info\">\n    Cette norme n'est pas rigide dans le sens o\u00f9 certains projets peuvent s'affranchir de certaines contraintes (comme la taille maximale d'une ligne, fix\u00e9e \u00e0 79 par d\u00e9faut pour PEP 8).\n</div>\n\n<span class=\"paragraph\">Prenons comme exemple les premi\u00e8res sp\u00e9cifications dans <a href=\"https://www.python.org/dev/peps/pep-0008/#indentation\" target=\"_blank\">Code Lay-out</a> pour l'indentation.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pep8_1.jpg\" /></span>\n<span class=\"paragraph\">Cette premi\u00e8re r\u00e8gle statue que les arguments d'une fonction, lorsqu'il y a un saut de ligne, doivent \u00eatre align\u00e9s sur la m\u00eame colonne que celui du premier argument.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "6bf02940dcd9ab801fde49e2589ef51a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Supposons que je saute une ligne entre l'argument <code>b</code> et l'argument <code>c</code> pour appeler cette fonction.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "a884d9797de1bd2cc79517c35cf03474",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dans la premi\u00e8re \u00e9criture, le troisi\u00e8me argument <marimo-tex class=\"arithmatex\">||(3||)</marimo-tex> n'est pas align\u00e9 avec le premier argument <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex> alors qu'il y a eu un saut de ligne : elle ne respecte donc pas PEP 8. La deuxi\u00e8me \u00e9criture, en revanche, respecte correctement PEP 8 puisque les deux arguments sont align\u00e9s \u00e0 la bonne colonne.</span>\n<span class=\"paragraph\">Autre exemple, si cette fois-ci nous effectuons un retour \u00e0 la ligne <strong>en premi\u00e8re indentation</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "5dcc30ea55f648d0ec5e60cea28d92f8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, m\u00eame constat, les arguments ne sont pas align\u00e9s. Si l'on souhaite donc ramener \u00e0 une indentation suppl\u00e9mentaire (qui \u00e9tait de base \u00e0 0 car la variable <code>resultat</code> est \u00e0 la toute premi\u00e8re colonne), il faut donc privil\u00e9gier la deuxi\u00e8me \u00e9criture.</span>\n<span class=\"paragraph\">Par ailleurs, PEP 8 est strict concernant l'indentation : <strong>utiliser 4 espaces par niveau d'identation</strong>. M\u00eame s'il est possible d'utiliser les deux, les espaces constituent la m\u00e9thode d'indentation pr\u00e9f\u00e9r\u00e9e.</span>\n<div class=\"alert alert-block alert-warning\">\n    Attention \u00e0 ne pas m\u00e9langer le caract\u00e8re de tabulation et les 4 espaces dans un seul et m\u00eame fichier, car le programme ne pourra pas \u00eatre ex\u00e9cut\u00e9.\n</div>\n\n<span class=\"paragraph\">Autre exemple de recommandations : <strong>les espaces dans les expressions</strong>. Pour PEP 8, les r\u00e8gles suivantes doivent \u00eatre respect\u00e9es.</span>\n<ul>\n<li>Toujours un espace apr\u00e8s et jamais avant une virgule pour s\u00e9parer les arguments ou les cl\u00e9s des valeurs.</li>\n<li>Jamais d'espace entre les crochets d'une liste ou d'un dictionnaire.</li>\n<li>Toujours un espace avant et apr\u00e8s les conditions binaires (op\u00e9rations math\u00e9matiques, conditions).</li>\n<li>Jamais d'espace avant ou apr\u00e8s les parenth\u00e8ses.</li>\n</ul>\n<span class=\"paragraph\">Il ne s'agit que de quelques exemples, que l'on retrouve en-dessous.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "054eeded4345110bc705e4daaad2dfcf",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">l</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"p\">)</span>\n\n<span class=\"c1\"># Pas bien</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"n\">var2</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">l</span><span class=\"p\">[</span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"p\">],{</span><span class=\"w\"> </span><span class=\"s1\">&#39;var&#39;</span><span class=\"w\"> </span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"w\"> </span><span class=\"p\">}</span>\n\n<span class=\"c1\"># Bien</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">var2</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">l</span><span class=\"p\">[</span><span class=\"mi\">1</span><span class=\"p\">],</span><span class=\"w\"> </span><span class=\"p\">{</span><span class=\"s1\">&#39;var&#39;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "1f1ce0330a8c0d34dc4772da717232a1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><blockquote>\n<span class=\"paragraph\">\u2753 Il faut donc toujours relire son code ?</span>\n</blockquote>\n<span class=\"paragraph\">En th\u00e9orie, oui. Mais il y a deux points qui vont nous aider.</span>\n<ul>\n<li>En tant qu'humain, nous avons une capacit\u00e9 de mim\u00e9tisme tr\u00e8s d\u00e9velopp\u00e9e. \u00c0 force de regarder des codes propres sur Internet et de pratique soi-m\u00eame, on finit par adopter automatiquement les bonnes pratiques.</li>\n<li>Et comme l'erreur est humaine, on s'allie \u00e9galement d'outils qui vont v\u00e9rifier si notre code est propre.</li>\n</ul>\n<span class=\"paragraph\">Et cet outil qui va nous aider, c'est le <strong>linting</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "69caf44a8c68057b257db3f746e0759a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"linting-avec-flake8\">Linting avec <code>flake8</code></h2>\n<span class=\"paragraph\">Le concept de linting est d\u00e9riv\u00e9 un logiciel UNIX qui s'appelle <strong>lint</strong>. Cette commande est utilis\u00e9e pour le langage C afin d'en faire une <strong>analyse statique</strong>. L'objectif de l'analyse statique, c'est d'obtenir des informations sur le comportement des programmes sans les ex\u00e9cuter. En particulier, cela permet de d\u00e9tecter les erreurs de syntaxe et de style (que l'on retrouve sous plusieurs langages).</span>\n<span class=\"paragraph\">Sous Python, il existe notamment trois <em>linter</em> : <code>pylint</code>, <code>flake8</code> et <code>ruff</code>. Ces linters vont se baser notamment sur PEP 8 (mais pas que) pour d\u00e9tecter les erreurs dans le code. \u00c0 noter qu'il est aussi possible de d\u00e9finir ses propres sp\u00e9cifications sur des syntaxes ou styles de code \u00e0 \u00e9viter.</span>\n<span class=\"paragraph\">Cr\u00e9ons le fichier <code>lint/flake8_1.py</code> avec le code suivant.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "366c0f4ddf2f94591cb1779410bb146a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"n\">l</span><span class=\"o\">=</span> <span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span> <span class=\"p\">)</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"n\">var2</span> <span class=\"o\">=</span> <span class=\"n\">l</span><span class=\"p\">[</span><span class=\"mi\">1</span> <span class=\"p\">],{</span> <span class=\"s1\">&#39;var&#39;</span> <span class=\"p\">:</span> <span class=\"mi\">4</span> <span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "18437777afaf9256af8e6110ee0c3559",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Combien y a-t-il d'erreurs PEP 8 dans ces deux lignes ? Voyons ce que <code>flake8</code> en dit.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "d3111a33d889fac90c59f3580aaf21c6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>uvx flake8 flake8_1.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "173c6d6c49d63af7bc04cc887662b30d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il y a beaucoup d'erreurs ! Les erreurs <code>E2XX</code> sont li\u00e9es \u00e0 des espaces, car elles sont majoritairement pr\u00e9sentes dans ces deux lignes. L'erreur <code>E741</code>, stipule que nommer une variable <code>l</code> n'est pas assez explicite (car avec une seule lettre, difficile de savoir \u00e0 long-terme de quoi il s'agit).</span>\n<span class=\"paragraph\">Corrigeons toutes ces erreurs.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "7c9d7ebfeb473ceef4caa494593747a2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">liste</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"p\">)</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">var2</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">l</span><span class=\"p\">[</span><span class=\"mi\">1</span><span class=\"p\">],</span><span class=\"w\"> </span><span class=\"p\">{</span><span class=\"s1\">&#39;var&#39;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "4a68035fc290913cfc7c6355d00f7696",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ex\u00e9cutons \u00e0 nouveau <code>flake8</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "9e8b268dd261f7b4a4ff89f79fe0e3b1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Un nouveau type d'erreur appara\u00eet : <code>F821</code>. F signifie Fatal, indiquant que cette erreur emp\u00eacherait m\u00eame l'ex\u00e9cution du programme ! Et pour cause, puisque l'on n'a renomm\u00e9 <code>l</code> en <code>liste</code>, la variable <code>l</code> n'existe pas. Pourtant, on y acc\u00e8de \u00e0 la deuxi\u00e8me ligne.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "ab50edae9959425de481b3225361c2a6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">liste</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"p\">)</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">var2</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">1</span><span class=\"p\">],</span><span class=\"w\"> </span><span class=\"p\">{</span><span class=\"s1\">&#39;var&#39;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "8fefa0bfedca46c52233d72e8b7fa8bd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous avons maintenant plus aucune erreur. Regardons un autre exemple. Cr\u00e9eons un nouveau fichier <code>flake8_2.py</code> avec le contenu suivant et lan\u00e7ons le \u00e0 l'aide de <code>flake8</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "6f3ce3fcee564e3477e16862de07b5f8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">os</span><span class=\"o\">,</span><span class=\"w\"> </span><span class=\"nn\">sys</span>\n\n<span class=\"n\">filename</span> <span class=\"o\">=</span> <span class=\"nb\">open</span><span class=\"p\">(</span><span class=\"n\">os</span><span class=\"o\">.</span><span class=\"n\">path</span><span class=\"o\">.</span><span class=\"n\">join</span><span class=\"p\">(</span><span class=\"s2\">&quot;/home&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;/fichier.txt&quot;</span><span class=\"p\">))</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "20f04eb5a4da554e5e2a8951bae624ce",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, il y a deux probl\u00e8mes. Le module <code>sys</code> est import\u00e9 alors qu'il n'est pas utilis\u00e9 \u00e0 un seul moment. Ensuite, nous avons effectu\u00e9 plusieurs importations de modules diff\u00e9rents sur la m\u00eame ligne, ce qui n'est pas autoris\u00e9 par PEP 8.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "392e542fb56b4cec6b0c0faf77663e75",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">os</span>\n<span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">sys</span>\n\n<span class=\"n\">filename</span> <span class=\"o\">=</span> <span class=\"nb\">open</span><span class=\"p\">(</span><span class=\"n\">os</span><span class=\"o\">.</span><span class=\"n\">path</span><span class=\"o\">.</span><span class=\"n\">join</span><span class=\"p\">(</span><span class=\"s2\">&quot;/home&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;/fichier.txt&quot;</span><span class=\"p\">))</span>\n<span class=\"n\">sys</span><span class=\"o\">.</span><span class=\"n\">exit</span><span class=\"p\">()</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "d7eecd8ef1ece0292764beb446065e31",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L\u00e0-aussi, les erreurs ont \u00e9t\u00e9 corrig\u00e9es.</span>\n<span class=\"paragraph\">Dans certains cas, il est aussi possible d'exclurer certaines erreurs ou avertissements en invoquant le param\u00e8tre <code>--ignore</code>. Par exemple, si nous supposons que des importations sur la m\u00eame ligne sont autoris\u00e9es, nous pouvons exclurer l'erreur associ\u00e9e, \u00e0 savoir <code>E401</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "6f3ce3fcee564e3477e16862de07b5f8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">import</span><span class=\"w\"> </span><span class=\"nn\">os</span><span class=\"o\">,</span><span class=\"w\"> </span><span class=\"nn\">sys</span>\n\n<span class=\"n\">filename</span> <span class=\"o\">=</span> <span class=\"nb\">open</span><span class=\"p\">(</span><span class=\"n\">os</span><span class=\"o\">.</span><span class=\"n\">path</span><span class=\"o\">.</span><span class=\"n\">join</span><span class=\"p\">(</span><span class=\"s2\">&quot;/home&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;/fichier.txt&quot;</span><span class=\"p\">))</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "d6b67b40e66864db1b43f33771d5777e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>flake8 --ignore E401 flake8_2.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "48599ff57cdf469e03b6d09df013d943",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ainsi, la pr\u00e9sence ou non de cette erreur ne viendra plus perturber l'analyse statique effectu\u00e9e par <code>flake8</code>. La liste d\u00e9taill\u00e9e des codes d'erreurs et d'avertissements <a href=\"https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes\" target=\"_blank\">est accessible ici</a>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "8d65d886971af48066093c31d84b7f9f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"refactoring-avec-black\">Refactoring avec <code>black</code></h2>\n<span class=\"paragraph\">Le <strong>refactoring</strong> (que l'on nomme en fran\u00e7ais r\u00e9usinage de code mais avouons que cela est moins classe) consiste \u00e0 modifier le code source sans ajouter de nouvelles fonctionnalit\u00e9s ni corriger des bugs. Concr\u00e8tement, dans le cadre de Python, le refactoring va corriger les erreurs PEP 8 qui peuvent \u00eatre corrig\u00e9es sans alt\u00e9rer le fonctionnement du code.</span>\n<span class=\"paragraph\">Par exemple, placer les bons niveaux d'indentation, ajouter ou supprimer des espaces ou encore respecter une taille maximale de caract\u00e8res par ligne sont des op\u00e9rations qui peuvent \u00eatre effectu\u00e9s par du refactoring <strong>de mani\u00e8re automatis\u00e9e</strong>. En revanche, d'autres comme le nommage des variables ou les importations de librairies n\u00e9cessitent l'attention du d\u00e9veloppeur, puisque automatiser ces modifications pourraient, au contraire, g\u00e9n\u00e9rer des erreurs.</span>\n<span class=\"paragraph\">Sous Python, l'utilitaire <code>black</code> permet de refactorer automatiquement un code Python. Par d\u00e9faut, lorsque c'est possible, <code>black</code> va reformater le code d'un fichier Python selon PEP 8, sauf s'il d\u00e9tecte une erreur fatale qu'il ne pourra corriger (dans ce cas, nous serons avertis de l'erreur).</span>\n<span class=\"paragraph\">Reprenons le code pr\u00e9c\u00e9dent.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "73e502529129f1ccdf68d63ff5f7f3ad",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">l</span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"nb\">range</span><span class=\"p\">(</span><span class=\"mi\">10</span><span class=\"w\"> </span><span class=\"p\">)</span>\n<span class=\"n\">var1</span><span class=\"p\">,</span><span class=\"n\">var2</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"n\">liste</span><span class=\"p\">[</span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"p\">],{</span><span class=\"w\"> </span><span class=\"s1\">&#39;var&#39;</span><span class=\"w\"> </span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"w\"> </span><span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "ac2765a7f620656aa709250d73b616d0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour ex\u00e9cuter <code>black</code>, il suffit de renseigner le chemin d'acc\u00e8s au fichier dont on souhaite refactorer le contenu.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "a062b557de6dcc017f0352baa8f00e57",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>uvx black black_1.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "d1429f0e4fd1a32a5e0026ed6fba82e3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">D'apr\u00e8s ce que nous voyons, le refactoring a fonctionn\u00e9.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi <code>black</code> n'a pas d\u00e9tect\u00e9 que la variable <code>liste</code> n'est pas d\u00e9finie ?</span>\n</blockquote>\n<span class=\"paragraph\">Tout simplement parce que <code>black</code> fait du <strong>refactoring de code</strong> : il ne va pas toucher ou s'int\u00e9resser aux noms des variables, aux importations, etc. Ce qui l'int\u00e9resse, ce sont les indentations, les espaces ou, de mani\u00e8re g\u00e9n\u00e9rale, l'agencement des caract\u00e8res.</span>\n<span class=\"paragraph\">En revanche, d'autres recommandations PEP 8, comme le nommage des variables, ne sera pas modifi\u00e9 par <code>black</code>. C'est donc tout l'int\u00e9r\u00eat ici d'utiliser <code>black</code> pour reformater le code, puis ensuite utiliser <code>flake8</code> pour v\u00e9rifier que le code reformat\u00e9 respecte bien PEP 8.</span>\n<span class=\"paragraph\">Un autre exemple ici, que nous avions utilis\u00e9 lors de l'optimisation bay\u00e9sienne pour LightGBM.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "b8d03da291eb6d0ba52440b53d9501e7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">lightgbm.sklearn</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LGBMClassifier</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">hyperopt</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">hp</span><span class=\"p\">,</span> <span class=\"n\">tpe</span><span class=\"p\">,</span> <span class=\"n\">fmin</span>\n<span class=\"n\">MODEL_SPECS</span> <span class=\"o\">=</span> <span class=\"p\">{</span>\n    <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;class&quot;</span><span class=\"p\">:</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;max_evals&quot;</span><span class=\"p\">:</span> <span class=\"mi\">20</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.001</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">,</span> <span class=\"mi\">100</span><span class=\"p\">,</span> <span class=\"mi\">1000</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">,</span> <span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"mi\">12</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">128</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.3</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.5</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n        <span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n    <span class=\"p\">},</span>\n    <span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span>\n    <span class=\"p\">}</span>\n<span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "7c9b9092530f36d20d32a645dc11bc05",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>uvx black black_2.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "598905f548695ced1dde4540f3b178cd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, <code>black</code> a rajout\u00e9 une ligne entre les importations de librairies et la variable <code>MODEL_SPECS</code>. De plus, un retour chariot a \u00e9t\u00e9 appliqu\u00e9 \u00e0 chaque cl\u00e9/valeur du champ <code>override_schemas</code>, car la ligne des cl\u00e9s/valeurs d\u00e9passait les <marimo-tex class=\"arithmatex\">||(79||)</marimo-tex> caract\u00e8res.</span>\n<span class=\"paragraph\">Avec l'argument <code>-l</code>, nous avons la possibilit\u00e9 d'ignorer la limitation des <marimo-tex class=\"arithmatex\">||(79||)</marimo-tex> caract\u00e8res par ligne pour augmenter \u00e0 une plus grande taille.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "b8d03da291eb6d0ba52440b53d9501e7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">lightgbm.sklearn</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LGBMClassifier</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">hyperopt</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">hp</span><span class=\"p\">,</span> <span class=\"n\">tpe</span><span class=\"p\">,</span> <span class=\"n\">fmin</span>\n<span class=\"n\">MODEL_SPECS</span> <span class=\"o\">=</span> <span class=\"p\">{</span>\n    <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;class&quot;</span><span class=\"p\">:</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;max_evals&quot;</span><span class=\"p\">:</span> <span class=\"mi\">20</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.001</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">,</span> <span class=\"mi\">100</span><span class=\"p\">,</span> <span class=\"mi\">1000</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">,</span> <span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"mi\">12</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">128</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.3</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.5</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n        <span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n    <span class=\"p\">},</span>\n    <span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span>\n    <span class=\"p\">}</span>\n<span class=\"p\">}</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "236f0bfa1d5ba7f2ee5a9952ff2212c5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-scdoc codehilite\"><pre><span></span><code>uvx black  -l 120 black_2.py\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "8ccb3de32df8c919d9b41fb0ab6ad7ba",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En pratique, les projets s'autorisent \u00e0 outre-passer la limite des <marimo-tex class=\"arithmatex\">||(79||)</marimo-tex> caract\u00e8res par ligne (<code>E502</code>) et ignorent cette erreur.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "d35e56b1580f10735dfc30e30945ecf2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"les-deux-en-meme-temps-a-laide-de-ruff\">Les deux en m\u00eame temps \u00e0 l'aide de Ruff</h2>\n<span class=\"paragraph\">Les temps change avec l'arriv\u00e9 de Astral sur la sc\u00e8ne du d\u00e9veloppement python. En effet, apr\u00e8s vous avoir introduit l'utilisation de UV pour les environnement virtuels de python, l'\u00e9quipe avait commenc\u00e9 sur la sc\u00e8ne de python \u00e0 travers un outil qui s'appelle Ruff.</span>\n<span class=\"paragraph\">Ruff en simple, c'est la fusion de flake8 et de black.</span>\n<span class=\"paragraph\">Trois commandes \u00e0 retenir :</span>\n<ul>\n<li><code>uvx ruff check</code> permet d'avoir le comportement d'un linteur, comme flake8</li>\n<li><code>uvx ruff check --fix</code> permet de corriger les erreurs qui sont trouv\u00e9 \u00e0 l'aide de <code>check</code></li>\n<li><code>uvx ruff format</code> permet de corriger le fichier au niveau de la norme PEP8.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "c6f5f3b3f43656a275b9b21af3458dd8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pour-aller-plus-loin-ty-de-astral\">Pour aller plus loin : ty de Astral</h2>\n<span class=\"paragraph\">ty est tout nouveau, il a pour r\u00f4le de v\u00e9rifier strictement le typage de vos variables ainsi que vos m\u00e9thodes. Elle vous sera tr\u00e8s utile lorsque vous attaquerez la partie de FastAPI, plus tard dans le cours.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "60ba1013f8ac47e7e76e7d8b9794610f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Maintenant, plus aucune raison de ne pas coder proprement !</span>\n<ul>\n<li>Nous avons vu la norme PEP 8 et pourquoi il est important de la respecter.</li>\n<li>Nous avons vu comment v\u00e9rifier si un code Python v\u00e9rifiait les recommandations PEP 8 avec <code>flake8</code>.</li>\n<li>Nous sommes capable de refactoriser automatiquement un code avec <code>black</code>.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f La prochaine \u00e9tape, c'est de <b>tester son code et son mod\u00e8le</b> pour s'assurer que tout fonctionne, aussi bien le code source que le mod\u00e8le.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "6f76b3dd96d337049e1428a052ec4fdf",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "d635ef4613446f74e80255e07873e4a0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "010b291e56f3d1c2f8bbdcc3368bc2f5",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

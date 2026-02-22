@@ -1,0 +1,713 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "6932befd968bfe31d5cc8418044b1d66",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pr\u00e9c\u00e9demment, nous avons r\u00e9alis\u00e9 des tests unitaires sur notre projet Kedro. Les tests unitaires sont rapides \u00e0 mettre en place et permettent de v\u00e9rifier ind\u00e9pendamment chaque portion de code.</span>\n<span class=\"paragraph\">Mais lorsqu'il s'agit de mod\u00e8les de Machine Learning, \u00e0 quoi correspondent exactement les tests ? Il n'est pas possible de r\u00e9diger des tests unitaires de la m\u00eame fa\u00e7on, car un mod\u00e8le fournit justement une pr\u00e9diction, qui n'est a priori pas connu \u00e0 l'avance. C'est pourquoi les Data Scientists et ML Engineers ont imagin\u00e9 des m\u00e9thodes de test \u00e0 r\u00e9aliser sur les mod\u00e8les.</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>Formaliser les diff\u00e9rents tests qui peuvent survenir</li>\n    <li>R\u00e9diger le tests dans le projet Kedro</li>\n</ul>\n</blockquote>\n\n<span class=\"paragraph\"><img src=\"https://media.giphy.com/media/lQ0VQmLuLH7lS/giphy.gif\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "1029df7622cd73171324216e9f90038f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"test-de-modeles\">Test de mod\u00e8les</h2>\n<span class=\"paragraph\">Lorsque l'on fait r\u00e9f\u00e9rence aux tests de mod\u00e8les, on cherche \u00e0 v\u00e9rifier le bon fonctionnement et comportement du mod\u00e8le. Pour cela, nous distinguons deux classes de tests de mod\u00e8les.</span>\n<ul>\n<li>Les <strong>tests pr\u00e9-entra\u00eenement</strong>, qui nous permettent d'identifier des erreurs ou incoh\u00e9rences avant m\u00eame l'entra\u00eenement du mod\u00e8le.</li>\n<li>Les <strong>tests post-entra\u00eenement</strong>, qui vont utiliser le mod\u00e8le entra\u00een\u00e9 et inspecter le comportement de ce dernier par rapport \u00e0 des sc\u00e9narios de r\u00e9f\u00e9rence que l'on d\u00e9cide en amont.</li>\n</ul>\n<div class=\"alert alert-block alert-warning\">\n    Il n'y a pas de <i>meilleur test possible</i>. Chaque test doit \u00eatre d\u00e9fini en fonction du contexte, du cas d'application et surtout de l'importance que l'on accorde aux d\u00e9cisions du mod\u00e8le.\n</div>\n\n<h2 id=\"les-tests-pre-entrainement\">Les tests pr\u00e9-entra\u00eenement</h2>\n<span class=\"paragraph\">Les tests pr\u00e9-entra\u00eenement permettent d'\u00e9viter de se lancer dans l'entra\u00eenement d'un mod\u00e8le si certains crit\u00e8res ne sont pas respect\u00e9s. Tr\u00e8s souvent, ces crit\u00e8res portent sur les donn\u00e9es et les tests, bien que rapide \u00e0 mettre en place, permettent d\u00e9j\u00e0 de soulever certains points. Parmi les tests qui peuvent \u00eatre r\u00e9alis\u00e9s avant l'entra\u00eenement, nous retrouvons surtout de tests de coh\u00e9rence des donn\u00e9es.</span>\n<ul>\n<li>Taille du jeu de donn\u00e9es.</li>\n<li>Format de la variable r\u00e9ponse.</li>\n<li>Proportion des classes dans la classification binaire.</li>\n<li>Repr\u00e9sentativit\u00e9 de l'\u00e9chantillon par rapport \u00e0 la population d'\u00e9tude.</li>\n</ul>\n<span class=\"paragraph\">En soit, il s'agit de tests qui peuvent \u00eatre r\u00e9dig\u00e9s au m\u00eame titre que les tests unitaires pr\u00e9c\u00e9dents. D\u00e9finissons les tests du pipeline <code>processing</code>. Ce pipeline est compos\u00e9 de deux nodes, chacun appelant une fonction.</span>\n<ul>\n<li><code>encode_features</code>, qui va encoder num\u00e9riquement les variables de <code>primary</code>.</li>\n<li><code>split_dataset</code>, qui va s\u00e9parer le jeu de donn\u00e9es en une base d'apprentissage et une base de test.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons par la fonction <code>encode_features</code> : elle s'attend \u00e0 recevoir un DataFrame nomm\u00e9 <code>dataset</code>. Il y a plusieurs choses que nous devons v\u00e9rifier \u00e0 l'issue de cette fonction.</span>\n<ul>\n<li>La colonne <code>purchased</code> est-elle toujours <em>intacte</em> dans le sens o\u00f9 elle n'est constitu\u00e9e que de <marimo-tex class=\"arithmatex\">||(0||)</marimo-tex> et de <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex> ?</li>\n<li>Toutes les colonnes sont-elles num\u00e9riques ?</li>\n<li>Avons-nous suffisamment d'observations pour entra\u00eener le mod\u00e8le ?</li>\n<li>Les proportions de classes positives et n\u00e9gatives sont-elles au moins sup\u00e9rieures \u00e0 un seuil ?</li>\n</ul>\n<span class=\"paragraph\">Dans le dossier de test, cr\u00e9ons le dossier <code>processing</code> avec le fichier <code>conftest.py</code>. Nous allons d\u00e9finir un catalogue de donn\u00e9es pour ce test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "3c57568f89d39c207711c1fbe4a1f528",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous r\u00e9-utilisons ici les deux fixtures <code>project_id</code> et <code>primary_folder</code> d\u00e9j\u00e0 pr\u00e9sentes dans les tests du pipeline <code>loading</code>. Nous utilisons la fonction <code>load_csv_from_bucket</code> pour r\u00e9cup\u00e9rer le jeu de donn\u00e9es de test depuis Cloud Storage afin d'utiliser une version non alt\u00e9r\u00e9e qui serait enregistr\u00e9e en local. En pratique, la fonction <code>load_csv_from_bucket</code> aura d\u00e9j\u00e0 \u00e9t\u00e9 test\u00e9e au pr\u00e9alable par <code>pytest</code>, nous pouvons donc l'utiliser ici pour charger les donn\u00e9es.</span>\n<div class=\"alert alert-block alert-warning\">\n    Il faut \u00e9viter de cr\u00e9er des d\u00e9pendances entre les tests : c'est pour cela que l'on red\u00e9fini ici les fixtures sans les importer depuis <code>loading/conftest.py</code>.\n</div>\n\n<span class=\"paragraph\">Cr\u00e9ons ensuite comme nous l'avions fait le fichier <code>test_nodes.py</code> dans le dossier <code>processing</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "653853025d9d82be369670419da89087",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La fonction <code>test_encode_features</code> va tester <code>encode_features</code> \u00e0 partir de la fixture <code>dataset_not_encoded</code> que nous venons de d\u00e9finir dans <code>conftest.py</code>. Ex\u00e9cutons les tests avec Kedro.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "2535c6ceac2733ecb04e6da0775373ce",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Avec l'argument <code>tests/pipelines/processing/</code>, on pr\u00e9cise \u00e0 Kedro d'ex\u00e9cuter les tests de mani\u00e8re r\u00e9cursive uniquement dans ce dossier.</span>\n<span class=\"paragraph\">Si tout s'est bien pass\u00e9, alors nos fixtures sont correctement en place et nous pouvons int\u00e9grer les <strong>tests pr\u00e9-entra\u00eenement</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "248bce88c4244e131689a5cf95a7ad12",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Les constantes <code>BALANCE_THRESHOLD</code> et <code>MIN_SAMPLES</code> vont bien s\u00fbr d\u00e9pendrent du contexte. Dans certains situations, <code>BALANCE_THRESHOLD</code> devra \u00eatre amen\u00e9 \u00e0 <marimo-tex class=\"arithmatex\">||(1\\%||)</marimo-tex> ou <code>MIN_SAMPLES</code> devra \u00eatre bien plus cons\u00e9quent.</span>\n<span class=\"paragraph\">\u00c9crivons maintenant les tests pour la fonction <code>split_dataset</code>. Il nous faut rajouter deux fixtures dans le fichier <code>conftest.py</code> : une pour le jeu de donn\u00e9es encod\u00e9 (apr\u00e8s application de <code>encode_features</code>) et une pour le ratio de test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "2b356959a4a03330a4481a0482cfe30c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">De la m\u00eame mani\u00e8re, nous ajoutons le test <code>test_split_dataset</code> au fichier <code>test_nodes.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "6fe258f8a5ccfec4fd92ecc58e6ea3b0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Lan\u00e7ons les tests.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "a290e1331b8e1994db4e27b460eeaebc",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"alert alert-block alert-info\">\n    Les deux points apr\u00e8s le chemin d'acc\u00e8s au fichier signifie que deux fonctions de tests ont \u00e9t\u00e9 correctement ex\u00e9cut\u00e9es. En cas d'erreur nous aurions eu un <code>E</code> \u00e0 la place et en cas de <i>skipping</i>, nous aurions eu <code>S</code>.\n</div>\n\n<span class=\"paragraph\">Il ne reste plus qu'\u00e0 tester le pipeline <code>processing</code> en entier, qui fait appel aux deux fonctions. \u00c0 noter que dans ce cas, il n'y a pas besoin de tester le jeu de donn\u00e9es interm\u00e9diaire car les tests unitaires sont suppos\u00e9s d\u00e9j\u00e0 valides. Pour rappel, le pipeline <code>processing</code> est constitu\u00e9 de deux nodes.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "6ba369ba9d7e548d6646305f3dd1ce30",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cr\u00e9ons un catalogue de test pour <code>processing</code> dans le fichier <code>conftest.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "25040faa77dca75bd83acd8d46f3d95b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Comme pour le pipeline pr\u00e9c\u00e9dent, nous nous basons sur les fixtures <code>dataset_not_encoded</code> et <code>test_ratio</code> pour cr\u00e9er le catalogue de donn\u00e9es.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi n'avons-nous pas cr\u00e9e un dataset <code>dataset</code> ?</span>\n</blockquote>\n<span class=\"paragraph\">Le catalogue de donn\u00e9es de test est identique \u00e0 celui utilis\u00e9 hors environnement de test, \u00e0 la diff\u00e9rence que l'on sp\u00e9cifie nous-m\u00eame les diff\u00e9rentes entr\u00e9es. Ainsi, remarquons que le premier node va produire en sortie <code>dataset</code>. En ex\u00e9cutant le pipeline avec le catalogue de test, <code>dataset</code> sera alors stock\u00e9 dans le catalogue en tant que <code>MemoryDataSet</code> : il sera donc utilisable par le prochain node du pipeline.</span>\n<span class=\"paragraph\">Le contenu de <code>test_pipeline.py</code> s'\u00e9crit directement.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "52a40ef4b4af830ae2bc0b3977214509",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ex\u00e9cutons l'int\u00e9gralit\u00e9 des tests.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "d145687a9ff519910a610d35569d2585",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"err\">\u2570\u2500</span><span class=\"w\"> </span><span class=\"n\">pytest</span><span class=\"w\">                                                                                                       </span><span class=\"err\">\u2500\u256f</span>\n<span class=\"o\">===============================================</span><span class=\"w\"> </span><span class=\"n\">test</span><span class=\"w\"> </span><span class=\"n\">session</span><span class=\"w\"> </span><span class=\"n\">starts</span><span class=\"w\"> </span><span class=\"o\">===============================================</span>\n<span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"w\"> </span><span class=\"n\">Python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pytest</span><span class=\"o\">-</span><span class=\"mf\">7.4</span><span class=\"o\">.</span><span class=\"mi\">4</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">pluggy</span><span class=\"o\">-</span><span class=\"mf\">1.6</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">rootdir</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"o\">/</span><span class=\"n\">Users</span><span class=\"o\">/</span><span class=\"n\">noobzik</span><span class=\"o\">/</span><span class=\"n\">Documents</span><span class=\"o\">/</span><span class=\"n\">Kaggle</span><span class=\"o\">/</span><span class=\"n\">purchase</span><span class=\"o\">-</span><span class=\"n\">predict</span>\n<span class=\"n\">configfile</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">pyproject</span><span class=\"o\">.</span><span class=\"n\">toml</span>\n<span class=\"n\">testpaths</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">unit</span>\n<span class=\"n\">plugins</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">anyio</span><span class=\"o\">-</span><span class=\"mf\">4.12</span><span class=\"o\">.</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">asyncio</span><span class=\"o\">-</span><span class=\"mf\">0.23</span><span class=\"o\">.</span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">cov</span><span class=\"o\">-</span><span class=\"mf\">6.3</span><span class=\"o\">.</span><span class=\"mi\">0</span>\n<span class=\"n\">asyncio</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">mode</span><span class=\"o\">=</span><span class=\"n\">Mode</span><span class=\"o\">.</span><span class=\"n\">STRICT</span>\n<span class=\"n\">collected</span><span class=\"w\"> </span><span class=\"mi\">7</span><span class=\"w\"> </span><span class=\"n\">items</span>\n\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">test_nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">..</span><span class=\"w\">                                                                    </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">28</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">test_pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                  </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">42</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">test_nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">..</span><span class=\"w\">                                                                 </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">71</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">tests</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">test_pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                               </span><span class=\"p\">[</span><span class=\"w\"> </span><span class=\"mi\">85</span><span class=\"o\">%</span><span class=\"p\">]</span>\n<span class=\"n\">unit</span><span class=\"o\">/</span><span class=\"n\">test_1</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\"> </span><span class=\"o\">.</span><span class=\"w\">                                                                                            </span><span class=\"p\">[</span><span class=\"mi\">100</span><span class=\"o\">%</span><span class=\"p\">]</span>\n\n<span class=\"o\">=================================================</span><span class=\"w\"> </span><span class=\"n\">tests</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"w\"> </span><span class=\"o\">==================================================</span>\n<span class=\"n\">________________________________</span><span class=\"w\"> </span><span class=\"n\">coverage</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"n\">platform</span><span class=\"w\"> </span><span class=\"n\">darwin</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">python</span><span class=\"w\"> </span><span class=\"mf\">3.12</span><span class=\"o\">.</span><span class=\"mi\">12</span><span class=\"o\">-</span><span class=\"n\">final</span><span class=\"o\">-</span><span class=\"mi\">0</span><span class=\"w\"> </span><span class=\"n\">________________________________</span>\n\n<span class=\"n\">Name</span><span class=\"w\">                                                    </span><span class=\"n\">Stmts</span><span class=\"w\">   </span><span class=\"n\">Miss</span><span class=\"w\">  </span><span class=\"n\">Cover</span><span class=\"w\">   </span><span class=\"n\">Missing</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">__main__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                           </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">14</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">5</span><span class=\"o\">-</span><span class=\"mi\">25</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipeline_registry</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                   </span><span class=\"mi\">7</span><span class=\"w\">      </span><span class=\"mi\">7</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">3</span><span class=\"o\">-</span><span class=\"mi\">17</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                  </span><span class=\"mi\">0</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">            </span><span class=\"mi\">18</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">loading</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">          </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">20</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">processing</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">       </span><span class=\"mi\">4</span><span class=\"w\">      </span><span class=\"mi\">0</span><span class=\"w\">   </span><span class=\"mi\">100</span><span class=\"o\">%</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">__init__</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">3</span><span class=\"w\">      </span><span class=\"mi\">3</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">10</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">nodes</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">           </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">60</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">165</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">pipelines</span><span class=\"o\">/</span><span class=\"n\">training</span><span class=\"o\">/</span><span class=\"n\">pipeline</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">         </span><span class=\"mi\">5</span><span class=\"w\">      </span><span class=\"mi\">5</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">6</span><span class=\"o\">-</span><span class=\"mi\">14</span>\n<span class=\"n\">src</span><span class=\"o\">/</span><span class=\"n\">purchase_predict</span><span class=\"o\">/</span><span class=\"n\">settings</span><span class=\"o\">.</span><span class=\"n\">py</span><span class=\"w\">                            </span><span class=\"mi\">1</span><span class=\"w\">      </span><span class=\"mi\">1</span><span class=\"w\">     </span><span class=\"mi\">0</span><span class=\"o\">%</span><span class=\"w\">   </span><span class=\"mi\">31</span>\n<span class=\"o\">-------------------------------------------------------------------------------------</span>\n<span class=\"n\">TOTAL</span><span class=\"w\">                                                     </span><span class=\"mi\">143</span><span class=\"w\">     </span><span class=\"mi\">90</span><span class=\"w\">    </span><span class=\"mi\">37</span><span class=\"o\">%</span>\n<span class=\"o\">===============================================</span><span class=\"w\"> </span><span class=\"mi\">7</span><span class=\"w\"> </span><span class=\"n\">passed</span><span class=\"w\"> </span><span class=\"ow\">in</span><span class=\"w\"> </span><span class=\"mf\">23.50</span><span class=\"n\">s</span><span class=\"w\"> </span><span class=\"o\">================================================</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "23fa9915008874ac1cb89e07bdc3f78e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Et voil\u00e0 ! Jusqu'ici, nos deux pipelines <code>loading</code> et <code>processing</code> sont test\u00e9s. Nous avons r\u00e9alis\u00e9 les tests pr\u00e9-entra\u00eenement. Mais qu'en est-il de ceux concernant le mod\u00e8le ?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "1244cad51d8c1baa101294e3d5e40a8d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"tests-post-entrainement\">Tests post-entra\u00eenement</h2>\n<span class=\"paragraph\">Les <strong>tests post-entra\u00eenement</strong> vont \u00eatre ex\u00e9cut\u00e9s une fois le mod\u00e8le calibr\u00e9. Contrairement aux tests pr\u00e9c\u00e9dents, ils sont plus subtils car l'objectif est de mettre en \u00e9vidence certains aspects et comportements particuliers du mod\u00e8le pour v\u00e9rifier qu'ils n'aboutissent pas \u00e0 des erreurs ou \u00e0 des incoh\u00e9rences qui pourraient avoir d'importantes r\u00e9percussions.</span>\n<span class=\"paragraph\">Pour cela, nous pouvons faire intervenir plusieurs outils.</span>\n<ul>\n<li>Des exemples de donn\u00e9es dont on conna\u00eet (en dehors de la base d'apprentissage) les r\u00e9ponses.</li>\n<li>Les m\u00e9thodes d'interpr\u00e9tabilit\u00e9 avec SHAP par exemple.</li>\n<li>Des m\u00e9thodes d'\u00e9valuation de propri\u00e9t\u00e9s, comme la r\u00e9gularit\u00e9 de la loi jointe.</li>\n</ul>\n<span class=\"paragraph\">Commen\u00e7ons par r\u00e9cup\u00e9rer le mod\u00e8le de boosting que nous avions entra\u00een\u00e9 avec la base de test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "354844886cf45788e6625dfbd8f5d72f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"tests-dinvariance\">Tests d'invariance</h3>\n<span class=\"paragraph\">Les tests d'invariance nous permettent de d\u00e9finir un ensemble de perturbations \u00e0 appliquer sur une ou plusieurs observations pour observer \u00e0 quel point cela affecte la sortie du mod\u00e8le.</span>\n<span class=\"paragraph\">Par exemple, supposons qu'un utilisateur, ayant visit\u00e9 un produit dont le prix est de 59\u20ac. Un test d'invariance consisterai \u00e0 dire qu'une variation de <marimo-tex class=\"arithmatex\">||(\\pm 1\u20ac||)</marimo-tex> ne devrait pas faire varier la probabilit\u00e9 d'acheter de <marimo-tex class=\"arithmatex\">||(\\pm x\\%||)</marimo-tex>. Une variation importante pourrait signifier que cette variable a beaucoup d'impact, alors qu'en r\u00e9alit\u00e9, il est peu probable que pour un article de 59\u20ac une variation de 1\u20ac fasse drastiquement augmenter ou baisser la probabilit\u00e9.</span>\n<span class=\"paragraph\">S\u00e9lectionnons une seule observation al\u00e9atoire <code>x_unit</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "73f5e199563a120baa1bff785dc2dbf2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La probabilit\u00e9 associ\u00e9e ici est d'environ 92%. Appliquons une perturbation de +1\u20ac et -1\u20ac.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "133954f93877070fab272fa0a452e293",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Sur cette observation en particulier, la diff\u00e9rence de probabilit\u00e9 est de <marimo-tex class=\"arithmatex\">||(0.165\\%||)</marimo-tex>. L'impact est <strong>tr\u00e8s limit\u00e9</strong>, indiquant que le mod\u00e8le est r\u00e9gulier au voisinage de ce point.</span>\n<span class=\"paragraph\">Calculons maintenant cette diff\u00e9rence (en valeur absolue) de probabilit\u00e9 (pour la classe positive) pour chaque observation.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "80ceefea3d40a517c3bef207cf70ded2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous pouvons voir que pour une dizaine d'observations au moins, cette variable de 1\u20ac contribue \u00e0 un diff\u00e9rentiel de 20% \u00e0 30% sur la probabilit\u00e9 pr\u00e9dite (ce qui est tout de m\u00eame \u00e9lev\u00e9).</span>\n<span class=\"paragraph\">Regardons de quelles observations il s'agit.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "e5acff1bf6b898d83bf57bd16e535017",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous aurions pu penser qu'il s'agit d'articles dont le prix est faible. Et pourtant, l'ordre de grandeur est de 20 \u00e0 50\u20ac pour la plupart des articles. Regardons les valeurs de Shapley de ces m\u00eames observations.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "f846e5c8eee92b2b40b4f802fda9f705",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Au global, l'impact est limit\u00e9.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "bd0daf3ed2f327dc08bc640181be85e9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En tra\u00e7ant ce delta pour chaque observation dans l'ordre d\u00e9croissant, nous pouvons voir appara\u00eetre un \u00ab coude \u00bb \u00e0 partir duquel ce delta stagne.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "f755e1be625f14291f887411186dcbc7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dans notre situation, une variation de 10% <strong>para\u00eet raisonnable</strong>. Il serait donc int\u00e9ressant de se concentrer sur les quelques observations qui pr\u00e9sentent une variation de plus de 20% par rapport \u00e0 la variable prix.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "135b71327511687b9432efd7a2cb0df4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"test-directionnels\">Test directionnels</h3>\n<span class=\"paragraph\">Les tests directionnels semblent proches des tests d'invariance, \u00e0 la diff\u00e9rence pr\u00e8s que l'ensemble des perturbations que nous allons appliquer aux observations devraient avoir un effet <strong>connu \u00e0 l'avance</strong> sur la sortie du mod\u00e8le.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "urSm",
+      "code_hash": "327a4a3c0ccb4435bf346a943177be65",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L'interpr\u00e9tation locale est d'une grande aide : pourquoi y a-t-il une forte probabilit\u00e9 que cet utilisateur ne finalise pas l'achat ?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "ab814a24aa5787a4e2bec4f3bce610e7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">C'est principalement la dur\u00e9e, qui n'est que de 10 secondes, qui explique pourquoi cet utilisateur ne finaliserai pas l'achat.</span>\n<span class=\"paragraph\">Le but du test directionnel est de se poser la question suivante : et si la dur\u00e9e avait dur\u00e9e 60 secondes de plus, que se passerait-il ?</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "d74fcfd2ca1ccbe04416850f75117d66",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, la probabilit\u00e9 augmente de pr\u00e8s de 70%, alors que la variable n'a augment\u00e9 que de 60 secondes. Ce qu'il faut regarder ici, ce sont les autres variables de l'observation.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "tZnO",
+      "code_hash": "b77c8d4d4349e016c552330c43878aed",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Regardons le graphe de d\u00e9pendance.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "CLip",
+      "code_hash": "e60fa269bc0840e788fcd5c77301f3c9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici , l'interaction avec la variable <code>num_views_session</code> <strong>est tr\u00e8s forte</strong> lorsque la dur\u00e9e est tr\u00e8s basse. Autrement dit, de petites dur\u00e9es font fortement baisser la probabilit\u00e9 lorsqu'il n'y a que peu de vues dans une session.</span>\n<span class=\"paragraph\">Maintenant, essayons conjointement d'augmenter la valeur de la variable <code>num_views_session</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "cEAS",
+      "code_hash": "45db4f8787bd4af2c7c38752371b7dde",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dans ce contexte, la probabilit\u00e9 <strong>reste tr\u00e8s faible</strong>. Ce test directionnel s'int\u00e9resserait donc \u00e0 des observations avec de faibles dur\u00e9es et peu de vues.</span>\n<span class=\"paragraph\">Prenons un autre exemple, cette fois-ci pour un utilisateur ayant une forte probabilit\u00e9 de finaliser son achat.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "UmEG",
+      "code_hash": "b6f1d92ad49667b104a749c101c08bb3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Retirons maintenant 60 secondes \u00e0 cette observation.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kLmu",
+      "code_hash": "cdc87b3fb3c84fb24f9f5114b4bbd264",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L'effet de la variable <code>duration</code> a beaucoup moins d'impact que pour l'observation pr\u00e9c\u00e9dente.</span>\n<span class=\"paragraph\">Ce qu'il faut retenir, c'est qu'il ne suffit pas de d\u00e9finir un seuil limite d'\u00e9cart de probabilit\u00e9 en appliquant une perturbation <marimo-tex class=\"arithmatex\">||(\\varepsilon||)</marimo-tex> sans \u00e9tudier au pr\u00e9alable l'observation qui va subir la transformation. Dans le premier exemple, la dur\u00e9e \u00e9tait tr\u00e8s faible (seule 10 secondes), il \u00e9tait donc logique sur la probabilit\u00e9 de finaliser l'achat soit tr\u00e8s faible. En revanche, le fait de rajouter 60 secondes pour cette session peut cr\u00e9er une observation que est pas ou tr\u00e8s peu repr\u00e9sent\u00e9e dans l'\u00e9chantillon : le mod\u00e8le n'a rencontr\u00e9 que peu d'observations pr\u00e9sentant ces caract\u00e9ristiques.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "IpqN",
+      "code_hash": "1c5ab14779a3293f6a9477724969f773",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"tests-unitaires-du-modele\">Tests unitaires du mod\u00e8le</h3>\n<span class=\"paragraph\">Au m\u00eame titre que les tests unitaires sont r\u00e9alis\u00e9s pour les fonctions de collecte et de transformation de donn\u00e9es, les tests unitaires pour le mod\u00e8le consistent \u00e0 v\u00e9rifier que ce dernier pr\u00e9dit la bonne r\u00e9ponse pour des observations qui sont suppos\u00e9es \u00eatre parfaitement classifi\u00e9es.</span>\n<span class=\"paragraph\">Une m\u00e9thode consiste \u00e0 calculer des <strong>prototypes</strong> : il s'agit d'observations qui <em>repr\u00e9sentent le plus</em> les donn\u00e9es. En d'autres termes, il s'agit d'un concept proches des centres de clusters form\u00e9s par les observations. Et un algorithme non-supervis\u00e9 permettant de d\u00e9tecter les prototypes est le <strong>k-m\u00e9do\u00efde</strong>, proche des k-moyennes dans son fonctionnement mais qui calcule le <a href=\"https://en.wikipedia.org/wiki/Medoid\" target=\"_blank\">m\u00e9do\u00efde</a>, point d'un cluster dont la distance avec tous les autres points est la plus petite.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dxZZ",
+      "code_hash": "7a26ac6c03469ddb18959891223ad0bf",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-text codehilite\"><pre><span></span><code>uv add scikit-learn-extra\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dlnW",
+      "code_hash": "aefb85f9845b3367403933372983e181",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Lan\u00e7ons un k-m\u00e9do\u00efde sur les observations de test.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RKFZ",
+      "code_hash": "d9acc5b69a08b9ed641d07c96ad25afd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">R\u00e9cup\u00e9rons les centres des clusters (les m\u00e9do\u00efdes) dans un DataFrame.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "IWgg",
+      "code_hash": "e978a62ac452641edbaf490af9dd1585",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Chacune de ces observations repr\u00e9sentent la moyenne d'une sous-population de l'\u00e9chantillon. \u00c9tonnamment, hormis la premi\u00e8re observation, toutes les autres concernent des produits issus de la m\u00eame cat\u00e9gorie.</span>\n<span class=\"paragraph\">Calculons les probabilit\u00e9 associ\u00e9es.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "LkGn",
+      "code_hash": "1bd7b47618dcebbf28a1ecebf1ebb298",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L\u00e0-aussi, \u00e0 part la premi\u00e8re observation, toutes les autres sont pr\u00e9dites dans la classe positive. La derni\u00e8re observation est, quant-\u00e0-elle, plus difficile \u00e0 quantifier du fait des deux probabilit\u00e9s tr\u00e8s proches.</span>\n<span class=\"paragraph\">Nous pourrions ainsi extraire plusieurs prototypes de ce DataFrame. Attention n\u00e9anmoins, car ces donn\u00e9es repr\u00e9sentent uniquement un historique d'une journ\u00e9e, alors qu'en pratique, celles qui seront utilis\u00e9es pour calibrer le mod\u00e8le repr\u00e9sentent un historique de 7 jours.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "zVRe",
+      "code_hash": "f1b5f019aa3b1e553e27849447f627ac",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Les tests de mod\u00e8le sont plus difficiles \u00e0 construire, mais sont indispensables pour certains secteurs d'activit\u00e9s o\u00f9 les pr\u00e9dictions du mod\u00e8le peuvent \u00eatre critiques.</span>\n<ul>\n<li>Nous avons vu les test pr\u00e9-entra\u00eenement pour s'assurer de la coh\u00e9rence de la base d'apprentissage avant l'entra\u00eenement.</li>\n<li>Nous avons d\u00e9taill\u00e9 plusieurs tests de mod\u00e8les pour v\u00e9rifier son comportement.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Lorsque ces tests sont r\u00e9alis\u00e9s avec succ\u00e8s, il faut maintenant conserver le mod\u00e8le quelque part pour y acc\u00e9der ult\u00e9rieurement : c'est le r\u00f4le de <b>MLflow</b>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "7d34b82cd496f30a66564a052a81ee24",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "a8f0b54b6bf6a7b2abe582a141596e68",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "dde62f6d737873edd9b2f955a140683b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "0c83e436d97e1ebab729beefb32ec0e3",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "655ea01cf5fbb7333e84399621606c3d",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "5c37605a7322fd0ab552a2abf2e1400b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "cd5f4ff373cb7704668c2638df55b5be",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "66b7df68543497641a2c5a6f879b99c7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "3abb485f5bc64df3949ec768c00f052a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "5a748c120135eca0627c0c3b4985e917",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "ca99d3059f78163ec696f35ab25cc4a7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "e8c721b692c2b4bba40a39e8e0610a23",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "f4e6246574737282e35e56644f974d6e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "4cd49ad4e15d4b629f90eada3f1eee1e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "c8de6ed52cc75db061f8f4d34a27dc62",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "0f3c51865616336dfbedeb87604a9238",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "216af1c813e020266c4c38aabfe677b2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "7424f4e80fc02d27b91c4c7d1d9ef52b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "7660977b45b36519707f856520f5cd4c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "277f91d3e458eed027221862847ddc40",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "CcZR",
+      "code_hash": "46653fce6d7b1e4e3cbde6a4410c423f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "zlud",
+      "code_hash": "f32cd5241c276bf547e9b27668f2fc3a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xvXZ",
+      "code_hash": "06aba0fb1966477d0de5404125622513",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "YECM",
+      "code_hash": "393803c781cb56d602d25fbc71527576",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iXej",
+      "code_hash": "da0909d5224699911b1375c4500f842e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "EJmg",
+      "code_hash": "82b0e15dd61bdd175caed68f14986466",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "vEBW",
+      "code_hash": "a2f79a71f017f21d85005f6a1b93f2a9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TTti",
+      "code_hash": "7b2ec2f44fc4142795aae56d0fa5b3b0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "IaQp",
+      "code_hash": "2564896eccb4cc1167cabdfa1a92f314",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "fCoF",
+      "code_hash": "996ac6dbe5de73722157b21cf7d87333",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

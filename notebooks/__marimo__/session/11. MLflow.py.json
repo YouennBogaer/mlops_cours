@@ -1,0 +1,452 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.1"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "043b161370a55b7e39de40bd14e9d50b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>MLflow</strong> est une plateforme open source qui permet de g\u00e9rer le cycle de vie des mod\u00e8les de Machine Learning. En particulier, gr\u00e2ce \u00e0 MLflow, les mod\u00e8les qui ont \u00e9t\u00e9 entra\u00een\u00e9s \u00e0 une date sp\u00e9cifique ainsi que les hyper-param\u00e8tres associ\u00e9s pourront \u00eatre stock\u00e9s, monitor\u00e9s et r\u00e9-utilis\u00e9s de mani\u00e8re efficace.</span>\n<span class=\"paragraph\"><img src=\"https://dv495y1g0kef5.cloudfront.net/training/data_engineer_uber/img/mlflow.png\" width=\"300\" /></span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>D\u00e9couvrir les concepts importants de MLflow</li>\n    <li>Tracker et monitorer des mod\u00e8les en local</li>\n    <li>Installer MLflow sur un serveur et envoyer les mod\u00e8les sur le serveur</li>\n</ul>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "872200cb4a0ec943f2922805044b2703",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"concepts-de-mlflow\">Concepts de MLflow</h2>\n<span class=\"paragraph\">Rappelons-nous du workflow en Machine Learning : la premi\u00e8re \u00e9tape de collecte des donn\u00e9es et suivie d'une \u00e9tape de transformation des donn\u00e9es, puis de la mod\u00e9lisation pour maximiser une m\u00e9trique de performance qui jugera de la qualit\u00e9 de l'algorithme employ\u00e9. \u00catre productif avec du Machine Learning n'est pas de tout repos pour les raisons suivantes.</span>\n<ul>\n<li><strong>Il est difficile de garder un trace des pr\u00e9c\u00e9dentes exp\u00e9riences</strong>. Une chose \u00e0 laquelle beaucoup de Data Scientists font face, c'est de faire une s\u00e9rie d'exp\u00e9riences en modifiant algorithmes et param\u00e8tres, mais qui peut s'av\u00e9rer contre-productif si l'on ne dispose pas de l'historique des mod\u00e8les et de leurs performances. Bien que Kedro puisse tendre vers cette pratique, il ne permet pas de le faire enti\u00e8rement \u00e0 lui tout seul.</li>\n<li><strong>Il est difficile de reproduire le code</strong>. Dans les projets Data Science, une multitude de fonctions permettent d'arriver \u00e0 un r\u00e9sultat bien pr\u00e9cis : le changement de quelques lignes de code peut grandement affecter le mod\u00e8le et ses performances.</li>\n<li><strong>Il n'y a aucun standard sur le packaging et le d\u00e9ploiement de mod\u00e8les</strong>. Chaque \u00e9quipe poss\u00e8de son approche pour d\u00e9ployer les mod\u00e8les, et ce sont souvent les grandes \u00e9quipes avec de l'exp\u00e9rience qui peuvent se le permettre.</li>\n<li><strong>Il n'y a aucun point central pour g\u00e9rer les mod\u00e8les</strong>. En pratique, la solution na\u00efve consiste \u00e0 sauvegarder les param\u00e8tres dans des fichiers sur le m\u00eame serveur h\u00e9bergeant l'algorithme, en stockage local avec Kedro.</li>\n</ul>\n<span class=\"paragraph\">MLflow cherche \u00e0 am\u00e9liorer la productivit\u00e9 en offrant la possibilit\u00e9 de r\u00e9-entra\u00eener, r\u00e9-utiliser et d\u00e9ployer des mod\u00e8les en agissant sur un point central (plateforme MLflow) o\u00f9 tout l'historique du mod\u00e8le sera conserv\u00e9.</span>\n<span class=\"paragraph\">Tout d'abord, MLflow est <em>language-agnostic</em>, c'est-\u00e0-dire que les mod\u00e8les peuvent \u00eatre cod\u00e9s en Python, R, Java ou encore C++ et envoy\u00e9s sur MLflow. Ensuite, il n'y a aucun pr\u00e9-requis concernant la librairie de Machine Learning : que vous soyez adeptes de <code>scikit-learn</code> ou de <code>tensorflow</code>, tout sera compatible.</span>\n<span class=\"paragraph\">Quatre composants r\u00e9sident sous MLflow.</span>\n<ul>\n<li><strong>MLflow Tracking</strong> est l'API et l'interface utilisateur pour logger les hyper-param\u00e8tres, le versioning de code et les <em>artifacts</em> (param\u00e8tres du mod\u00e8le, fichier de poids, ...).</li>\n<li><strong>MLflow Projects</strong> est un format standard pour package un code source et le r\u00e9-utiliser dans plusieurs projets.</li>\n<li><strong>MLflow Models</strong> est un format de packaging pour les mod\u00e8les de Machine Learning.</li>\n<li><strong>MLflow Registry</strong> est le registre de mod\u00e8le (comme un git de mod\u00e8les) qui permet de s'assurer que les mod\u00e8les respectent certaines contraintes.</li>\n</ul>\n<span class=\"paragraph\">Hormis le composant <em>Projects</em>, qui est remplac\u00e9 par l'utilisation de Kedro, nous utiliserons tous les composants de MLflow pour g\u00e9rer efficacement le cycle de vie des mod\u00e8les.</span>\n<span class=\"paragraph\">Pour installer MLflow en local, il suffit juste d'ex\u00e9cuter <code>uv add mlflow</code> dans le terminal.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "885542362898e7ffc9bb7455040a7c65",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour lancer le serveur de MLFlow (surtout ne pas l'executer dans ce notebook, mais en dehors du notebook)</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "e2059e0f31e1a75d430bfccda8cfde1e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-text codehilite\"><pre><span></span><code>mlflow server --default-artifact-root ./mlruns\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "7fc1e029c56bcd3fcb9eb9cbec0699c0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons ensuite lancer un <em>experiment</em> sous MLflow. Pour cela, cr\u00e9ons une nouvelle exp\u00e9rience que l'on nommera <code>purchase_predict</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "c33208ec42bd28414ff15cd5d4f34da1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En ex\u00e9cutant ce code, nous avons d\u00e9clenc\u00e9 un <strong>run</strong> avec <code>mlflow.start_run()</code>. L'int\u00e9r\u00eat d'utiliser <code>with</code> est qu'en sortant de l'indentation, le run MLflow sera automatiquement termin\u00e9. Nous allons envoyer plusieurs informations vers MLflow.</span>\n<ul>\n<li>Les hyper-param\u00e8tres du mod\u00e8le avec <code>log_params</code>.</li>\n<li>La ou les m\u00e9triques obtenues sur un \u00e9chantillon avec <code>log_metric</code>.</li>\n<li>Le mod\u00e8le au format de <code>scikit-learn</code> avec <code>log_model</code>.</li>\n</ul>\n<span class=\"paragraph\">En visualisant l'interface web MLflow</a>, nous voyons le mod\u00e8le appara\u00eetre avec les informations associ\u00e9es.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/mlflow1.png\" /></span>\n<span class=\"paragraph\">En cliquant sur la date d'ex\u00e9cution, nous avons acc\u00e8s \u00e0 plus de d\u00e9tails ainsi qu'aux fichiers stock\u00e9s (ici le mod\u00e8le), que l'on appelle des <strong>artifacts</strong>.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/mlflow2.png\" /></span>\n<span class=\"paragraph\">\u00c0 noter qu'il est \u00e9galement possible de r\u00e9cup\u00e9rer l'historique des mod\u00e8les entra\u00een\u00e9s.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "5726ca538f2246d1c77295c312ff57d2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour utiliser efficacement MLflow, il faut architecturer le code source afin qu'il soit r\u00e9-utilisable et facilement manipulable par les Data Scientists.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "3ad66d49e9a8292574d102c03d415db3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 chaque appel de la fonction <code>train_model</code>, une instance du mod\u00e8le est entra\u00een\u00e9e sur la base d'entra\u00eenement avec des hyper-param\u00e8tres sp\u00e9cifiques. La fonction <code>save_pr_curve</code> d\u00e9velopp\u00e9e permet d'enregistrer le graphique de la courbe PR dans un fichier. Cela permet notamment d'envoyer les graphiques \u00e0 MLflow sous forme d'artifacts.</span>\n<span class=\"paragraph\">Chaque appel de la fonction <code>train_model</code> va donc entra\u00eener un mod\u00e8le LightGBM, en calculer des m\u00e9triques, des graphiques et envoyer le r\u00e9sultats sous forme de run sur MLflow.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "b38856ab83eed200e69e5d1efd0f8609",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Apr\u00e8s ex\u00e9cution, les trois runs sont bien pr\u00e9sents.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/mlflow3.png\" /></span>\n<span class=\"paragraph\">L\u00e0-aussi, en explorant un run en particulier, nous pouvons voir appara\u00eetre le graphique dans l'explorateur de fichiers.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/mlflow4.png\" /></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "1cebb4f9e87b387fdfc05c0936eec6e8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"installation-sur-un-serveur\">Installation sur un serveur</h2>\n<h2 id=\"premiere-etape-creer-un-service-account-specifique-a-mlflow\">Premi\u00e8re \u00e9tape : Cr\u00e9er un service account sp\u00e9cifique \u00e0 MLFlow</h2>\n<span class=\"paragraph\">Les param\u00e8tres part d\u00e9faut du Service Account de Compute Engine n'est pas adapt\u00e9 pour le serveur MLFlow. Nous avons besoin d'acc\u00e9der \u00e0 plusieurs services de GCP en m\u00eame temps.</span>\n<span class=\"paragraph\">Voici donc la configuration \u00e0 avoir pour le service account de Mlflow</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/mlflow_service_account.png\" /></span>\n<h2 id=\"la-mise-en-place-de-la-vm-g1-small-de-mlflow\">La mise en place de la VM G1-Small de MLflow</h2>\n<span class=\"paragraph\">Pour \u00eatre pleinement exploit\u00e9, MLflow <strong>doit \u00eatre install\u00e9 sur un serveur</strong> : en plus de pouvoir collaborer \u00e0 plusieurs, cela permettra de l'int\u00e9grer dans un \u00e9cosyst\u00e8me avec un syst\u00e8me de stockage de fichiers et de processus automatis\u00e9s.</span>\n<span class=\"paragraph\">Lan\u00e7ons une VM depuis Google Cloud avec Debian 12 avec une instance de type <code>g1-small</code>.</span>\n<ul>\n<li>Pour cela, il faut cliquer sur <code>N1</code>et dans type de machine, il faut cliquer <code>Coeur Partag\u00e9</code> <code>g1-small</code></li>\n<li>Ensuite autorisuer le traffic HTTP et HTTPS</li>\n<li>Et ne surtout pas oublier de changer le Service Account vers MLFlow que nous vennons de cr\u00e9er. Oublier de le faire vous impose de supprimer la VM et recommencer la cr\u00e9ation de la VM.</li>\n</ul>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/ec2-1.png\" /></span>\n<span class=\"paragraph\">N'oubliez pas d'autoriser le trafic HTTP et HTTPS pour le besoin de ce TP.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "87d6244624b4f2ef1c2cfe3d8ef3173c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Par d\u00e9faut, les artifacts sont stock\u00e9s dans le syst\u00e8me local o\u00f9 est ex\u00e9cut\u00e9 le code Python : MLflow ne peut donc pas recevoir et afficher ces artifacts. Il est donc n\u00e9cessaire de configurer un bucket dans lequel MLflow pourra stocker et retrouver les artifacts que l'on enverra.</span>\n<span class=\"paragraph\">Par d\u00e9faut, MLflow \u00e9tant install\u00e9 sur une VM dans notre projet Google Cloud, les autorisations sont d\u00e9j\u00e0 pr\u00e9sentes sur la machine, permettant \u00e0 MLflow de lire des fichiers depuis le bucket. En revanche, il est n\u00e9cessaire de d\u00e9finir les autorisations pour les applications qui vont envoyer ou r\u00e9cup\u00e9rer des mod\u00e8les vers MLflow. Pour des raisons de s\u00e9curit\u00e9, nous allons ajouter un compte de service qui aura un r\u00f4le de lecture et \u00e9criture sur ce bucket uniquement.</span>\n<span class=\"paragraph\">Rajoutons un compte de service qui aura les deux r\u00f4les suivants : <strong>Cr\u00e9ateur des objets de l'espace de stockage</strong> et <strong>Lecteur des objets de l'espace de stockage</strong>. Pour terminer, nous allons cr\u00e9er une cl\u00e9 et conserver en lieu s\u00fbr le fichier JSON.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/mlflow5.png\" /></span>\n<span class=\"paragraph\">Pour s'assurer de la bonne ex\u00e9cution de MLflow, il est pr\u00e9f\u00e9rable de cr\u00e9er un <code>systemd</code> plut\u00f4t que de lancer MLflow en arri\u00e8re plan depuis le terminal.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "4b2b48d8306cd5aef906335928313518",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><ul>\n<li>Il faut penser \u00e0 modifier le nom du bucket <code>gs://&lt;name-user&gt;/mlflow</code></li>\n<li>Ainsi que le nom du ExecStart</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "dfe74d423777effc328fc98b1a6ad5a1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La derni\u00e8re \u00e9tape consiste \u00e0 activer le service et \u00e0 l'ex\u00e9cuter. Avec <code>daemon-reload</code>, nous activons le service MLflow.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "13956badb3d0ad4def131fdaca677e5a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Toujours dans la gestion des services Cloud, il faut appr\u00e9hender le cas d'un red\u00e9marrage de la VM et relancer automatiquement le service MLflow au d\u00e9marrage.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "f10bfe3d9dcabc9c3c96207db07bd979",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Puis on lance le service.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "41774e21a8ecb9b907a323c5c52c7afa",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Maintenant, en visitant la page web \u00e0 l'adresse IP externe de la VM, l'interface MLflow appara\u00eet.</span>\n<span class=\"paragraph\">Ajoutons la cl\u00e9 JSON que nous avons t\u00e9l\u00e9charg\u00e9, vers le dossier data</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "a569fc95e83f8da80c6e9e9ee3690a60",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour sp\u00e9cifier vers quel serveur nous allons envoyer les artifacts et le mod\u00e8le, il faut sp\u00e9cifier le nom de domaine ou l'adresse IP avec <code>set_tracking_uri</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "78f5c698380e62fd5cd6c5ebe0cf5218",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cr\u00e9ons une nouvelle exp\u00e9rience sur le serveur MLflow et ex\u00e9cutons un <em>run</em>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "f29565ed49c374c52d55a8ff56ca153f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Dor\u00e9navant, toutes les ex\u00e9cutions seront envoy\u00e9s sur le serveur contenant MLflow et les artifacts stock\u00e9s dans le bucket associ\u00e9.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "25ed38b012022cee20804ddf811b9ed1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Et voil\u00e0 ! L'interface MLflow devrait \u00e0 pr\u00e9sent afficher le mod\u00e8le stock\u00e9 sur Google Storage.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "74052b4dace5afafa20c229ebc53592e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Nous pouvons d\u00e9sormais tracker les mod\u00e8les de Machine Learning avec MLflow.</span>\n<ul>\n<li>Nous avons utilis\u00e9 MLflow en local pour tracker les mod\u00e8les.</li>\n<li>Nous avons install\u00e9 MLflow sur un serveur en stockant les artifacts sur un Cloud Storage.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Maintenant que nous avons notre mod\u00e8le de Machine Learning et un versioning de mod\u00e8le, nous pouvons mettre en place une API pour exposer le mod\u00e8le.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "0bdeb84f5fdfa45a8b9eaa05be019f33",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "d4732ecfbeec4a0248b15dd00db65383",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "a8e88dc2243f22812a571223dfd6a7ed",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "b7ca645fe413e448bcc1e0f39304eefb",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "bd5d1187b8f08e398871c3791bf26ca0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "6a1aabd862a1aa6be7e18e396bb1cdcb",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "22386b0c3a086852b50f6a1c8ad2916e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "7a2b40a7ebf61f5f21bb6914188b6d7e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "3dc4a0b452e291d878e389087b1aabe1",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "445a4d051a0b280f573429160a91814a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "ec8b8ea8bd58de237a0e65f9d3a99b26",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "69f508803947e6735a39720b61e6dae0",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "e7f929e231a257c009e8e5984d4d54fd",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "4b78619ba99412931c45ce92d54c2e71",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "b2ba4ad82fd8c64adc3f4e32530e85d8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "2026/02/22 11:50:22 INFO mlflow.tracking.fluent: Experiment with name 'purchase_predict' does not exist. Creating a new experiment.\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "d79a67e199dfb6bc8be9155afb527490",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stderr",
+          "text": "/Users/noobzik/Documents/Administration/1. Micro-entrepreneur/2.Contrats/2025-2026/CY-TECH/MLOps/MLOps Full GCP+UV/.venv/lib/python3.12/site-packages/mlflow/models/model.py:1209: FutureWarning: Saving scikit-learn models in the pickle or cloudpickle format requires exercising caution because these formats rely on Python's object serialization mechanism, which can execute arbitrary code during deserialization.The recommended safe alternative is the 'skops' format.\n  flavor.save_model(path=local_path, mlflow_model=mlflow_model, **kwargs)\n2026/02/22 11:50:46 WARNING mlflow.utils.environment: Failed to resolve installed pip version. ``pip`` will be added to conda.yaml environment spec without a version specifier.\n",
+          "mimetype": "text/plain"
+        },
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "\ud83c\udfc3 View run industrious-owl-223 at: http://136.114.127.11:80/#/experiments/1/runs/c3f3d09f38f94fd8bc497a947c267fff\n\ud83e\uddea View experiment at: http://136.114.127.11:80/#/experiments/1\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    }
+  ]
+}

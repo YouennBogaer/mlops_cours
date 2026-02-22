@@ -1,0 +1,542 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.1"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "58f3875a003ea6b8fd7f4f258665001d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Jusqu'\u00e0 maintenant, nous avons vu avec MLflow la puissance du composant Tracking, qui permettait de fournir un historique des exp\u00e9rimentations r\u00e9alis\u00e9es en gardant une tracabilit\u00e9 des hyper-param\u00e8tres utilis\u00e9s, des m\u00e9triques obtenus mais \u00e9galement des artifacts g\u00e9n\u00e9r\u00e9s (mod\u00e8le, graphique).</span>\n<span class=\"paragraph\">Il y a \u00e9galement un autre composant particuli\u00e8rement utile en tant que ML Engineer : c'est le <strong>registre de mod\u00e8le</strong>. \u00c0 l'instar d'un d\u00e9p\u00f4t Git, le registre de mod\u00e8le MLflow permettra de g\u00e9rer plusieurs versions de mod\u00e8les en leur attribuant \u00e9galement des tags, qui correspondent \u00e0 des environnement de pr\u00e9-production (<em>staging</em>) et de production.</span>\n<blockquote><span class=\"paragraph\">\ud83d\ude4b <b>Ce que nous allons faire</b></span>\n<ul>\n    <li>Int\u00e9grer le tracking MLflow dans Kedro</li>\n    <li>Cr\u00e9er un mod\u00e8le packag\u00e9 sous MLflow</li>\n    <li>Versioner les mod\u00e8les dans Kedro</li>\n</ul>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "a7e832e0621c4f35bedb3e932ab11382",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"tracking-mlflow-sous-kedro\">Tracking MLflow sous Kedro</h2>\n<span class=\"paragraph\">Dans le Notebook MLflow, nous avions entra\u00een\u00e9 un LightGBM manuellement et l'avons envoy\u00e9 directement sur MLflow et Cloud Storage. L'objectif ici est de modifier le pipeline <code>training</code> sous Kedro pour y ajouter l'int\u00e9gration avec MLflow.</span>\n<span class=\"paragraph\">Commen\u00e7ons par ajouter une variable d'environnement. Sous Python, le package <code>python-dotenv</code> est utile pour r\u00e9cup\u00e9rer les variables d'environnement ou pour en configurer automatiquement lors du d\u00e9veloppement du projet.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "115ce9c08538da95fbc211774f73fc8f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "5a72dbc7f4a8f594cdbe4a97f10414b0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 la racine du projet, cr\u00e9ons le fichier <code>.env</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "380a032b445994a2ea50913f00aa5b8c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "de2ec2edcec4f806dcf152bb70e6225a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Le r\u00f4le de ce fichier est identique \u00e0 un <code>export</code> qui serait r\u00e9alis\u00e9 sur chaque variable. Le principal int\u00e9r\u00eat, en plus de pouvoir centraliser toutes les variables d'environnement, est que <code>python-dotenv</code> supporte aussi les variables d'environnement : il peut donc \u00eatre utilis\u00e9 \u00e0 la fois lors du d\u00e9veloppement ou une fois le code en production.</span>\n<span class=\"paragraph\">\u00c0 noter que nous aurions pu utiliser le fichier <code>parameters.yml</code> de Kedro. Dans la pratique, ce fichier est plut\u00f4t r\u00e9serv\u00e9 aux param\u00e8tres des pipelines (ratio pour l'ensemble de test, hyper-param\u00e8tres par d\u00e9faut, etc), et il est pr\u00e9f\u00e9rable, comme c'est le cas en d\u00e9veloppement logiciel, d'inscrire des param\u00e8tres plus g\u00e9n\u00e9raux (comme les r\u00e9f\u00e9rences aux servers, l'environnement de pr\u00e9-production ou de production) dans des fichiers de configuration ou des variables d'environnement.</span>\n<span class=\"paragraph\">Ouvrons le fichier <code>__init__.py</code> dans le dossier <code>training</code> des pipelines.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "5c01920d850a6609d839466cec01917c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "3deff9f538d010e513c02ba652490fd5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour rappel, ce fichier sera ex\u00e9cut\u00e9 initialement par l'interpr\u00e9teur Python, permettant ainsi de d\u00e9finir des configurations qui seront partag\u00e9es par tous les fichiers du module/dossier. Par la suite, nous allons pouvoir appeler <code>os.getenv(\"MLFLOW_SERVER\")</code> pour r\u00e9cup\u00e9rer cette variable d'environnement dans n'importe quel fichier du dossier contenant ce <code>__init__.py</code>.</span>\n<span class=\"paragraph\">Nous allons ajouter deux param\u00e8tres dans <code>parameters.yml</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "ab4886700c6c906c5f2fdea2afda1398",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "1567a1ec0b1c99fa29b3640e204992ab",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Cela permet de d\u00e9cider \u00e0 tout moment si l'on souhaite envoyer les logs et artifacts vers MLflow, ainsi que l'identifiant de l'exp\u00e9rience MLflow.</span>\n<span class=\"paragraph\">Dans <code>nodes.py</code> de <code>training</code>, modifiant la fonction <code>auto_ml</code> pour accepter ces deux nouveaux param\u00e8tres.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "e7c3ee1feb7aa505d540aaaccf53c6e6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "17a5299761189fe08412649457153904",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Par d\u00e9faut, si aucune information n'est sp\u00e9cifi\u00e9e concernant MLflow, on pr\u00e9f\u00e8re ne pas envoyer de logs ou d'artifacts. Importons <code>os</code> ainsi que <code>mlflow</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "78efaacdf1faa79602688779a94e9bcd",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "7cea764e64ad5bcc1ce5bc0e7ef4322a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Au tout d\u00e9but de la fonction, apr\u00e8s avoir r\u00e9cup\u00e9r\u00e9 la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex>, nous d\u00e9marrons un run.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "42a2d5e81133c92577bf5c1eab12c690",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "08e7359a0c6a0e4ad4280d4c7d059a29",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Si l'on souhaite tracker avec MLflow (<code>log_to_mlflow</code> \u00e0 <code>True</code>), alors on sp\u00e9cifie l'URL de tracking, puis on lance un run avec <code>start_run</code> en indiquant l'identifiant de l'exp\u00e9rience associ\u00e9 au run.</span>\n<span class=\"paragraph\">\u00c0 la fin de la fonction, nous envoyons les logs et artifacts vers MLflow. Elle retournera \u00e9galement le champ <code>mlflow_run_id</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "dc96d85be3527971bf25575f9b67d0cd",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "3a2b53377edeba2850f4211647ff5a5f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il nous reste \u00e0 ajouter une nouvelle fonction pour logger les plots dans le dossier data/08_reporting</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "455e3d3a38014c40e51df3f41c1cbc17",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "c6dfee080bf34d999afd7f8e59556bed",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La derni\u00e8re modification \u00e0 apporter est de mettre \u00e0 jour la d\u00e9finition du pipeline.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "9c5eb478e2aad9d6874a6d9486eb51e7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "a9263cebe855a89bfc61dc70d7c0b883",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous pouvons v\u00e9rifier visuellement notre pipeline \u00e0 l'aide de la commande suivante :</span>\n<span class=\"paragraph\"><div class=\"language-text codehilite\"><pre><span></span><code>uv run kedro viz run --port 4141\n</code></pre></div>\nAttention, pandas vient d'\u00eatre mise \u00e0 jour vers la version 3, elle n'est pas compatible avec la derni\u00e8re version de MLFlow et de Protobuf utilis\u00e9 par google-cloud-storage.</span>\n<span class=\"paragraph\">Nous avons donc un probl\u00e8me de d\u00e9pendance du projet \u00e0 g\u00e9rer, et pour le faire fonctionner, nous allons demander \u00e0 UV des conditions de d\u00e9pendance n\u00e9cessaire :\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add &quot;pandas&gt;=2.0.0,&lt;3.0.0&quot; &quot;mlflow&gt;=2.10.0&quot;\n</code></pre></div></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "29a6b12f331f0a7b796d7185e068c736",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry3.png\" /></span>\n<span class=\"paragraph\">Avant d'ex\u00e9cuter le pipeline, il faut penser \u00e0 donner les droits d'\u00e9criture sur Cloud Storage au compte de service de Kedro. Rappelons-nous, nous avions cr\u00e9e un compte de service pour pouvoir r\u00e9cup\u00e9rer les fichiers CSV sur le bucket. Pas besoin d'en cr\u00e9er un nouveau : nous pouvons utiliser celui existant en lui rajoutant de nouvelles autorisations.</span>\n<span class=\"paragraph\">Dirigeons-nous dans <a href=\"https://console.cloud.google.com/iam-admin/iam\" target=\"_blank\">IAM</a> et \u00e9ditons le membre <code>purchase-predict@...</code>.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry1.png\" /></span>\n<span class=\"paragraph\">Ajoutons le r\u00f4le Cr\u00e9ateur des objets de l'espace de stockage. Apr\u00e8s modification des r\u00f4les, il faut ret\u00e9l\u00e9charger une cl\u00e9 pour <a href=\"https://console.cloud.google.com/iam-admin/serviceaccounts\" target=\"_blank\">le compte de service</a>. Une fois le contenu de la cl\u00e9 modifi\u00e9 dans <code>conf/local/service-account.json</code>, nous devons mettre \u00e0 jour la variable d'environnement <code>GOOGLE_APPLICATION_CREDENTIALS</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "e3d7c6c19cb1a4d7cef34e61e6ef158b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "6c1360da44c3c8bc488e329dc86e715b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 noter que pour aller plus vite, nous pouvons d\u00e9finir cette variable dans le fichier <code>.env</code>.</span>\n<span class=\"paragraph\">Temporairement, pour v\u00e9rifier que notre code fonctionne, nous allons modifier le param\u00e8tre <code>automl_max_evals</code> \u00e0 <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>. </span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "bba67891f7d268dd39619a82b27a5b2d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ex\u00e9cutons le pipeline <code>global</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "9834bafb343087285c71539728717c5d",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "30ca641e636bd2ca785d474c539c8b9c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Apr\u00e8s quelques dizaines de secondes, le run devrait \u00eatre visible sous MLflow.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry2.png\" /></span>\n<span class=\"paragraph\">N'oublions pas, puisque le test est concluant, de remettre <code>automl_max_evals</code> \u00e0 sa valeur d'origine.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "0cff7ef10cdb60d75acec33bd316bdf8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pipeline-de-deploiement-vers-mlflow\">Pipeline de d\u00e9ploiement vers MLflow</h2>\n<span class=\"paragraph\">Pour l'instant, nous avons uniquement effectu\u00e9 du tracking. Bien que cela soit pratique pour historiser et garder une trace des diff\u00e9rentes ex\u00e9cutions des pipelines d'entra\u00eenement, cela ne permet pas directement de g\u00e9rer efficacement des <strong>versions de mod\u00e8les</strong>.</span>\n<h3 id=\"registre-de-modeles\">Registre de mod\u00e8les</h3>\n<span class=\"paragraph\">Le <strong>Model Registry</strong> (registre de mod\u00e8les) est un composant de MLflow qui permet de g\u00e9rer des versions de mod\u00e8les de Machine Learning, en proposant \u00e9galement des <strong>stages</strong> (\u00e9tats).</span>\n<ul>\n<li>Le tag <strong>staging</strong> correspond \u00e0 un mod\u00e8le consid\u00e9r\u00e9 comme pr\u00e9-production.</li>\n<li>Le tag <strong>production</strong> correspond \u00e0 un mod\u00e8le qui serait en environnement de production.</li>\n<li>Le tag <strong>archived</strong> pour les anciens mod\u00e8les staging ou production archiv\u00e9s.</li>\n</ul>\n<span class=\"paragraph\">C'est un composant particuli\u00e8rement utile pour g\u00e9rer le cycle de vie des mod\u00e8les, car le cycle staging, production et archive est couramment appliqu\u00e9 lorsque des mod\u00e8les sont mis \u00e0 jour r\u00e9guli\u00e8rement. Sous MLflow, l'onglet Models permet d'afficher tous les mod\u00e8les enregistr\u00e9s.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry4.png\" /></span>\n<span class=\"paragraph\">Retournons dans les exp\u00e9riences et choisissons le dernier run que nous avons lanc\u00e9. En cliquant sur <code>model</code> dans les artifacts, un bouton <em>Register Model</em> appara\u00eet \u00e0 droite.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry5.png\" /></span>\n<span class=\"paragraph\">En cliquant dessus, nous allons pouvoir ajouter manuellement le mod\u00e8le au registre. Pour cela, nous devons cr\u00e9er un nouveau mod\u00e8le que l'on nommera <code>purchase_predict</code>.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry6.png\" /></span>\n<span class=\"paragraph\">En retournant dans Models, nous voyons que la version 1 (le mod\u00e8le que nous venons d'ajouter est bien pr\u00e9sent).</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry7.png\" /></span>\n<span class=\"paragraph\">En cliquant dessus, nous avons acc\u00e8s \u00e0 plus de d\u00e9tails sur les diff\u00e9rentes versions pr\u00e9sentes.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry8.png\" /></span>\n<span class=\"paragraph\">Pour une version sp\u00e9cifique, nous pouvons manuellement transitionner vers un \u00e9tat de pr\u00e9-production ou de production. L'objectif sera d'automatiser cette t\u00e2che pour automatiquement changer l'\u00e9tat d'un mod\u00e8le que l'on aura entra\u00een\u00e9.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry9.png\" /></span>\n<h3 id=\"pipeline-de-deploiement\">Pipeline de d\u00e9ploiement</h3>\n<span class=\"paragraph\">Une fois l'entra\u00eenement r\u00e9alis\u00e9, nous allons \u00e9galement impl\u00e9menter dans Kedro un pipeline qui va permettre de transitionner l'\u00e9tat d'un mod\u00e8le en staging ou production. Pour cela, nous allons cr\u00e9er un pipepline <code>deployment</code> avec les trois fichiers <code>__init__.py</code>, <code>nodes.py</code> et <code>pipeline.py</code>. Le fichier <code>__init__.py</code> contiendra les m\u00eames instructions.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "648f3c4d141bd9cdc8ae27c2aea37c7a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "7fe7b4f7e6b1e299d783cd561eaf421c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons cr\u00e9er deux fonctions dans le fichier <code>nodes.py</code>.</span>\n<ul>\n<li>La fonction <code>push_to_model_registry</code> va envoyer un mod\u00e8le enregistr\u00e9 dans tracking vers le registre de mod\u00e8le associ\u00e9. Notons que pour cela, le mod\u00e8le doit d\u00e9j\u00e0 \u00eatre dans le tracking.</li>\n<li>La fonction <code>stage_model</code> qui permet de transitionner un mod\u00e8le du registre vers un \u00e9tat staging ou production.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "452511d764da2bf3a1c2f2748a57f1f8",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "00b1eef81aeed46d7e479c908acc91ac",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous avons besoin de configurations suppl\u00e9mentaires, <code>registry_name</code>, pour r\u00e9f\u00e9rencer le nom du mod\u00e8le dans le registre, que l'on ajoute au fichier <code>parameters.yml</code>, ainsi que la variable d'environnement <code>ENV</code> pour sp\u00e9cifier si le projet Kedro est ex\u00e9cut\u00e9 dans un environnement de pr\u00e9-production ou de production. Modifions le fichier <code>.env</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "d8e29402542d7cbd8e8aae0583ff5aff",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "07985503235236ada5774ae4cfab4f8b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">De m\u00eame pour le fichier <code>parameters.yml</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "4b3d1036fdb470921abd59ceda283621",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "4d292a7787cd2d7f2114772ffe54da73",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Le param\u00e8tre <code>run_id</code> sera lui fourni par le catalogue de donn\u00e9es. \u00c9crivons le code du pipeline, qui ne pr\u00e9sente aucune difficult\u00e9.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "d19a0b4bec45768fa3e7cdbcdbdb258f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "9dd48f7a6b463898eadd30e2e3ad43e8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Avant de passer \u00e0 la suite, nous devons d\u00e9finir notre ml_run_id qui va r\u00e9cup\u00e9rer le num\u00e9ro du run depuis l'entrainement afin de passer l'information lors du d\u00e9ploiement. Il sera d\u00e9finit dans notre catalogue</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "8de1431d9ca927c420bc2545927fbcaa",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "f776fb74b9686c28e71fad2e24d141f6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il ne reste plus qu'\u00e0 renseigner ce pipeline dans <code>hooks.py</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "4cab4a2b9c20695011d9daade156c895",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "a75a64f7c71fe9e6bb521889d16bf758",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous obtenons le pipeline suivant.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry10.png\" /></span>\n<span class=\"paragraph\">Lan\u00e7ons une ex\u00e9cution globale (en sp\u00e9cifiant l\u00e0-aussi le param\u00e8tre <code>automl_max_evals</code> \u00e0 1 pour acc\u00e9lerer les calculs.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "2c7276d38156cdc0ccb646a284e084f3",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "urSm",
+      "code_hash": "c5d5b49a8d917573c94531fe09709c80",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Puisque nous sommes en environnement staging, sur MLflow, le mod\u00e8le enregistr\u00e9 doit avoir l'\u00e9tat correspondant.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry12.png\" /></span>\n<span class=\"paragraph\">Nous avons donc \u00e0 la fois la <em>Latest Version</em> \u00e0 2, et c'est elle qui est actuellement en staging.</span>\n<span class=\"paragraph\">L'int\u00e9gralit\u00e9 des pipelines ont \u00e9t\u00e9 r\u00e9alis\u00e9es, ce qui donne pour le pipeline <code>global</code> un ensemble assez important d'\u00e9tapes.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry11.png\" /></span>\n<blockquote>\n<span class=\"paragraph\">\u2753 En quoi envoyer le mod\u00e8le vers le registre peut nous \u00eatre utile ?</span>\n</blockquote>\n<span class=\"paragraph\">Ce qui va \u00eatre puissant, c'est que l'on sera capable de r\u00e9cup\u00e9rer, dans un projet diff\u00e9rent que Kedro, le mod\u00e8le le plus \u00e0 jour. Ainsi, on <strong>d\u00e9couple fortement</strong> la phase d'exp\u00e9rimentation/d'entra\u00eenement du mod\u00e8le et la phase de d\u00e9ploiement, qui est une bonne pratique du Cloud.</span>\n<span class=\"paragraph\">Comme toujours, il ne faut pas h\u00e9siter \u00e0 r\u00e9guli\u00e8rement pousser son code vers le d\u00e9p\u00f4t Git.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "8f041692b475f0f31cc59372bb8867b4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "55e99aa2fa8c340c997be3d1bd27e15c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "CcZR",
+      "code_hash": "af8cfc4ee7ddb5862077825e4128c358",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous allons cr\u00e9er une <strong>nouvelle branche</strong> appel\u00e9e staging. Cela va nous permettre de produire un code en environnement de pr\u00e9-production.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "9799dc01c3a34676a42ccf63893376ee",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "zlud",
+      "code_hash": "c85b4a3a959a457220605864422f770f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">On n'oubliera pas d'ajouter la cl\u00e9 SSH \u00e0 l'agent avec de pousser vers le d\u00e9p\u00f4t.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "tZnO",
+      "code_hash": "b903fbdb8882d16d8effe1990399a407",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xvXZ",
+      "code_hash": "bc59702b0d5144a96237a5cface277ba",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Sur <a href=\"https://source.cloud.google.com/\" target=\"_blank\">Cloud Source</a>, la branche <code>staging</code> est d\u00e9sormais visible.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "CLip",
+      "code_hash": "66d07517c4a4d367b466cbf176ac8f4d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusion\">\u2714\ufe0f Conclusion</h2>\n<span class=\"paragraph\">Dor\u00e9navant, le projet Kedro peut ex\u00e9cuter le pipeline ML de A \u00e0 Z avec MLflow pour centraliser les diff\u00e9rents mod\u00e8les qui seront entra\u00een\u00e9s.</span>\n<ul>\n<li>Nous avons int\u00e9gr\u00e9 le tracking MLflow sous Kedro.</li>\n<li>Nous avons cr\u00e9er un mod\u00e8le packag\u00e9 sous MLflow.</li>\n<li>Nous sommes capable de changer les \u00e9tats des mod\u00e8les de pr\u00e9-production et de production automatiquement.</li>\n</ul>\n<blockquote>\n<span class=\"paragraph\">\u27a1\ufe0f Nous avons un mod\u00e8le pr\u00eat \u00e0 \u00eatre utilis\u00e9. Mais pour \u00eatre utilis\u00e9, il faut le rendre accessible ... et la meilleure mani\u00e8re de le faire, c'est de <b>construire une API</b>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
