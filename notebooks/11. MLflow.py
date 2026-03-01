@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.1"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -451,7 +451,8 @@ def _(mo):
     Gardez à l'esprit que MLflow supérieur à 3.0.1 via UV ne fonctionnera pas
     ///
 
-    - Si vous deviez ré-installer `mlflow`
+    - Si vous deviez ré-installer `mlflow`, supprimez le document `sudo rm /mlflow.db`
+    Elle se trouve à la racine du disque.
     """)
     return
 
