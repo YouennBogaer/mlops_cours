@@ -59,6 +59,26 @@ def _(mo):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    /// danger | Mise en garde, MLflow et UV !
+
+    Depuis la version 3.1.0 de MLFlow, il y a un bug d'exécution de MLFlow avec UV. Ils ont fait une refactorisation du fonctionnement des tâches annexes cron-job via Huey.
+
+    Comme ils ont mal fait la refacto et qu'il veulent absolument rester en pip natif, la version que nous utiliserons sera la 3.0.1.
+
+    Pour installer une version spécifique de mlflow nous utiliserons la commande suivante :
+    ```
+    uv pip install "mlflow==3.0.1"
+    ```
+
+    Vous pouvez suivre l'évolution du problème ici : https://github.com/mlflow/mlflow/issues/21062
+    ///
+    """)
+    return
+
+
 @app.cell
 def _():
     import os
@@ -71,13 +91,25 @@ def _():
     import mlflow.sklearn
     from lightgbm.sklearn import LGBMClassifier  # Wrapper pour scikit-learn
     from mlflow.models import infer_signature
-    from sklearn.metrics import f1_score, PrecisionRecallDisplay, precision_recall_curve
+    from sklearn.metrics import (
+        f1_score,
+        PrecisionRecallDisplay,
+        precision_recall_curve,
+    )
 
     path_kedro = "/Users/noobzik/Documents/Kaggle/purchase-predict/"
-    X_train = pd.read_csv(os.path.expanduser(path_kedro + 'data/05_model_input/X_train.csv'))
-    X_test = pd.read_csv(os.path.expanduser(path_kedro + 'data/05_model_input/X_test.csv'))
-    y_train = pd.read_csv(os.path.expanduser(path_kedro +'data/05_model_input/y_train.csv')).values.flatten()
-    y_test = pd.read_csv(os.path.expanduser(path_kedro +'data/05_model_input/y_test.csv')).values.flatten()
+    X_train = pd.read_csv(
+        os.path.expanduser(path_kedro + "data/05_model_input/X_train.csv")
+    )
+    X_test = pd.read_csv(
+        os.path.expanduser(path_kedro + "data/05_model_input/X_test.csv")
+    )
+    y_train = pd.read_csv(
+        os.path.expanduser(path_kedro + "data/05_model_input/y_train.csv")
+    ).values.flatten()
+    y_test = pd.read_csv(
+        os.path.expanduser(path_kedro + "data/05_model_input/y_test.csv")
+    ).values.flatten()
     return (
         LGBMClassifier,
         PrecisionRecallDisplay,
@@ -97,18 +129,29 @@ def _():
 
 @app.cell
 def _(X_test, X_train):
-    int_columns = ['product_id', 'brand', 'num_views_session', 'num_views_product',
-                   'category', 'sub_category', 'hour', 'minute', 'weekday',
-                   'duration', 'num_prev_sessions', 'num_prev_product_views']
-    X_train[int_columns] = X_train[int_columns].astype('float64')
-    X_test[int_columns] = X_test[int_columns].astype('float64')
+    int_columns = [
+        "product_id",
+        "brand",
+        "num_views_session",
+        "num_views_product",
+        "category",
+        "sub_category",
+        "hour",
+        "minute",
+        "weekday",
+        "duration",
+        "num_prev_sessions",
+        "num_prev_product_views",
+    ]
+    X_train[int_columns] = X_train[int_columns].astype("float64")
+    X_test[int_columns] = X_test[int_columns].astype("float64")
     # Hyper-paramètres des modèles
     hyp_params = {
         "num_leaves": 60,
         "min_child_samples": 10,
         "max_depth": 12,
         "n_estimators": 100,
-        "learning_rate": 0.1
+        "learning_rate": 0.1,
     }
     return (hyp_params,)
 
@@ -152,18 +195,22 @@ def _(
     y_train,
 ):
     # Identification de l'interface MLflow
-    mlflow.set_tracking_uri('http://127.0.0.1:5000')
-    mlflow.set_experiment('purchase_predict')
+    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_experiment("purchase_predict")
     with mlflow.start_run() as run:
-        model = LGBMClassifier(**hyp_params, objective='binary', verbose=-1)
+        model = LGBMClassifier(**hyp_params, objective="binary", verbose=-1)
         model.fit(X_train, y_train)
         score = f1_score(y_test, model.predict(X_test))
         mlflow.log_params(hyp_params)
-        mlflow.log_metric('f1', score)
+        mlflow.log_metric("f1", score)
         print(mlflow.get_artifact_uri())
-        signature = infer_signature(X_train, model.predict(X_train))  # On calcule le score du modèle sur le test
+        signature = infer_signature(
+            X_train, model.predict(X_train)
+        )  # On calcule le score du modèle sur le test
         input_example = X_test.iloc[0:1].copy()
-        mlflow.sklearn.log_model(model, 'model', signature=signature, input_example=input_example)  # Inférer la signature du modèle
+        mlflow.sklearn.log_model(
+            model, "model", signature=signature, input_example=input_example
+        )  # Inférer la signature du modèle
     return (run,)
 
 
@@ -193,11 +240,9 @@ def _(mo):
 def _(run):
     from mlflow.tracking import MlflowClient
 
-    client = MlflowClient(
-        tracking_uri="http://127.0.0.1:5000"
-    )
+    client = MlflowClient(tracking_uri="http://127.0.0.1:5000")
 
-    client.get_metric_history(run.info.run_id, key='f1')
+    client.get_metric_history(run.info.run_id, key="f1")
     return
 
 
@@ -227,14 +272,19 @@ def _(
     y_train,
 ):
     def save_pr_curve(X, y, model):
-        plt.figure(figsize=(16,11))
-        prec, recall, _ = precision_recall_curve(y, model.predict_proba(X)[:,1], pos_label=1)
-        pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot(ax=plt.gca())
+        plt.figure(figsize=(16, 11))
+        prec, recall, _ = precision_recall_curve(
+            y, model.predict_proba(X)[:, 1], pos_label=1
+        )
+        pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot(
+            ax=plt.gca()
+        )
         plt.title("PR Curve", fontsize=16)
         plt.gca().xaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
         plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
         plt.savefig(os.path.expanduser("data/pr_curve.png"))
         plt.close()
+
 
     def train_model_local(params):
 
@@ -247,13 +297,17 @@ def _(
 
             mlflow.log_params(hyp_params)
             mlflow.log_metric("f1", score)
-            mlflow.log_artifact(os.path.expanduser("data/pr_curve.png"), artifact_path="plots")
+            mlflow.log_artifact(
+                os.path.expanduser("data/pr_curve.png"), artifact_path="plots"
+            )
 
-                # Inférer la signature du modèle
+            # Inférer la signature du modèle
             signature = infer_signature(X_train, model.predict(X_train))
             input_example = X_test.iloc[0:1].copy()
 
-            mlflow.sklearn.log_model(model, "model", signature=signature, input_example=input_example)
+            mlflow.sklearn.log_model(
+                model, "model", signature=signature, input_example=input_example
+            )
 
     return (save_pr_curve,)
 
@@ -270,9 +324,9 @@ def _(mo):
 
 @app.cell
 def _(hyp_params, train_model):
-    train_model({**hyp_params, **{'n_estimators': 200, 'learning_rate': 0.05}})
-    train_model({**hyp_params, **{'n_estimators': 500, 'learning_rate': 0.025}})
-    train_model({**hyp_params, **{'n_estimators': 1000, 'learning_rate': 0.01}})
+    train_model({**hyp_params, **{"n_estimators": 200, "learning_rate": 0.05}})
+    train_model({**hyp_params, **{"n_estimators": 500, "learning_rate": 0.025}})
+    train_model({**hyp_params, **{"n_estimators": 1000, "learning_rate": 0.01}})
     return
 
 
@@ -366,23 +420,40 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ```
     [Unit]
     Description=MLflow
-    After=network.target 
+    After=network.target
 
     [Service]
     Restart=on-failure
     RestartSec=30
-    ExecStart=/home/<user-name>/.venv/bin/mlflow server --default-artifact-root gs://<gcs_bucket_name_here>/mlflow --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 80 --allowed-hosts "*"
+    ExecStart=/home/<user-name>/.venv/bin/mlflow server --default-artifact-root gs://<gcs_bucket_name_here>/mlflow --backend-store-uri sqlite:///mlflow.db --host 0.0.0.0 --port 80
 
 
     [Install]
     WantedBy=multi-user.target
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    /// attention | Attention!
+    Si vous utilisez une version supérieur à 3.0.1, ajoutez --allowed-hosts "*"
+    C'est du au passage au backend Huey, mentionné précédenement.
+
+    Gardez à l'esprit que MLflow supérieur à 3.0.1 via UV ne fonctionnera pas
+    ///
+
+    - Si vous deviez ré-installer `mlflow`
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -462,8 +533,11 @@ def _(mo):
 @app.cell
 def _(mlflow, os):
     from google.cloud import storage
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.expanduser('notebooks/mlflow.json')
-    mlflow.set_tracking_uri('http://136.114.127.11:80')
+
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
+        "notebooks/mlflow.json"
+    )
+    mlflow.set_tracking_uri("http://136.114.127.11:80")
     # Authentification à Google Cloud avec la clé correspondant au compte de service MLflow
     # Nouvel URI de l'interface MLflow
     client_1 = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
@@ -492,20 +566,28 @@ def _(
     y_test,
     y_train,
 ):
-    mlflow.set_experiment('purchase_predict')
+    mlflow.set_experiment("purchase_predict")
+
 
     def train_model(params):
         with mlflow.start_run() as run:
-            model = LGBMClassifier(**params, objective='binary', verbose=-1)
+            model = LGBMClassifier(**params, objective="binary", verbose=-1)
             model.fit(X_train, y_train)
             score = f1_score(y_test, model.predict(X_test))
             save_pr_curve(X_test, y_test, model)
             mlflow.log_params(hyp_params)
-            mlflow.log_metric('f1', score)
-            mlflow.log_artifact(os.path.expanduser('data/pr_curve.png'), artifact_path='plots')
+            mlflow.log_metric("f1", score)
+            mlflow.log_artifact(
+                os.path.expanduser("data/pr_curve.png"), artifact_path="plots"
+            )
             signature = infer_signature(X_train, model.predict(X_train))
             input_example = X_test.iloc[0:1].copy()
-            mlflow.sklearn.log_model(model, name='model', signature=signature, input_example=input_example)
+            mlflow.sklearn.log_model(
+                model,
+                name="model",
+                signature=signature,
+                input_example=input_example,
+            )
 
     return (train_model,)
 
@@ -520,7 +602,7 @@ def _(mo):
 
 @app.cell
 def _(hyp_params, train_model):
-    train_model({**hyp_params, **{'n_estimators': 200, 'learning_rate': 0.05}})
+    train_model({**hyp_params, **{"n_estimators": 200, "learning_rate": 0.05}})
     return
 
 
