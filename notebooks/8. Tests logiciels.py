@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -45,11 +45,13 @@ def _(mo):
     - Les **tests de régression**, où l'on doit s'assurer que le développement d'une nouvelle fonctionnalité ne va pas faire survenir un bug déjà rencontré par le passé.
     - Les **tests d'intégration**, où on cherche à voir si la fonctionnalité développée va être correctement intégré dans l'application sans générer des erreurs dues à son interaction avec d'autres composantes. Ces erreurs sont en pratique plus difficiles à prévenir, d'où la difficulté de construire des tests d'intégration efficaces.
 
+    /// note
     Dans les faits, les bonnes pratiques nécessitent de suivre plusieurs conventions. En travail collaboratif, notamment avec `git`, les règles de base suivantes sont appliquées.
 
     - Ne **jamais fusionner de branches** si les tests ne sont pas valides.
     - **Toujours écrire des tests** pour de nouvelles fonctionnalités.
     - Lorsque l'on corrige un bug, **toujours écrire le test** et l'appliquer sur la correction.
+    ///
 
     ## 2. Tests de modèles de Machine Learning
 

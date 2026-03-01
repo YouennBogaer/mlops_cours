@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -53,9 +53,9 @@ def _(mo):
 
     Suivre la PEP 8, c'est **suivre les recommandations officielles** pour écrire du code qui respecte un format adopté par le plus grand nombre.
 
-    <div class="alert alert-block alert-info">
-        Cette norme n'est pas rigide dans le sens où certains projets peuvent s'affranchir de certaines contraintes (comme la taille maximale d'une ligne, fixée à 79 par défaut pour PEP 8).
-    </div>
+    /// attention
+    Cette norme n'est pas rigide dans le sens où certains projets peuvent s'affranchir de certaines contraintes (comme la taille maximale d'une ligne, fixée à 79 par défaut pour PEP 8).
+    ///
 
     Prenons comme exemple les premières spécifications dans <a href="https://www.python.org/dev/peps/pep-0008/#indentation" target="_blank">Code Lay-out</a> pour l'indentation.
 
@@ -116,9 +116,9 @@ def _(mo):
 
     Par ailleurs, PEP 8 est strict concernant l'indentation : **utiliser 4 espaces par niveau d'identation**. Même s'il est possible d'utiliser les deux, les espaces constituent la méthode d'indentation préférée.
 
-    <div class="alert alert-block alert-warning">
-        Attention à ne pas mélanger le caractère de tabulation et les 4 espaces dans un seul et même fichier, car le programme ne pourra pas être exécuté.
-    </div>
+    /// attention
+    Attention à ne pas mélanger le caractère de tabulation et les 4 espaces dans un seul et même fichier, car le programme ne pourra pas être exécuté.
+    ///
 
     Autre exemple de recommandations : **les espaces dans les expressions**. Pour PEP 8, les règles suivantes doivent être respectées.
 
@@ -393,6 +393,8 @@ def _(mo):
     En revanche, d'autres recommandations PEP 8, comme le nommage des variables, ne sera pas modifié par `black`. C'est donc tout l'intérêt ici d'utiliser `black` pour reformater le code, puis ensuite utiliser `flake8` pour vérifier que le code reformaté respecte bien PEP 8.
 
     Un autre exemple ici, que nous avions utilisé lors de l'optimisation bayésienne pour LightGBM.
+
+    La version du code est avant l'application de `astral/ty`
     """)
     return
 
@@ -453,6 +455,7 @@ def _(mo):
     ```
     from lightgbm.sklearn import LGBMClassifier
     from hyperopt import hp, tpe, fmin
+
     MODEL_SPECS = {
         "name": "LightGBM",
         "class": LGBMClassifier,
@@ -500,7 +503,7 @@ def _(mo):
     mo.md(r"""
     ## Les deux en même temps à l'aide de Ruff
 
-    Les temps change avec l'arrivé de Astral sur la scène du développement python. En effet, après vous avoir introduit l'utilisation de UV pour les environnement virtuels de python, l'équipe avait commencé sur la scène de python à travers un outil qui s'appelle Ruff.
+    Les temps changent avec l'arrivé de Astral sur la scène du développement python. En effet, après vous avoir introduit l'utilisation de UV pour les environnement virtuels de python, l'équipe avait commencé sur la scène de python à travers un outil qui s'appelle Ruff.
 
     Ruff en simple, c'est la fusion de flake8 et de black.
 
@@ -515,10 +518,64 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ## Pour aller plus loin : ty de Astral
+    ## Pour aller plus loin : `ty` de Astral
 
-    ty est tout nouveau, il a pour rôle de vérifier strictement le typage de vos variables ainsi que vos méthodes. Elle vous sera très utile lorsque vous attaquerez la partie de FastAPI, plus tard dans le cours.
+    `ty` est tout nouveau, il a pour rôle de vérifier strictement le typage de vos variables ainsi que vos méthodes. Elle vous sera très utile lorsque vous attaquerez la partie de FastAPI, plus tard dans le cours.
+
+    Par analogie, vous pouvez considérer que `astral/ty` est l'équivalent d'un `gcc -Wall`
+
+    Dès maintenant, nous vous recommendons très fortement à utiliser l'association de `astral/ruff` et `astral/ty` en plus de de `astral/uv`.
+
+    Elle seront très prochainement le nouveau standard côté OPS, si les tests en entreprise sont concluantes. Vous serez parmis les premiers à les utiliser sans formation supplémentaire !
+
+    Point d'attention pour les entreprise qui pratiquent les package intermédiaires. C'est à dire que certains paquets de la bibliothèque sont copiés en interne pour des raisons de sécurités. (Notament aux applications et environnements interne qui ne doit jamais accéder à internet !)
     """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    La nouvelle version de notre modèle doit être typé, et le meilleur moyen de le typer est l'utilisation d'un ModelSpec associé à un type.
+    """)
+    return
+
+
+@app.cell
+def _(Any, Callable, LGBMClassifier, TypedDict, hp):
+    class ModelSpec(TypedDict, total=True):
+        name: str
+        model_class: Callable[..., Any]  # Covers LGBMClassifier()
+        params: dict[str, Any]  # Accepts hp.uniform etc.
+        override_schemas: dict[str, type]
+
+
+    # Type the MODELS list
+    MODELS: list[ModelSpec] = [
+        {
+            "name": "LightGBM",
+            "model_class": LGBMClassifier,
+            "params": {
+                "objective": "binary",
+                "verbose": -1,
+                "learning_rate": hp.uniform("learning_rate", 0.001, 1),
+                "num_iterations": hp.quniform("num_iterations", 100, 1000, 20),
+                "max_depth": hp.quniform("max_depth", 4, 12, 6),
+                "num_leaves": hp.quniform("num_leaves", 8, 128, 10),
+                "colsample_bytree": hp.uniform("colsample_bytree", 0.3, 1),
+                "subsample": hp.uniform("subsample", 0.5, 1),
+                "min_child_samples": hp.quniform("min_child_samples", 1, 20, 10),
+                "reg_alpha": hp.choice("reg_alpha", [0, 1e-1, 1, 2, 5, 10]),
+                "reg_lambda": hp.choice("reg_lambda", [0, 1e-1, 1, 2, 5, 10]),
+            },
+            "override_schemas": {
+                "num_leaves": int,
+                "min_child_samples": int,
+                "max_depth": int,
+                "num_iterations": int,
+            },
+        }
+    ]
     return
 
 

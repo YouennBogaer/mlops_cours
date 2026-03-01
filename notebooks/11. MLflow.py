@@ -97,6 +97,7 @@ def _():
         precision_recall_curve,
     )
 
+    # Mettez le chemin de votre kedro local ici, nous allons lancer les cellules pour la suite
     path_kedro = "/Users/noobzik/Documents/Kaggle/purchase-predict/"
     X_train = pd.read_csv(
         os.path.expanduser(path_kedro + "data/05_model_input/X_train.csv")
@@ -541,7 +542,7 @@ def _(mlflow, os):
     mlflow.set_tracking_uri("http://136.114.127.11:80")
     # Authentification à Google Cloud avec la clé correspondant au compte de service MLflow
     # Nouvel URI de l'interface MLflow
-    client_1 = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
+    client = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
     return
 
 

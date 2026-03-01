@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -104,11 +104,12 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ```
-    MODELS = [
+    ```py
+    # Type the MODELS list
+    MODELS: list[ModelSpec] = [
         {
             "name": "LightGBM",
-            "class": LGBMClassifier,
+            "model_class": LGBMClassifier,
             "params": {
                 "objective": "binary",
                 "verbose": -1,
@@ -138,13 +139,15 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via `"class"`, le TY de astral nous reverra l'erreur suivante :
+    /// note
+    Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via `"class"`, le `astral/ty` de astral nous reverra l'erreur suivante :
     ```
     Error at model_conf = next(m for m in MODELS if isinstance(instance, m["class"]))
     Argument to function `isinstance` is incorrect: Expected `type | UnionType | tuple[Divergent, ...]`, found `Unknown | str | <class 'LGBMClassifier'> | dict[Unknown | str, Unknown | str | int] | dict[Unknown | str, Unknown | <class 'int'>]` (ty invalid-argument-type)
     ```
 
     Nous allons devoir créer une fonction qui vérifie le typage afin que faire taire cette erreur lancé par `ty`
+    ///
     """)
     return
 
@@ -153,12 +156,12 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     ```python
-    def get_model_config(instance: BaseEstimator) -> dict:
-        "\"\"
-        Returns the configuration dictionary for the given model instance.
-        "\"\"
-        if isinstance(instance, LGBMClassifier):
-            return MODELS[0]  # Or match by type
+    def get_model_config(instance: BaseEstimator) -> ModelSpec:
+        "\"\"Returns the configuration dictionary for the given model instance."\"\"
+        for model_spec in MODELS:
+            model_cls: type = model_spec["model_class"]  # type: ignore (or guard below)
+            if isinstance(model_cls, type) and isinstance(instance, model_cls):
+                return model_spec
         raise ValueError(f"Unsupported model: {type(instance)}")
     ```
     """)
@@ -560,9 +563,9 @@ def _(mo):
 
     Après avoir crée le compte de service, nous pouvons créer une clé au format JSON et la télécharger.
 
-    <div class="alert alert-block alert-danger">
-        La clé du compte de service est équivalent à un mot de passe. Il ne faut jamais la divulguer ou la laisser dans un projet où Git ajouterai ce fichier à un dépôt distant.
-    </div>
+    /// danger
+    La clé du compte de service est équivalent à un mot de passe. Il ne faut jamais la divulguer ou la laisser dans un projet où Git ajouterai ce fichier à un dépôt distant.
+    ///
 
     Heureusement pour nous, Kedro a prévu de cas de figure. Tous les mots de passes et clés de services, lorsqu'ils sont utilisé sur des environnement de développement, doivent être placés dans le dossier `conf/local`, qui est ignoré par Git. Ajoutons le fichier `service-account.json` dans ce dossier en insérant le contenu de la clé JSON téléchargée.
 

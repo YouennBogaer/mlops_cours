@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.1"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -43,7 +43,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    uv add python-dotenv mlflow google-cloud-storage
+    uv add python-dotenv "mlflow==3.0.1" google-cloud-storage
     """,
     name="_"
 )
@@ -108,8 +108,8 @@ def _(mo):
 
 @app.cell
 def _():
-    mlflow_enabled: True # Do we log metrics and artifacts to MLflow ?
-    mlflow_experiment_id: 1 # Experimented ID associated to this project
+    mlflow_enabled: True  # Do we log metrics and artifacts to MLflow ?
+    mlflow_experiment_id: 1  # Experimented ID associated to this project
     return
 
 
@@ -154,36 +154,65 @@ def _():
     import pandas as pd
     import mlflow
 
-    return mlflow, np, os
+    return np, os
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Au tout début de la fonction, après avoir récupéré la base d'apprentissage $(X, y)$, nous démarrons un run.
+
+    Mais nous devons changer la manière dont nous traitons les données d'apprentissage, pour que notre parseur Astral/ty soit content.
+
+    Nous en profitons pour ajouter également les bout de code permettant de tracker MLFlow ou non. Ces bouts de codes sont à mettre au début de la fonction `auto-ml`
     """)
     return
 
 
 app._unparsable_cell(
     r"""
-    X = pd.concat([pd.DataFrame(X_train), pd.DataFrame(X_test)], ignore_index=True)
+        X = pd.concat([pd.DataFrame(X_train), pd.DataFrame(X_test)], ignore_index=True)
 
-    y = pd.concat((y_train, y_test))
         # Convert y to Series
         y_train_flat = y_train.squeeze() if isinstance(y_train, pd.DataFrame) else y_train
         y_test_flat = y_test.squeeze() if isinstance(y_test, pd.DataFrame) else y_test
 
         y = pd.concat([pd.Series(y_train_flat), pd.Series(y_test_flat)], ignore_index=True)
+        opt_models = []
 
-    run_id:str = ""
-    if log_to_mlflow:
-        mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER", "http://localhost:5000"))
-        run: mlflow.ActiveRun = mlflow.start_run(experiment_id=str(experiment_id))
-        run_id = run.info.run_id
+        run_id: str = ""
+        if log_to_mlflow:
+            mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER", "http://localhost:5000"))
+            exp_id = str(experiment_id)
+            try:
+                mlflow.get_experiment(exp_id)  # Verify exists # ty: ignore[possibly-missing-attribute]
+            except mlflow.exceptions.MlflowException:
+                # Auto-create if ID=1 or name-like
+                if experiment_id == 1:
+                    exp_id = mlflow.create_experiment(  # ty: ignore[possibly-missing-attribute]
+                        "purchase_predict"
+                    )  # Returns str ID
+
+            run: mlflow.ActiveRun = mlflow.start_run(experiment_id=exp_id)  # ty: ignore[possibly-missing-attribute]
+            run_id = run.info.run_id
+        model_specs: ModelSpec
     """,
-    name="_"
+    column=None, disabled=True, hide_code=True, name="_"
 )
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    /// note
+    Puisque le cours est préparé avec astral/ty, vous allez voir beacoup d'adaptation de code python, dans le seul but d'avoir un code clean, mais surtout, être en règle avec `ty`.
+
+    On va dire que `ty` sera l'équivalent de notre `gcc -Wall` dont nous cherchons à effacer l'ensemble des warnings.
+
+    Nous pouvons pousser le concepte plus loin en l'intégrant sous la forme de pre-commit si ce n'est pas déjà réalisé.
+    ///
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -202,6 +231,7 @@ def _(BaseEstimator, np, opt_models, run_id, save_pr_curve):
     from mlflow.models import infer_signature
     import mlflow.sklearn
 
+
     # On oublie pas de changer la sigature de la fonction, qui est rappelé ici :
     def auto_ml(
         X_train: np.ndarray,
@@ -212,33 +242,37 @@ def _(BaseEstimator, np, opt_models, run_id, save_pr_curve):
         log_to_mlflow: bool = False,
         experiment_id: int = -1,
     ) -> dict[str, BaseEstimator | str]:
-    
+
         #
-        # ... 
+        # ...
         #
-    
+
         # In case we have multiple models
         best_model = max(opt_models, key=lambda x: x["score"])
-    
+
         if log_to_mlflow:
-            model_metrics = {
-                "f1": best_model["score"]
-            }
-            signature = infer_signature(X_train, best_model["model"].predict(X_train))
+            model_metrics = {"f1": best_model["score"]}
+            signature = infer_signature(
+                X_train, best_model["model"].predict(X_train)
+            )
             save_pr_curve(X_test, y_test, best_model["model"])
-    
-            mlflow.log_metrics(model_metrics)
-            mlflow.log_params(best_model["params"])
+
+            mlflow.log_metrics(model_metrics)  # ty: ignore[possibly-missing-attribute]
+            mlflow.log_params(best_model["params"])  # ty: ignore[possibly-missing-attribute]
             # Only use if validation curves are produced
-            mlflow.log_artifacts("data/08_reporting", artifact_path="plots")
-            mlflow.sklearn.log_model(best_model["model"], "model", signature=signature)
-    
-            mlflow.end_run()
-    
-        return {"model": best_model["model"], "mlflow_run_id": run_id}  # Return just the model from the best_model dict
+            mlflow.log_artifacts("data/08_reporting", artifact_path="plots")  # ty: ignore[possibly-missing-attribute]
+            mlflow_info = mlflow.sklearn.log_model(
+                best_model["model"], name="model", signature=signature
+            )
 
+            mlflow.end_run()  # ty: ignore[possibly-missing-attribute]
+        return {
+            "model": best_model["model"],
+            "mlflow_run_id": run_id,
+            "mlflow_model_uri": mlflow_info.model_uri if log_to_mlflow else "",
+        }  # Return just the model from the best_model dict
 
-    return auto_ml, mlflow
+    return (auto_ml,)
 
 
 @app.cell(hide_code=True)
@@ -255,14 +289,19 @@ def _(os):
     import matplotlib.ticker as mtick
     from sklearn.metrics import precision_recall_curve, PrecisionRecallDisplay
 
+
     def save_pr_curve(X, y, model):
         plt.figure(figsize=(16, 11))
-        prec, recall, _ = precision_recall_curve(y, model.predict_proba(X)[:, 1], pos_label=1)
-        pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot(ax=plt.gca())
-        plt.title('PR Curve', fontsize=16)
+        prec, recall, _ = precision_recall_curve(
+            y, model.predict_proba(X)[:, 1], pos_label=1
+        )
+        pr_display = PrecisionRecallDisplay(precision=prec, recall=recall).plot(
+            ax=plt.gca()
+        )
+        plt.title("PR Curve", fontsize=16)
         plt.gca().xaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
         plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
-        plt.savefig(os.path.expanduser('data/08_reporting/pr_curve.png'))
+        plt.savefig(os.path.expanduser("data/08_reporting/pr_curve.png"))
         plt.close()
 
     return (save_pr_curve,)
@@ -284,10 +323,19 @@ def _(Pipeline, auto_ml, node):
                 node(
                     auto_ml,
                     [
-                        "X_train", "y_train", "X_test", "y_test",
-                        "params:automl_max_evals", "params:mlflow_enabled",
-                        "params:mlflow_experiment_id"],
-                    dict(model="model", mlflow_run_id="mlflow_run_id"),
+                        "X_train",
+                        "y_train",
+                        "X_test",
+                        "y_test",
+                        "params:automl_max_evals",
+                        "params:mlflow_enabled",
+                        "params:mlflow_experiment_id",
+                    ],
+                    dict(
+                        model="model",
+                        mlflow_run_id="mlflow_run_id",
+                        mlflow_model_uri="mlflow_model_uri",
+                    ),
                 )
             ]
         )
@@ -307,7 +355,7 @@ def _(mo):
 
     Nous avons donc un problème de dépendance du projet à gérer, et pour le faire fonctionner, nous allons demander à UV des conditions de dépendance nécessaire :
     ```
-    uv add "pandas>=2.0.0,<3.0.0" "mlflow>=2.10.0"
+    uv add "pandas>=2.0.0,<3.0.0" "mlflow<3.1.0"
     ```
     """)
     return
@@ -368,7 +416,8 @@ def _(mo):
     mo.md(r"""
     Après quelques dizaines de secondes, le run devrait être visible sous MLflow.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry2.png" />
+    ![alt](public/model_registry2.png)
+    ![alt](public/model_registry3_1.png)
 
     N'oublions pas, puisque le test est concluant, de remettre `automl_max_evals` à sa valeur d'origine.
     """)
@@ -392,31 +441,63 @@ def _(mo):
 
     C'est un composant particulièrement utile pour gérer le cycle de vie des modèles, car le cycle staging, production et archive est couramment appliqué lorsque des modèles sont mis à jour régulièrement. Sous MLflow, l'onglet Models permet d'afficher tous les modèles enregistrés.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry4.png" />
+    ![alt](public/model_registry4.png)
 
-    Retournons dans les expériences et choisissons le dernier run que nous avons lancé. En cliquant sur `model` dans les artifacts, un bouton *Register Model* apparaît à droite.
+    Retournons dans les expériences et choisissons le dernier run que nous avons lancé. En bas de la page, nous avons une sectione nommé "Logged models". Cliquez sur "model" qui se trouve en dessous de "Model name", un bouton *Register Model* apparaît à droite.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry5.png" />
 
+    ![alt](public/model_registry5_1.png)
     En cliquant dessus, nous allons pouvoir ajouter manuellement le modèle au registre. Pour cela, nous devons créer un nouveau modèle que l'on nommera `purchase_predict`.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry6.png" />
+    ![alt](public/model_registry_6.png)
 
     En retournant dans Models, nous voyons que la version 1 (le modèle que nous venons d'ajouter est bien présent).
+    /// attention | Attention :
+    Depuis la version 3, MLFlow a changé la manière de gérer les version des modèles.
+    Par le passé, nous avons :
+    - Version 1: Staging
+    - Version 2: Production
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry7.png" />
+    Aujourd'hui, nous avons plusieurs version avec plusieurs états comme le montre cet image
+
+    ![alt](public/model_registry7.png)
+
+    - Cliquez sur "Try it now"
+    ///
+
+
+    ![alt](public/model_registry8.png)
 
     En cliquant dessus, nous avons accès à plus de détails sur les différentes versions présentes.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry8.png" />
 
-    Pour une version spécifique, nous pouvons manuellement transitionner vers un état de pré-production ou de production. L'objectif sera d'automatiser cette tâche pour automatiquement changer l'état d'un modèle que l'on aura entraîné.
+    Pour une version spécifique, nous pouvons manuellement transitionner vers un état de pré-production ou de production (Pour l'ancien mode).
+
+    Pour une version spécifique, nous pouvons attribuer un tag pour dire dans quel état est le modèle. A savoir qu'un modèle peut posséder plusieurs tags en même temps (Nouveau mode, celui que nous travaillons actuellement)
+
+    L'objectif sera d'automatiser cette tâche pour automatiquement changer l'état d'un modèle que l'on aura entraîné.
 
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry9.png" />
 
+
+    ![alt](public/registry_model_9.png)
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ### Pipeline de déploiement
 
-    Une fois l'entraînement réalisé, nous allons également implémenter dans Kedro un pipeline qui va permettre de transitionner l'état d'un modèle en staging ou production. Pour cela, nous allons créer un pipepline `deployment` avec les trois fichiers `__init__.py`, `nodes.py` et `pipeline.py`. Le fichier `__init__.py` contiendra les mêmes instructions.
+    Une fois l'entraînement réalisé, nous allons également implémenter dans Kedro un pipeline qui va permettre de transitionner l'état d'un modèle en staging ou production.
+
+    Pour cela, nous allons créer un pipepline `deployment`.
+
+    Nous rappelons donc la commande pour créer un pipeline comme le suit :
+    ```
+    uv run kedro pipeline create loading
+    ```
     """)
     return
 
@@ -424,6 +505,20 @@ def _(mo):
 @app.cell
 def _(load_dotenv):
     load_dotenv()
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Bien évidement, notre `__init.py__` possèdera une ligne pour charger les `.env`
+
+    /// danger
+    Une piqure de rappel ne fait pas de mal, ne **JAMAIS** commit un `.env` sous peine d'être licencié pour le motif faute grave, avec un éventuel poursuite judiciaire par l'équipe cyber-sécurité, car votre entreprise se retrouve dans le journal de 20h pour une fuite de données vers les forums du darknet.
+
+    La France est actuellement champion des fuites de données, ne soyez pas le prochain sur la liste.
+    ///
+    """)
     return
 
 
@@ -439,28 +534,48 @@ def _(mo):
 
 
 @app.cell
-def _(mlflow, os):
+def _():
+    import os
+    import mlflow
+
     from mlflow.tracking import MlflowClient
 
-    def push_to_model_registry(registry_name: str, run_id: int):
+
+    def push_to_model_registry(registry_name: str, model_uri: str) -> str:
         """
         Pushes a model's version to the specified registry.
         """
-        mlflow.set_tracking_uri(os.getenv('MLFLOW_SERVER'))
-        result = mlflow.register_model('runs:/{}/artifacts/model'.format(run_id), registry_name)
+        tracking_uri = os.getenv("MLFLOW_SERVER")
+        if not tracking_uri:
+            raise ValueError("MLFLOW_SERVER environment variable is not set")
+        mlflow.set_tracking_uri(tracking_uri)
+        client = MlflowClient()
+        result = client.create_model_version(
+            name=registry_name,
+            source=model_uri,  # Pass directly, no runs:/ wrapping
+        )
+
         return result.version
 
-    def stage_model(registry_name: str, version: int):
-        """
-        Stages a model version pushed to model registry.
-        """
-        env = os.getenv('ENV')
-        if env not in ['staging', 'production']:
-            return
-        client = MlflowClient()
-        client.transition_model_version_stage(name=registry_name, version=int(version), stage=env[0].upper() + env[1:])
 
-    return push_to_model_registry, stage_model
+    def stage_model(registry_name: str, version: str) -> None:
+        """
+        Assigns an alias (e.g., 'staging') to a model version in the registry.
+        Use model URI: models://registry_name@staging for deployments.
+        """
+        env = os.getenv("ENV")
+        if env is None:
+            return
+
+        alias = env  # 'staging' or 'production' as alias name
+        client = MlflowClient()
+
+        # Assign alias to this version (overwrites prior if same alias)
+        client.set_registered_model_alias(
+            name=registry_name, alias=alias, version=version
+        )
+
+    return (os,)
 
 
 @app.cell(hide_code=True)
@@ -490,9 +605,13 @@ def _(mo):
     return
 
 
-@app.cell
-def _():
-    mlflow_model_registry: "purchase_predict" # Name of model registry of this project
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    mlflow_model_registry: (
+        "purchase_predict"  # Name of model registry of this project
+    )
+    """)
     return
 
 
@@ -504,20 +623,39 @@ def _(mo):
     return
 
 
-@app.cell
-def _(push_to_model_registry, stage_model):
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    mo.md(r"\"\"
+    ```
     from kedro.pipeline import Pipeline, node
 
-    def create_pipeline_1(**kwargs):
-        return Pipeline([node(push_to_model_registry, ['params:mlflow_model_registry', 'mlflow_run_id'], 'mlflow_model_version'), node(stage_model, ['params:mlflow_model_registry', 'mlflow_model_version'], None)])
 
-    return Pipeline, node
+    def create_pipeline(**kwargs):
+        return Pipeline(
+            [
+                node(
+                    push_to_model_registry,
+                    ["params:mlflow_model_registry", "mlflow_run_id"],
+                    "mlflow_model_version",
+                ),
+                node(
+                    stage_model,
+                    ["params:mlflow_model_registry", "mlflow_model_version"],
+                    None,
+                ),
+            ]
+        )
+    ```
+    "\"\")
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Avant de passer à la suite, nous devons définir notre ml_run_id qui va récupérer le numéro du run depuis l'entrainement afin de passer l'information lors du déploiement. Il sera définit dans notre catalogue
+    Avant de passer à la suite, nous devons définir notre `ml_run_id` qui va récupérer le numéro du run depuis l'entrainement afin de passer l'information lors du déploiement. Il sera définit dans notre catalogue
     """)
     return
 
@@ -534,56 +672,20 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Il ne reste plus qu'à renseigner ce pipeline dans `hooks.py`.
-    """)
-    return
-
-
-@app.cell
-def _(
-    Dict,
-    Pipeline,
-    hook_impl,
-    loading_pipeline,
-    processing_pipeline,
-    training_pipeline,
-):
-    from purchase_predict.pipelines.deployment import pipeline as deployment_pipeline
-
-    class ProjectHooks_1:
-
-        @hook_impl
-        def register_pipelines(self) -> Dict[str, Pipeline]:
-            """Register the project's pipeline.
-
-            Returns:
-                A mapping from a pipeline name to a ``Pipeline`` object.
-
-            """
-            p_processing = processing_pipeline.create_pipeline()
-            p_training = training_pipeline.create_pipeline()
-            p_loading = loading_pipeline.create_pipeline()
-            p_deployment = deployment_pipeline.create_pipeline()
-            return {'global': Pipeline([p_loading, p_processing, p_training, p_deployment]), 'loading': p_loading, 'processing': p_processing, 'training': p_training, 'deployment': p_deployment}
-
-    return
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
+    mo.md(r"\"\"
     Nous obtenons le pipeline suivant.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry10.png" />
+    ![alt](public/kedro-pipeline.png)
 
     Lançons une exécution globale (en spécifiant là-aussi le paramètre `automl_max_evals` à 1 pour accélerer les calculs.
+    "\"\")
     """)
     return
 
 
 app._unparsable_cell(
     r"""
-    kedro run --pipeline global
+    uv run kedro run
     """,
     name="_"
 )
@@ -594,13 +696,12 @@ def _(mo):
     mo.md(r"""
     Puisque nous sommes en environnement staging, sur MLflow, le modèle enregistré doit avoir l'état correspondant.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry12.png" />
+
+    ![alt](public/model_registry12.png)
 
     Nous avons donc à la fois la *Latest Version* à 2, et c'est elle qui est actuellement en staging.
 
     L'intégralité des pipelines ont été réalisées, ce qui donne pour le pipeline `global` un ensemble assez important d'étapes.
-
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry11.png" />
 
     > ❓ En quoi envoyer le modèle vers le registre peut nous être utile ?
 
@@ -659,7 +760,6 @@ app._unparsable_cell(
     r"""
     git checkout -b staging
     git commit -am "New staging branch"
-    git push google staging
     """,
     name="_"
 )
@@ -668,23 +768,19 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    On n'oubliera pas d'ajouter la clé SSH à l'agent avec de pousser vers le dépôt.
-    """)
-    return
+    Pour de raison évidentes de pricing, https://cloud.google.com/products/secure-source-manager/pricing?hl=en#secure-source-manager-pricing
 
+    Nous n'allons pas utiliser le service Secure Source Manager, afin d'avoir notre propre instance de Git.
 
-app._unparsable_cell(
-    r"""
-    ssh-add ~/ssh/git_key
-    """,
-    name="_"
-)
+    À la place, nous allons devoir mettre le projet sur GitHub.
 
+    - Créez à présent un répertoire Git pour ce projet. Ce projet consititura la pipeline d'entrainement.
 
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Sur <a href="https://source.cloud.google.com/" target="_blank">Cloud Source</a>, la branche `staging` est désormais visible.
+    Il nous restera plus qu'à appliquer les push sur la branche `staging`
+
+    ```
+    git push -u origin staging
+    ```
     """)
     return
 

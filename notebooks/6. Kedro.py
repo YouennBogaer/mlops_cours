@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.9"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -62,6 +62,10 @@ def _(mo):
     En effet, les jupyter notebook sont progressivement remplacés par des alternatives répondant à ce problème. C'est le cas notament de Marimo. La particularité de Marimo réside sur le fait que les cellules sont encapsulé par des méthodes. Elle va donc déterminer automatiquement l'ordre d'execution des cellules, comme à l'image des graphes d'exécutions.
 
     L'utilisation de Marimo dans le cadre de ce cours vous facilitera la transition d'un code sous la forme de cellules, vers un code en production via Kedro.
+
+    Cependant, cette conversion d'un marimo vers un kedro ne vous sera pas démontré.
+
+    A vour de l'appliquer dans vos futures projets. Vous verrez que chaque cellule est sous la forme d'une fonction si vous ouvrez un notebook marimo à l'aide d'un éditeur de code de votre choix.
     ///
     """)
     return

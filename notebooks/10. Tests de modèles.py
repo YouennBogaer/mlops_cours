@@ -4,7 +4,7 @@
 
 import marimo
 
-__generated_with = "0.20.1"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -102,9 +102,9 @@ def _(mo):
     mo.md(r"""
     Nous ré-utilisons ici les deux fixtures `project_id` et `primary_folder` déjà présentes dans les tests du pipeline `loading`. Nous utilisons la fonction `load_csv_from_bucket` pour récupérer le jeu de données de test depuis Cloud Storage afin d'utiliser une version non altérée qui serait enregistrée en local. En pratique, la fonction `load_csv_from_bucket` aura déjà été testée au préalable par `pytest`, nous pouvons donc l'utiliser ici pour charger les données.
 
-    <div class="alert alert-block alert-warning">
-        Il faut éviter de créer des dépendances entre les tests : c'est pour cela que l'on redéfini ici les fixtures sans les importer depuis <code>loading/conftest.py</code>.
-    </div>
+    /// attention
+    Il faut éviter de créer des dépendances entre les tests : c'est pour cela que l'on redéfini ici les fixtures sans les importer depuis <code>loading/conftest.py</code>.
+    ///
 
     Créons ensuite comme nous l'avions fait le fichier `test_nodes.py` dans le dossier `processing`.
     """)
