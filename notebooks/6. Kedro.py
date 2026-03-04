@@ -409,6 +409,19 @@ def _(mo):
     mo.md(r"""
     Cette fonction retourne le DataFrame `features`, qui correspond aux données encodées.
 
+
+    Comme nous enrengistrons également la manière dont les données ont été traîtées, nous devons les enrengistrer sous la forme d'un fichier `pickle`
+
+    Cela tombe bien, puisque nous avons à notre disposition, `transform_pipeline` qui est récupéré à l'issue de l'appel de la fonction `encode_feature`
+
+    Nous devons donc l'ajouter dans notre catalogue
+
+    ```
+    transform_pipeline:
+      type: pickle.PickleDataset
+      filepath: data/04_feature/transform_pipeline.pkl
+    ```
+
     ### Noeud `split_dataset`
 
     L'autre fonction, `split_dataset`, opère simplement une séparation en deux sous-échantillons. L'argument `test_ratio` permettra de spécifier la proportion d'observation à considérer dans le sous-échantillon de test.
