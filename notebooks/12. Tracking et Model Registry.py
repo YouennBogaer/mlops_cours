@@ -627,9 +627,11 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    ```
     mlflow_model_registry: (
         "purchase_predict"  # Name of model registry of this project
     )
+    ```
     """)
     return
 
@@ -645,7 +647,6 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    mo.md(r"\"\"
     ```
     from kedro.pipeline import Pipeline, Node
 
@@ -666,7 +667,6 @@ def _(mo):
             ]
         )
     ```
-    "\"\")
     """)
     return
 
@@ -691,13 +691,11 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    mo.md(r"\"\"
     Nous obtenons le pipeline suivant.
 
     ![alt](public/kedro-pipeline.png)
 
     Lançons une exécution globale (en spécifiant là-aussi le paramètre `automl_max_evals` à 1 pour accélerer les calculs.
-    "\"\")
     """)
     return
 
