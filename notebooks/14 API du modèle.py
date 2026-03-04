@@ -35,64 +35,68 @@ def _(mo):
 
     Avant de débuter sur la structure de l'API, nous devons apporter une légère modification sur le pipeline `processing` et `training` de Kedro. En effet, si l'on regarde bien, dans le pipeline `processing`, la fonction `encode_features` transforme numérique les données en appliquant par exemple un `LabelEncoder` sur plusieurs colonnes. Sur l'API, il faut que l'on ait **exactement le même encodage**, sinon cela pourrait poser des problèmes lors de la prédiction (valeur jamais observée par exemple).
 
-    Pour cela, nous rajoutons dans le catalogue de données un nouvel élément.
-    """)
-    return
+    Pour cela, nous rajoutons dans le catalogue de données un nouvel élément. (Si ce n'est pas déjà fait avant)
 
-
-app._unparsable_cell(
-    r"""
+    ```
     transform_pipeline:
       type: pickle.PickleDataSet
       filepath: data/04_feature/transform_pipeline.pkl
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Modifions le code dans la fonction `encode_features` du fichier `nodes.py`.
+
+    ```py
+    def encode_features(
+        dataset: pd.DataFrame,
+    ) -> dict[str, pd.DataFrame | dict[str, LabelEncoder]]:
+        "\"\"
+        Encode features of data file.
+        "\"\"
+        features = dataset.drop(["user_id", "user_session"], axis=1).copy()
+
+        encoders = []
+        transform_pipeline: dict[str, LabelEncoder] = {}
+        for label in ["category", "sub_category", "brand"]:
+            features[label] = features[label].astype("string").fillna("unknown")
+            encoder = LabelEncoder()
+            features[label] = encoder.fit_transform(features[label])
+            encoders.append((label, features[label]))
+            transform_pipeline[label] = encoder
+
+        features["weekday"] = features["weekday"].astype(int)
+        return {"features": features, "transform_pipeline": transform_pipeline}
+
+
+    # On a rajouté la transform pipeline
+    ```
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    features = dataset.drop(["user_id", "user_session"], axis=1).copy()
-
-    encoders = []
-    for label in ["category", "sub_category", "brand"]:
-        features[label] = features[label].astype(str)
-        features.loc[features[label] == "nan", label] = "unknown"
-        encoder = LabelEncoder()
-        features.loc[:, label] = encoder.fit_transform(
-            features.loc[:, label].copy()
-        )
-        encoders.append((label, encoder))
-
-    features["weekday"] = features["weekday"].astype(int)
-    return dict(features=features, transform_pipeline=encoders)
-    """,
-    name="_"
-)
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    <div class="alert alert-block alert-warning">
-        Puisque l'on vient de modifier le contenu de la fonction <code>encode_features</code>, il faut également penser à modifier le test unitaire et les fixtures associés !
-    </div>
-    """)
-    return
+    /// attention
+    Puisque l'on vient de modifier le contenu de la fonction `encode_features`, il faut également penser à modifier le test unitaire et les fixtures associés !
+    ///
 
-
-@app.cell
-def _(BALANCE_THRESHOLD, MIN_SAMPLES, encode_features, pd):
+    ```py
     def test_encode_features(dataset_not_encoded):
-        df = encode_features(dataset_not_encoded)["features"]
+        encoded: dict[str, pd.DataFrame | dict[str, LabelEncoder]] = (
+            encode_features(dataset_not_encoded)
+        )
+        features_value = encoded["features"]
+        assert isinstance(features_value, pd.DataFrame), (
+            "Expected DataFrame for features"
+        )
+        df: pd.DataFrame = features_value  # Now type-safe
+
         # Checking column 'purchased' that all values are either 0 or 1
         assert df["purchased"].isin([0, 1]).all()
         # Checking that all columns are numeric
@@ -104,7 +108,8 @@ def _(BALANCE_THRESHOLD, MIN_SAMPLES, encode_features, pd):
         assert (
             df["purchased"].value_counts() / df.shape[0] > BALANCE_THRESHOLD
         ).all()
-
+    ```
+    """)
     return
 
 
@@ -112,16 +117,12 @@ def _(BALANCE_THRESHOLD, MIN_SAMPLES, encode_features, pd):
 def _(mo):
     mo.md(r"""
     De même pour la fixture associée.
-    """)
-    return
-
-
-@app.cell
-def _(encode_features, pytest):
+    ```py
     @pytest.fixture(scope="module")
     def dataset_encoded(dataset_not_encoded):
-        return encode_features(dataset_not_encoded)["features"]
-
+        return encode_features(dataset_not_encoded)
+    ```
+    """)
     return
 
 
@@ -131,12 +132,8 @@ def _(mo):
     Plutôt que de retourner uniquement `features`, la fonction retourne en plus la liste des encodeurs utilisés. Nous n'avons que 3 LabelEncoder, mais nous pourrions en avoir plus et de natures différentes.
 
     Puisque nous avons modifié la sortie de la fonction, nous devons également modifier le pipeline associé.
-    """)
-    return
 
-
-@app.cell
-def _(Pipeline, encode_features, node, split_dataset):
+    ```py
     def create_pipeline(**kwargs):
         return Pipeline(
             [
@@ -159,7 +156,8 @@ def _(Pipeline, encode_features, node, split_dataset):
                 ),
             ]
         )
-
+    ```
+    """)
     return
 
 
@@ -167,12 +165,8 @@ def _(Pipeline, encode_features, node, split_dataset):
 def _(mo):
     mo.md(r"""
     La dernière manipulation consiste à envoyer ce pipeline `sklearn` vers MLflow. En exécutant ce pipeline Kedro, les transformations seront enregistrées dans `04_feature/transform_pipeline.pkl` comme défini dans le catalogue de données. Ainsi, il suffit d'envoyer cet artifact à MLflow, en même temps que les métriques et le modèle sont envoyés.
-    """)
-    return
 
-
-@app.cell
-def _(best_model, log_to_mlflow, mlflow, optimum_params):
+    ```py
     if log_to_mlflow:
         model_metrics = {"f1": best_model["score"]}
 
@@ -183,6 +177,8 @@ def _(best_model, log_to_mlflow, mlflow, optimum_params):
         mlflow.log_artifact("data/04_feature/transform_pipeline.pkl")
         mlflow.sklearn.log_model(best_model["model"], "model")
         mlflow.end_run()
+    ```
+    """)
     return
 
 
@@ -190,17 +186,12 @@ def _(best_model, log_to_mlflow, mlflow, optimum_params):
 def _(mo):
     mo.md(r"""
     Exécutons d'abord le pipeline `processing`, puis `training`.
-    """)
-    return
-
-
-app._unparsable_cell(
-    r"""
+    ```
     kedro run --pipeline processing
     kedro run --pipeline training
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -208,22 +199,18 @@ def _(mo):
     mo.md(r"""
     Le fichier Pickle devrait être présent dans les artifacts sous MLflow.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/api_model1.png" />
+    ![alt](public/api_model1.png)
 
     ### Nouveau projet
 
     C'est parti pour réaliser un nouveau projet qui contiendra les codes sources de l'API. Lançons une nouvelle fenêtre VS Code avec un terminal pour y créer un nouveau dossier avec un environnement virtuel.
-    """)
-    return
 
-
-app._unparsable_cell(
-    r"""
+    ```
     uv init purchase_predict_api --python 3.12
     cd purchase_predict_api/
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -254,12 +241,8 @@ def _(mo):
     - Nous remarquons que `astral/uv` nous a généré un `main.py`, nous pouvons le supprimer.
 
     Commençons par le fichier `app.py`.
-    """)
-    return
 
-
-@app.cell
-def _():
+    ```
     from flask import Flask
 
     app = Flask(__name__)
@@ -272,32 +255,28 @@ def _():
 
     if __name__ == "__main__":
         app.run(port=5000)
-    return (Flask,)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Jusque-là, rien de nouveau. Nous allons installer `Flask` dans l'environnement virtuel.
+
+    ```
+    uv add flask
+    ```
+
+    ///note
+    Au cas où ça ne fonctionne pas
+    ```
+    uv add "flask==1.1.2"
+    ```
+    ///
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    uv add flask
-    """,
-    name="_"
-)
-
-
-app._unparsable_cell(
-    r"""
-    # Au cas où ça ne fonctionne pas
-    uv add "flask==1.1.2"
-    """,
-    name="_"
-)
 
 
 @app.cell(hide_code=True)
@@ -308,10 +287,12 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     ```
     uv run app.py
+    ```
     ```
     * Serving Flask app "app" (lazy loading)
      * Environment: production
@@ -319,52 +300,37 @@ app._unparsable_cell(
        Use a production WSGI server instead.
      * Debug mode: off
      * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-    """,
-    name="_"
-)
-
-
-@app.cell
-def _():
+    ```
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Dans le dossier `src/`, nous allons ajouter le fichier vide `__init__.py` et le fichier `model.py` qui contiendra les fonctions pour charger le modèle. Tout comme nous l'avions fait pour Kedro, installons `python-dotenv` et créons le fichier `.env` pour y insérer les variables d'environnement.
-    """)
-    return
+    Dans le dossier `src/`, nous allons ajouter le fichier vide `__init__.py` et le fichier `model.py` qui contiendra les fonctions pour charger le modèle.
 
+    Tout comme nous l'avions fait pour Kedro, installons `python-dotenv` et créons le fichier `.env` pour y insérer les variables d'environnement.
 
-app._unparsable_cell(
-    r"""
+    ```
     uv add python-dotenv
-    """,
-    name="_"
-)
+    ```
 
-
-app._unparsable_cell(
-    r"""
+    ```
     ENV=staging
     MLFLOW_SERVER=http://xx.xx.xx.xx/
     MLFLOW_REGISTRY_NAME=purchase_predict
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Et nous chargeons les variables d'environnement dans le fichier `__init__.py`.
-    """)
-    return
 
-
-@app.cell
-def _():
+    ```py
     import os
 
     from dotenv import load_dotenv
@@ -376,19 +342,17 @@ def _():
             raise Exception(
                 "Environment variable {} must be defined.".format(env_var)
             )
-    return (os,)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     La boucle `for` permet de s'assurer que toutes les variables d'environnement nécessaires sont bien présentes. Détaillons le contenu du fichier `model.py`.
-    """)
-    return
 
-
-@app.cell
-def _():
+    ```py
     import os
 
     import joblib
@@ -399,7 +363,9 @@ def _():
 
     # Le warning est déjà guardé par le fichier __init__.py, pas besoin de le répéter ici
     mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER"))  # ty: ignore[invalid-argument-type]
-    return ENV, MlflowClient, joblib, mlflow, os
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -415,8 +381,24 @@ def _(mo):
     return
 
 
-@app.cell
-def _(ENV, MlflowClient, joblib, mlflow, os):
+@app.cell(disabled=True)
+def _():
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    À l'initialisation `__init__`, on instancie les variables `model` et `transform_pipeline`, puis on appelle directement la fonction `load_model`.
+
+    Cette dernière va tout d'abord charger le modèle depuis le registre avec le tag correspondant à `ENV` (staging ou production, que l'on renome en `alias` pour être en adéquation avec l'API de `mlflow`), puis va récupéer l'artifact `transform_pipeline.pkl` en se basant sur l'identifiant du run associé à la version du modèle de registre.
+
+    À chaque appel de la fonction `predict`, nous vérifions au préalable que le modèle est bien en mémoire, puis s'il y a un pipeline de transformation, nous l'appliquons sur le jeu de données avant de pouvoir calculer les prédictions.
+
+    Dans le fichier `app.py`, il suffit de mettre à jour l'en-tête.
+
+
+    ```py
     class Model:
         def __init__(self):
             self.model = None
@@ -426,15 +408,27 @@ def _(ENV, MlflowClient, joblib, mlflow, os):
         def load_model(self):
             # We query currently staging or production model, according to environment specification
             client = MlflowClient()
-            model_version = client.get_latest_versions(
-                os.getenv("MLFLOW_REGISTRY_NAME"), [ENV]
-            )[0]
-            pipeline_path = client.download_artifacts(
-                model_version.run_id, "transform_pipeline.pkl"
+            alias = ENV
+            model_version = client.get_model_version_by_alias(
+                os.getenv("MLFLOW_REGISTRY_NAME"),  # ty: ignore[invalid-argument-type]
+                alias,  # ty: ignore[invalid-argument-type]
             )
 
+            # In MLFlow v3, construct the artifact URI and use mlflow.artifacts.download_artifacts()
+            artifact_uri = f"runs:/{model_version.run_id}/transform_pipeline.pkl"
+            pipeline_path = mlflow.artifacts.download_artifacts(
+                artifact_uri=artifact_uri
+            )  # ty: ignore[possibly-missing-attribute]
+
+            if pipeline_path is None:
+                raise RuntimeError(
+                    f"Failed to download transform_pipeline.pkl for run_id={model_version.run_id}. "
+                    "The artifact was not found. Ensure the training pipeline logs "
+                    "transform_pipeline.pkl via mlflow.log_artifact()."
+                )
+
             self.model = mlflow.sklearn.load_model(
-                "runs:/{}/model".format(model_version.run_id)
+                f"models:/{MLFLOW_REGISTRY_NAME}@{alias}"
             )
             # We must also retrieve transform pipeline from artifacts
             self.transform_pipeline = joblib.load(pipeline_path)
@@ -450,24 +444,15 @@ def _(ENV, MlflowClient, joblib, mlflow, os):
                         X = X.drop(col, axis=1)
                 return self.model.predict(X)
             return None
-
-    return (Model,)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    À l'initialisation `__init__`, on instancie les variables `model` et `transform_pipeline`, puis on appelle directement la fonction `load_model`. Cette dernière va tout d'abord charger le modèle depuis le registre avec le tag correspondant à `ENV` (staging ou production), puis va récupéer l'artifact `transform_pipeline.pkl` en se basant sur l'identifiant du run associé à la version du modèle de registre.
-
-    À chaque appel de la fonction `predict`, nous vérifions au préalable que le modèle est bien en mémoire, puis s'il y a un pipeline de transformation, nous l'appliquons sur le jeu de données avant de pouvoir calculer les prédictions.
-
-    Dans le fichier `app.py`, il suffit de mettre à jour l'en-tête.
-    """)
-    return
-
-
-@app.cell
-def _(Flask):
+    ```py
     from src.model import Model
 
     app = Flask(__name__)
@@ -482,7 +467,9 @@ def _(Flask):
 
     if __name__ == "__main__":
         app.run(port=5000)
-    return Model, model
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -491,13 +478,11 @@ def _(mo):
     Là-aussi, avant d'exécuter l'API, il faut authentifier notre application pour qu'elle ait les accès en lecture vers Cloud Storage pour récupérer les artifacts MLflow.
 
     Comme nous avions déjà créé un <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank">compte de service</a> pour Kedro, nous pouvons utiliser le même ici. Pour cela, nous allons créer une nouvelle clé et récupérer son contenu. Créons le dossier `conf/` dans lequel nous allons ajouter la clé du compte de service. Il faut également penser à ajouter la variable d'environnement `GOOGLE_APPLICATION_CREDENTIALS` dans le fichier `.env`.
-    """)
-    return
 
-
-@app.cell
-def _():
+    ```
     GOOGLE_APPLICATION_CREDENTIALS = "conf/key.json"
+    ```
+    """)
     return
 
 
@@ -529,19 +514,16 @@ def _(mo):
     - On récupère le DataFrame envoyé au format JSON.
     - On calcule les prédictions du modèle sur le DataFrame.
     - On retourne la liste des prédictions au format JSON.
-    """)
-    return
 
-
-@app.cell
-def _(app_1, jsonify, model, pd, request):
-    @app_1.route("/predict", methods=["POST"])
+    ```py
+    @app.route("/predict", methods=["POST"])
     def predict():
         body = request.get_json()
         df = pd.read_json(body)
         results = [int(x) for x in model.predict(df).flatten()]
         return (jsonify(results), 200)
-
+    ```
+    """)
     return
 
 
@@ -551,27 +533,23 @@ def _(mo):
     À noter que le format `int64` des prédictions du modèle n'est pas sérialisable en JSON : c'est pour cela que l'on utilise une itération avec une conversion explicite en `int`.
 
     Au final, le code complet du fichier `app.py` tient en quelques lignes.
-    """)
-    return
 
-
-@app.cell
-def _(Flask, Model):
+    ```
     import pandas as pd
     from flask import request, jsonify
 
-    app_2 = Flask(__name__)
-    model_1 = Model()
+    app = Flask(__name__)
+    model = Model()
 
 
-    @app_2.route("/", methods=["GET"])
-    def home_2():
+    @app.route("/", methods=["GET"])
+    def home():
         # At beginning, we load model from MLflow
         return ("OK !", 200)
 
 
-    @app_2.route("/predict", methods=["POST"])
-    def predict_1():
+    @app.route("/predict", methods=["POST"])
+    def predict():
         body = request.get_json()
         df = pd.read_json(body)
         results = [int(x) for x in model_1.predict(df).flatten()]
@@ -579,8 +557,10 @@ def _(Flask, Model):
 
 
     if __name__ == "__main__":
-        app_2.run(port=5000)
-    return jsonify, pd, request
+        app.run(port=5000)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -594,8 +574,13 @@ def _(mo):
 
 
 @app.cell
-def _(os, pd):
-    dataset = pd.read_csv(os.path.expanduser("data/primary.csv"))
+def _():
+    import pandas as pd
+    import os
+
+    # N'oubliez pas de mettre le path du projet kedro ici
+    path_kedro = "/Users/noobzik/Documents/Kaggle/purchase-predict"
+    dataset = pd.read_csv(os.path.join(path_kedro, "data/03_primary/primary.csv"))
     dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return (dataset,)
 
@@ -626,16 +611,12 @@ def _(mo):
     Le principal intérêt de l'API c'est qu'elle puisse être exécutée sur un serveur et être utilisée par d'autres applications. L'API doit donc être déployée sur un serveur pour accepter des requêtes par Internet. Seulement, Flask est une API **synchrone**, ce qui fait que lorsque deux requêtes seront exécutées quasi-simultanément, la seconde requête ne sera traîtée que lorsque la première aura reçu une réponse du serveur.
 
     Un outil qui nous permet d'exécuter plusieurs instances de l'API en parallèle sur un même serveur, bien connu par les développeurs Python, est `gunicorn`. Il va également gérer les cas où une exécution pourrait crasher et ne pas redémarrer : on appelle cela de **l'équilibrage de charge vertical**.
+
+    ```
+    uv add gunicorn
+    ```
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    pip install gunicorn
-    """,
-    name="_"
-)
 
 
 @app.cell(hide_code=True)
@@ -680,16 +661,12 @@ def _(dataset, requests):
 def _(mo):
     mo.md(r"""
     Là-aussi, la requête fonctionne avec 4 processus `gunicorn` en exécution. Observons de plus près ces processus.
+
+    ```
+    ps -aux | grep gunicorn
+    ```
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    ps -aux | grep gunicorn
-    """,
-    name="_"
-)
 
 
 app._unparsable_cell(
@@ -767,78 +744,56 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     Nous allons créer le fichier `.gitignore` : il s'agit d'une fichier lu par Git qui permet de ne pas ajouter des fichiers ou dossiers dans le versioning. C'est particulièrement utile pour les fichiers de configuration locale (`venv`, `.env` et `__pycache__` par exemple) mais également pour **ne pas envoyer les secrets et mot de passe au dépôt Git**.
-    """)
-    return
 
-
-app._unparsable_cell(
-    r"""
+    ```.gitignore
     conf/**
     .env
     venv/
     __pycache__/
     *.py[cod]
     *$py.class
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Créons sur <a href="\" target="_blank">Cloud Source</a> un nouveau dépôt.
-
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/api_model2.png" />
-
-    Sélectionnons le mode pour transférer du code vers le déoôt.
-
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/api_model3.png" />
-
-    Comme toujours, effectuons les manipulations Git.
+    Maintenant, vous allez devoir créer un nouveau répertoire Github pour ce projet d'inférence
     """)
     return
 
 
-app._unparsable_cell(
-    r"""
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    Comme toujours, effectuons les manipulations Git.
+
+    ```
     git init
     git add .
-    git remote add google <ADRESSE_SSH>
+    git remote add <GIT>
     git commit -am "First release"
-    """,
-    name="_"
-)
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Tout comme nous l'avions fait pour le projet `purchase_predict`, nous allons **créer une nouvelle branche** staging.
-    """)
-    return
 
-
-app._unparsable_cell(
-    r"""
+    ```
     git checkout -b staging
     # Pour ajouter la clé SSH à l'agent Git
     eval "$(ssh-agent -s)"
     chmod 600 ~/ssh/git_key
     ssh-add ~/ssh/git_key
     # On pousse vers le dépôt sur la branche staging
-    git push google staging
-    """,
-    name="_"
-)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Sur la branche `staging`, nous pouvons voir que les fichiers ont bien été envoyés.
-
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/api_model4.png" />
+    git push -u origin staging
+    ```
     """)
     return
 
