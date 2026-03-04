@@ -402,7 +402,7 @@ def _(mo):
 @app.cell
 def _(subprocess):
     #! pytest /tmp/pytest_2.py -v
-    subprocess.call(['pytest', '/tmp/pytest_2.py', '-v'])
+    subprocess.call(["pytest", "/tmp/pytest_2.py", "-v"])
     return
 
 
@@ -528,6 +528,7 @@ def _():
 
     from purchase_predict.pipelines.loading.nodes import load_csv_from_bucket
 
+
     def test_load_csv_from_bucket(project_id, primary_folder):
         df = load_csv_from_bucket(project_id, primary_folder)
         print(df.head())
@@ -553,9 +554,11 @@ def _(mo):
 def _():
     import pytest
 
+
     @pytest.fixture(scope="module")
     def project_id():
         return "<PROJECT_GCP>"
+
 
     @pytest.fixture(scope="module")
     def primary_folder():
@@ -646,11 +649,11 @@ def _(mo):
 
 @app.cell
 def _(load_csv_from_bucket, pd):
-    def test_load_csv_from_bucket_1(project_id, primary_folder):
+    def test_load_csv_from_bucket(project_id, primary_folder):
         df = load_csv_from_bucket(project_id, primary_folder)
         assert type(df) == pd.DataFrame
         assert df.shape[1] == 16
-        assert 'purchased' in df
+        assert "purchased" in df
 
     return
 
@@ -670,6 +673,7 @@ def _():
     from kedro.runner import SequentialRunner
 
     from purchase_predict.pipelines.loading.pipeline import create_pipeline
+
 
     def test_pipeline(catalog_test):
         runner = SequentialRunner()
@@ -693,17 +697,25 @@ def _(mo):
 def _(pytest):
     from kedro.io import DataCatalog, MemoryDataset
 
-    @pytest.fixture(scope='module')
-    def project_id_1():
-        return '<PROJECT_GCP>'
 
-    @pytest.fixture(scope='module')
-    def primary_folder_1():
-        return '<NOM_DU_BUCKET>/primary/data-test.csv'
+    @pytest.fixture(scope="module")
+    def project_id():
+        return "<PROJECT_GCP>"
 
-    @pytest.fixture(scope='module')
+
+    @pytest.fixture(scope="module")
+    def primary_folder():
+        return "<NOM_DU_BUCKET>/primary/data-test.csv"
+
+
+    @pytest.fixture(scope="module")
     def catalog_test(project_id, primary_folder):
-        catalog = DataCatalog({'params:gcp_project_id': MemoryDataset(project_id), 'params:gcs_primary_folder': MemoryDataset(primary_folder)})
+        catalog = DataCatalog(
+            {
+                "params:gcp_project_id": MemoryDataset(project_id),
+                "params:gcs_primary_folder": MemoryDataset(primary_folder),
+            }
+        )
         return catalog
 
     return
@@ -725,8 +737,16 @@ def _(mo):
 
 @app.cell
 def _(Pipeline, load_csv_from_bucket, node):
-    def create_pipeline_1(**kwargs):
-        return Pipeline([node(load_csv_from_bucket, ['params:gcp_project_id', 'params:gcs_primary_folder'], 'primary')])
+    def create_pipeline(**kwargs):
+        return Pipeline(
+            [
+                node(
+                    load_csv_from_bucket,
+                    ["params:gcp_project_id", "params:gcs_primary_folder"],
+                    "primary",
+                )
+            ]
+        )
 
     return
 
