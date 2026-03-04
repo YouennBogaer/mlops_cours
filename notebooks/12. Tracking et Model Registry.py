@@ -154,7 +154,7 @@ def _():
     import pandas as pd
     import mlflow
 
-    return np, os
+    return mlflow, np, os, pd
 
 
 @app.cell(hide_code=True)
@@ -169,36 +169,53 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
-        X = pd.concat([pd.DataFrame(X_train), pd.DataFrame(X_test)], ignore_index=True)
+@app.cell(disabled=True, hide_code=True)
+def _(
+    ModelSpec,
+    X_test,
+    X_train,
+    experiment_id,
+    log_to_mlflow,
+    mlflow,
+    os,
+    pd,
+    y_test,
+    y_train,
+):
+    X = pd.concat([pd.DataFrame(X_train), pd.DataFrame(X_test)], ignore_index=True)
 
-        # Convert y to Series
-        y_train_flat = y_train.squeeze() if isinstance(y_train, pd.DataFrame) else y_train
-        y_test_flat = y_test.squeeze() if isinstance(y_test, pd.DataFrame) else y_test
+    # Convert y to Series
+    y_train_flat = (
+        y_train.squeeze() if isinstance(y_train, pd.DataFrame) else y_train
+    )
+    y_test_flat = y_test.squeeze() if isinstance(y_test, pd.DataFrame) else y_test
 
-        y = pd.concat([pd.Series(y_train_flat), pd.Series(y_test_flat)], ignore_index=True)
-        opt_models = []
+    y = pd.concat(
+        [pd.Series(y_train_flat), pd.Series(y_test_flat)], ignore_index=True
+    )
+    opt_models = []
 
-        run_id: str = ""
-        if log_to_mlflow:
-            mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER", "http://localhost:5000"))
-            exp_id = str(experiment_id)
-            try:
-                mlflow.get_experiment(exp_id)  # Verify exists # ty: ignore[possibly-missing-attribute]
-            except mlflow.exceptions.MlflowException:
-                # Auto-create if ID=1 or name-like
-                if experiment_id == 1:
-                    exp_id = mlflow.create_experiment(  # ty: ignore[possibly-missing-attribute]
-                        "purchase_predict"
-                    )  # Returns str ID
+    run_id: str = ""
+    if log_to_mlflow:
+        mlflow.set_tracking_uri(
+            os.getenv("MLFLOW_SERVER", "http://localhost:5000")
+        )
+        exp_id = str(experiment_id)
+        try:
+            mlflow.get_experiment(
+                exp_id
+            )  # Verify exists # ty: ignore[possibly-missing-attribute]
+        except mlflow.exceptions.MlflowException:
+            # Auto-create if ID=1 or name-like
+            if experiment_id == 1:
+                exp_id = mlflow.create_experiment(  # ty: ignore[possibly-missing-attribute]
+                    "purchase_predict"
+                )  # Returns str ID
 
-            run: mlflow.ActiveRun = mlflow.start_run(experiment_id=exp_id)  # ty: ignore[possibly-missing-attribute]
-            run_id = run.info.run_id
-        model_specs: ModelSpec
-    """,
-    column=None, disabled=True, hide_code=True, name="_"
-)
+        run: mlflow.ActiveRun = mlflow.start_run(experiment_id=exp_id)  # ty: ignore[possibly-missing-attribute]
+        run_id = run.info.run_id
+    model_specs: ModelSpec
+    return opt_models, run_id
 
 
 @app.cell(hide_code=True)
@@ -226,7 +243,7 @@ def _(mo):
 
 
 @app.cell
-def _(BaseEstimator, np, opt_models, run_id, save_pr_curve):
+def _(BaseEstimator, np, opt_models, run_id: str, save_pr_curve):
     # A ajouter au dessus
     from mlflow.models import infer_signature
     import mlflow.sklearn
@@ -261,6 +278,8 @@ def _(BaseEstimator, np, opt_models, run_id, save_pr_curve):
             mlflow.log_params(best_model["params"])  # ty: ignore[possibly-missing-attribute]
             # Only use if validation curves are produced
             mlflow.log_artifacts("data/08_reporting", artifact_path="plots")  # ty: ignore[possibly-missing-attribute]
+            mlflow.log_artifact("data/04_feature/transform_pipeline.pkl")  # ty: ignore[possibly-missing-attribute]
+
             mlflow_info = mlflow.sklearn.log_model(
                 best_model["model"], name="model", signature=signature
             )
@@ -272,7 +291,7 @@ def _(BaseEstimator, np, opt_models, run_id, save_pr_curve):
             "mlflow_model_uri": mlflow_info.model_uri if log_to_mlflow else "",
         }  # Return just the model from the best_model dict
 
-    return (auto_ml,)
+    return auto_ml, mlflow
 
 
 @app.cell(hide_code=True)
@@ -575,7 +594,7 @@ def _():
             name=registry_name, alias=alias, version=version
         )
 
-    return (os,)
+    return mlflow, os
 
 
 @app.cell(hide_code=True)
