@@ -89,6 +89,24 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    Ensuite, nous allons définir notre `ModelSpec` que nous avons vu pendant l'optimisation des hyper-paramètres.
+
+    Nous rappelons le code ici :
+
+    ```py
+    class ModelSpec(TypedDict, total=True):
+        name: str
+        model_class: Callable[..., Any]  # Covers LGBMClassifier()
+        params: dict[str, Any]  # Accepts hp.uniform etc.
+        override_schemas: dict[str, type]
+    ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     Créons une variable `MODELS` dans laquelle nous allons spécifier une liste de modèles candidats. Pour commencer, nous n'utiliserons qu'un seul modèle LightGBM, mais nous pourrions également calibrer d'autres modèles comme XGBoost, CatBoost, Random Forest. Nous définissons un dictionnaire pour chaque modèle.
 
     - `name` est le nom du modèle.
