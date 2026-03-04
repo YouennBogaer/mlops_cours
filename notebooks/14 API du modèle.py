@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.1"
+__generated_with = "0.20.2"
 app = marimo.App()
 
 
@@ -101,7 +101,9 @@ def _(BALANCE_THRESHOLD, MIN_SAMPLES, encode_features, pd):
         # Checking that we have enough samples
         assert df.shape[0] > MIN_SAMPLES
         # Checking that classes have at least BALANCE_THRESHOLD percent of data
-        assert (df["purchased"].value_counts() / df.shape[0] > BALANCE_THRESHOLD).all()
+        assert (
+            df["purchased"].value_counts() / df.shape[0] > BALANCE_THRESHOLD
+        ).all()
 
     return
 
@@ -142,9 +144,8 @@ def _(Pipeline, encode_features, node, split_dataset):
                     encode_features,
                     "primary",
                     dict(
-                        features="dataset",
-                        transform_pipeline="transform_pipeline"
-                    )
+                        features="dataset", transform_pipeline="transform_pipeline"
+                    ),
                 ),
                 node(
                     split_dataset,
@@ -154,7 +155,7 @@ def _(Pipeline, encode_features, node, split_dataset):
                         y_train="y_train",
                         X_test="X_test",
                         y_test="y_test",
-                    )
+                    ),
                 ),
             ]
         )
@@ -218,12 +219,21 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    mkdir purchase_predict_api
+    uv init purchase_predict_api --python 3.12
     cd purchase_predict_api/
-    python3 -m venv venv
     """,
     name="_"
 )
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    /// attention
+    Pour rappel, l'ensemble des paquets n'ont pas encore migré vers 3.14, nous utiliserons donc 3.12 pour le moment
+    ///
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -234,23 +244,14 @@ def _(mo):
     return
 
 
-app._unparsable_cell(
-    r"""
-    source venv/bin/activate
-    pip install --upgrade pip
-    """,
-    name="_"
-)
-
-
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     Nous allons y ajouter plusieurs éléments.
 
     - Le fichier `app.py`, qui correspond au point d'entrée de notre API. En particulier, ce fichier contiendra les routes pour pouvoir interagir avec notre modèle.
-    - Le fichier `requirements.txt` va contenir tous les packages Python avec les versions associés qui doivent être installés pour que l'API fonctionne. C'est un bon moyen pour s'assurer que les bonnes versions de dépendances seront installés sur un serveur cible.
     - Le dossier `src/` va contenir des fichiers, notamment pour récupérer le modèle depuis MLflow ou effectuer le traitement des données que recevra l'API.
+    - Nous remarquons que `astral/uv` nous a généré un `main.py`, nous pouvons le supprimer.
 
     Commençons par le fichier `app.py`.
     """)
@@ -263,9 +264,11 @@ def _():
 
     app = Flask(__name__)
 
-    @app.route('/', methods=['GET'])
+
+    @app.route("/", methods=["GET"])
     def home():
         return "OK !", 200
+
 
     if __name__ == "__main__":
         app.run(port=5000)
@@ -275,14 +278,14 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Jusque-là, rien de nouveau. Nous allons installer `Flask` dans l'environnement virtuel et ajouter la version correspondante dans le fichier `requirements.txt`.
+    Jusque-là, rien de nouveau. Nous allons installer `Flask` dans l'environnement virtuel.
     """)
     return
 
 
 app._unparsable_cell(
     r"""
-    pip install Flask
+    uv add flask
     """,
     name="_"
 )
@@ -290,7 +293,8 @@ app._unparsable_cell(
 
 app._unparsable_cell(
     r"""
-    Flask==1.1.2
+    # Au cas où ça ne fonctionne pas
+    uv add "flask==1.1.2"
     """,
     name="_"
 )
@@ -306,6 +310,9 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
+    ```
+    uv run app.py
+    ```
     * Serving Flask app "app" (lazy loading)
      * Environment: production
        WARNING: This is a development server. Do not use it in a production deployment.
@@ -315,6 +322,11 @@ app._unparsable_cell(
     """,
     name="_"
 )
+
+
+@app.cell
+def _():
+    return
 
 
 @app.cell(hide_code=True)
@@ -327,7 +339,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    pip install python-dotenv
+    uv add python-dotenv
     """,
     name="_"
 )
@@ -361,7 +373,9 @@ def _():
 
     for env_var in ["ENV", "MLFLOW_SERVER", "MLFLOW_REGISTRY_NAME"]:
         if not os.getenv(env_var):
-            raise Exception("Environment variable {} must be defined.".format(env_var))
+            raise Exception(
+                "Environment variable {} must be defined.".format(env_var)
+            )
     return (os,)
 
 
@@ -374,13 +388,18 @@ def _(mo):
 
 
 @app.cell
-def _(os):
-    import mlflow
+def _():
+    import os
+
     import joblib
+    import mlflow
     from mlflow.tracking import MlflowClient
-    ENV = os.getenv('ENV')
-    mlflow.set_tracking_uri(os.getenv('MLFLOW_SERVER'))
-    return ENV, MlflowClient, joblib, mlflow
+
+    ENV = os.getenv("ENV")
+
+    # Le warning est déjà guardé par le fichier __init__.py, pas besoin de le répéter ici
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER"))  # ty: ignore[invalid-argument-type]
+    return ENV, MlflowClient, joblib, mlflow, os
 
 
 @app.cell(hide_code=True)
@@ -398,8 +417,7 @@ def _(mo):
 
 @app.cell
 def _(ENV, MlflowClient, joblib, mlflow, os):
-    class Model():
-
+    class Model:
         def __init__(self):
             self.model = None
             self.transform_pipeline = None
@@ -408,10 +426,16 @@ def _(ENV, MlflowClient, joblib, mlflow, os):
         def load_model(self):
             # We query currently staging or production model, according to environment specification
             client = MlflowClient()
-            model_version = client.get_latest_versions(os.getenv("MLFLOW_REGISTRY_NAME"), [ENV])[0]
-            pipeline_path = client.download_artifacts(model_version.run_id, "transform_pipeline.pkl")
+            model_version = client.get_latest_versions(
+                os.getenv("MLFLOW_REGISTRY_NAME"), [ENV]
+            )[0]
+            pipeline_path = client.download_artifacts(
+                model_version.run_id, "transform_pipeline.pkl"
+            )
 
-            self.model = mlflow.sklearn.load_model("runs:/{}/model".format(model_version.run_id))
+            self.model = mlflow.sklearn.load_model(
+                "runs:/{}/model".format(model_version.run_id)
+            )
             # We must also retrieve transform pipeline from artifacts
             self.transform_pipeline = joblib.load(pipeline_path)
 
@@ -443,17 +467,22 @@ def _(mo):
 
 
 @app.cell
-def _(Flask, Model):
-    app_1 = Flask(__name__)
+def _(Flask):
+    from src.model import Model
+
+    app = Flask(__name__)
     model = Model()
 
-    @app_1.route('/', methods=['GET'])
-    def home_1():
-    # At beginning, we load model from MLflow
-        return ('OK !', 200)
-    if __name__ == '__main__':
-        app_1.run(port=5000)
-    return app_1, model
+
+    @app.route("/", methods=["GET"])
+    def home():
+        # At beginning, we load model from MLflow
+        return ("OK !", 200)
+
+
+    if __name__ == "__main__":
+        app.run(port=5000)
+    return Model, model
 
 
 @app.cell(hide_code=True)
@@ -468,30 +497,24 @@ def _(mo):
 
 @app.cell
 def _():
-    GOOGLE_APPLICATION_CREDENTIALS="conf/key.json"
+    GOOGLE_APPLICATION_CREDENTIALS = "conf/key.json"
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    Nous complétons le fichier `requirements.txt`.
+    Nous complétons le fichier `pyproject.toml`, en ajoutant les dépendances suivantes à l'aide de `uv add`:
+    - pandas<3.0.0
+    - mlflow==3.0.1
+    - scikit-learn
+    - google-cloud-storage
+    - lightgbm
+    ```
+    uv add "pandas<3.0.0" "mlflow==3.0.1" scikit-learn google-cloud-storage lightgbm
+    ```
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    Flask==1.1.2
-    python-dotenv==0.17.0
-    mlflow==1.15.0
-    pandas==1.2.3
-    scikit-learn==0.24.1
-    google-cloud-storage==1.37.1
-    lightgbm==3.2.0
-    """,
-    name="_"
-)
 
 
 @app.cell(hide_code=True)
@@ -512,7 +535,7 @@ def _(mo):
 
 @app.cell
 def _(app_1, jsonify, model, pd, request):
-    @app_1.route('/predict', methods=['POST'])
+    @app_1.route("/predict", methods=["POST"])
     def predict():
         body = request.get_json()
         df = pd.read_json(body)
@@ -536,21 +559,26 @@ def _(mo):
 def _(Flask, Model):
     import pandas as pd
     from flask import request, jsonify
+
     app_2 = Flask(__name__)
     model_1 = Model()
 
-    @app_2.route('/', methods=['GET'])
-    def home_2():
-    # At beginning, we load model from MLflow
-        return ('OK !', 200)
 
-    @app_2.route('/predict', methods=['POST'])
+    @app_2.route("/", methods=["GET"])
+    def home_2():
+        # At beginning, we load model from MLflow
+        return ("OK !", 200)
+
+
+    @app_2.route("/predict", methods=["POST"])
     def predict_1():
         body = request.get_json()
         df = pd.read_json(body)
         results = [int(x) for x in model_1.predict(df).flatten()]
         return (jsonify(results), 200)
-    if __name__ == '__main__':
+
+
+    if __name__ == "__main__":
         app_2.run(port=5000)
     return jsonify, pd, request
 
@@ -567,8 +595,8 @@ def _(mo):
 
 @app.cell
 def _(os, pd):
-    dataset = pd.read_csv(os.path.expanduser('data/primary.csv'))
-    dataset = dataset.drop(['user_session', 'user_id', 'purchased'], axis=1)
+    dataset = pd.read_csv(os.path.expanduser("data/primary.csv"))
+    dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return (dataset,)
 
 
@@ -585,8 +613,7 @@ def _(dataset):
     import requests
 
     requests.post(
-        "http://127.0.0.1:5000/predict",
-        json=dataset.sample(n=10).to_json()
+        "http://127.0.0.1:5000/predict", json=dataset.sample(n=10).to_json()
     ).json()
     return (requests,)
 
@@ -644,8 +671,7 @@ app._unparsable_cell(
 @app.cell
 def _(dataset, requests):
     requests.post(
-        "http://127.0.0.1:5000/predict",
-        json=dataset.sample(n=10).to_json()
+        "http://127.0.0.1:5000/predict", json=dataset.sample(n=10).to_json()
     ).json()
     return
 
