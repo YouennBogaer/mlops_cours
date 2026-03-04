@@ -335,11 +335,11 @@ def _(mo):
 
 
 @app.cell
-def _(Pipeline, auto_ml, node):
+def _(Node, Pipeline, auto_ml):
     def create_pipeline(**kwargs):
         return Pipeline(
             [
-                node(
+                Node(
                     auto_ml,
                     [
                         "X_train",
@@ -647,18 +647,18 @@ def _(mo):
     mo.md(r"""
     mo.md(r"\"\"
     ```
-    from kedro.pipeline import Pipeline, node
+    from kedro.pipeline import Pipeline, Node
 
 
     def create_pipeline(**kwargs):
         return Pipeline(
             [
-                node(
+                Node(
                     push_to_model_registry,
                     ["params:mlflow_model_registry", "mlflow_run_id"],
                     "mlflow_model_version",
                 ),
-                node(
+                Node(
                     stage_model,
                     ["params:mlflow_model_registry", "mlflow_model_version"],
                     None,
