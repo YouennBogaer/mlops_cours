@@ -515,7 +515,7 @@ def _(mo):
 
     Nous rappelons donc la commande pour créer un pipeline comme le suit :
     ```
-    uv run kedro pipeline create loading
+    uv run kedro pipeline create deployment
     ```
     """)
     return
