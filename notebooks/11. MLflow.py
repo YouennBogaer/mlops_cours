@@ -209,6 +209,7 @@ def _(
             X_train, model.predict(X_train)
         )  # On calcule le score du modèle sur le test
         input_example = X_test.iloc[0:1].copy()
+        mlflow.log_artifact("data/04_feature/transform_pipeline.pkl")
         mlflow.sklearn.log_model(
             model, "model", signature=signature, input_example=input_example
         )  # Inférer la signature du modèle
