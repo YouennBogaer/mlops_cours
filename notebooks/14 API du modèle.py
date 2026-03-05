@@ -583,7 +583,7 @@ def _():
     import os
 
     # N'oubliez pas de mettre le path du projet kedro ici
-    path_kedro = r"C:\Users\hedi_\Documents\formation donné\Mlops v2\puchase-predict\purchase-predict"
+    path_kedro = r"your_kedro_path"
     dataset = pd.read_csv(os.path.join(path_kedro, r"data\03_primary\primary.csv"))
     dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return (dataset,)
