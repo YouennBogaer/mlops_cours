@@ -17,7 +17,6 @@ dependencies = [
     "pytest>=9.0.2",
     "ruff>=0.15.0",
     "scikit-learn>=1.8.0",
-    "scikit-learn-extra>=0.3.0",
     "seaborn>=0.13.2",
     "shap>=0.49.1",
     "ty>=0.0.18",

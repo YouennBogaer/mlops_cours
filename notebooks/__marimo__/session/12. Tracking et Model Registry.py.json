@@ -1,22 +1,10 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.20.1"
+    "marimo_version": "0.20.4",
+    "script_metadata_hash": null
   },
   "cells": [
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
     {
       "id": "MJUe",
       "code_hash": "58f3875a003ea6b8fd7f4f258665001d",
@@ -44,12 +32,6 @@
       "console": []
     },
     {
-      "id": "bkHC",
-      "code_hash": "115ce9c08538da95fbc211774f73fc8f",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "lEQa",
       "code_hash": "5a72dbc7f4a8f594cdbe4a97f10414b0",
       "outputs": [
@@ -60,12 +42,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "PKri",
-      "code_hash": "380a032b445994a2ea50913f00aa5b8c",
-      "outputs": [],
       "console": []
     },
     {
@@ -82,12 +58,6 @@
       "console": []
     },
     {
-      "id": "SFPL",
-      "code_hash": "5c01920d850a6609d839466cec01917c",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "BYtC",
       "code_hash": "3deff9f538d010e513c02ba652490fd5",
       "outputs": [
@@ -98,12 +68,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "RGSE",
-      "code_hash": "ab4886700c6c906c5f2fdea2afda1398",
-      "outputs": [],
       "console": []
     },
     {
@@ -120,12 +84,6 @@
       "console": []
     },
     {
-      "id": "emfo",
-      "code_hash": "e7c3ee1feb7aa505d540aaaccf53c6e6",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "Hstk",
       "code_hash": "17a5299761189fe08412649457153904",
       "outputs": [
@@ -139,32 +97,33 @@
       "console": []
     },
     {
-      "id": "nWHF",
-      "code_hash": "78efaacdf1faa79602688779a94e9bcd",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "iLit",
-      "code_hash": "7cea764e64ad5bcc1ce5bc0e7ef4322a",
+      "code_hash": "d595bac4ee6c17c11998954115e1f659",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Au tout d\u00e9but de la fonction, apr\u00e8s avoir r\u00e9cup\u00e9r\u00e9 la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex>, nous d\u00e9marrons un run.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Au tout d\u00e9but de la fonction, apr\u00e8s avoir r\u00e9cup\u00e9r\u00e9 la base d'apprentissage <marimo-tex class=\"arithmatex\">||((X, y)||)</marimo-tex>, nous d\u00e9marrons un run.</span>\n<span class=\"paragraph\">Mais nous devons changer la mani\u00e8re dont nous traitons les donn\u00e9es d'apprentissage, pour que notre parseur Astral/ty soit content.</span>\n<span class=\"paragraph\">Nous en profitons pour ajouter \u00e9galement les bout de code permettant de tracker MLFlow ou non. Ces bouts de codes sont \u00e0 mettre au d\u00e9but de la fonction <code>auto-ml</code></span></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "ZHCJ",
-      "code_hash": "42a2d5e81133c92577bf5c1eab12c690",
-      "outputs": [],
+      "id": "ROlb",
+      "code_hash": "1b5c1dea5359f04505a0f66e24d6a7b9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"admonition note\">\n<p class=\"admonition-title\">Note</span>\n<span class=\"paragraph\">Puisque le cours est pr\u00e9par\u00e9 avec astral/ty, vous allez voir beacoup d'adaptation de code python, dans le seul but d'avoir un code clean, mais surtout, \u00eatre en r\u00e8gle avec <code>ty</code>.</span>\n<span class=\"paragraph\">On va dire que <code>ty</code> sera l'\u00e9quivalent de notre <code>gcc -Wall</code> dont nous cherchons \u00e0 effacer l'ensemble des warnings.</span>\n<span class=\"paragraph\">Nous pouvons pousser le concepte plus loin en l'int\u00e9grant sous la forme de pre-commit si ce n'est pas d\u00e9j\u00e0 r\u00e9alis\u00e9.</span>\n</div></span>"
+          }
+        }
+      ],
       "console": []
     },
     {
-      "id": "ROlb",
+      "id": "qnkX",
       "code_hash": "08e7359a0c6a0e4ad4280d4c7d059a29",
       "outputs": [
         {
@@ -177,13 +136,7 @@
       "console": []
     },
     {
-      "id": "qnkX",
-      "code_hash": "dc96d85be3527971bf25575f9b67d0cd",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TqIu",
+      "id": "Vxnm",
       "code_hash": "3a2b53377edeba2850f4211647ff5a5f",
       "outputs": [
         {
@@ -196,13 +149,7 @@
       "console": []
     },
     {
-      "id": "Vxnm",
-      "code_hash": "455e3d3a38014c40e51df3f41c1cbc17",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "DnEU",
+      "id": "ulZA",
       "code_hash": "c6dfee080bf34d999afd7f8e59556bed",
       "outputs": [
         {
@@ -215,26 +162,20 @@
       "console": []
     },
     {
-      "id": "ulZA",
-      "code_hash": "9c5eb478e2aad9d6874a6d9486eb51e7",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ecfG",
-      "code_hash": "a9263cebe855a89bfc61dc70d7c0b883",
+      "id": "Pvdt",
+      "code_hash": "640054d13dc63e06cf940b51f192aaeb",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous pouvons v\u00e9rifier visuellement notre pipeline \u00e0 l'aide de la commande suivante :</span>\n<span class=\"paragraph\"><div class=\"language-text codehilite\"><pre><span></span><code>uv run kedro viz run --port 4141\n</code></pre></div>\nAttention, pandas vient d'\u00eatre mise \u00e0 jour vers la version 3, elle n'est pas compatible avec la derni\u00e8re version de MLFlow et de Protobuf utilis\u00e9 par google-cloud-storage.</span>\n<span class=\"paragraph\">Nous avons donc un probl\u00e8me de d\u00e9pendance du projet \u00e0 g\u00e9rer, et pour le faire fonctionner, nous allons demander \u00e0 UV des conditions de d\u00e9pendance n\u00e9cessaire :\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add &quot;pandas&gt;=2.0.0,&lt;3.0.0&quot; &quot;mlflow&gt;=2.10.0&quot;\n</code></pre></div></span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous pouvons v\u00e9rifier visuellement notre pipeline \u00e0 l'aide de la commande suivante :</span>\n<span class=\"paragraph\"><div class=\"language-text codehilite\"><pre><span></span><code>uv run kedro viz run --port 4141\n</code></pre></div>\nAttention, pandas vient d'\u00eatre mise \u00e0 jour vers la version 3, elle n'est pas compatible avec la derni\u00e8re version de MLFlow et de Protobuf utilis\u00e9 par google-cloud-storage.</span>\n<span class=\"paragraph\">Nous avons donc un probl\u00e8me de d\u00e9pendance du projet \u00e0 g\u00e9rer, et pour le faire fonctionner, nous allons demander \u00e0 UV des conditions de d\u00e9pendance n\u00e9cessaire :\n<div class=\"language-text codehilite\"><pre><span></span><code>uv add &quot;pandas&gt;=2.0.0,&lt;3.0.0&quot; &quot;mlflow&lt;3.1.0&quot;\n</code></pre></div></span></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "Pvdt",
+      "id": "ZBYS",
       "code_hash": "29a6b12f331f0a7b796d7185e068c736",
       "outputs": [
         {
@@ -247,19 +188,13 @@
       "console": []
     },
     {
-      "id": "ZBYS",
-      "code_hash": "e3d7c6c19cb1a4d7cef34e61e6ef158b",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "aLJB",
-      "code_hash": "6c1360da44c3c8bc488e329dc86e715b",
+      "id": "nHfw",
+      "code_hash": "14e242c5fb829ea6d64ea7963fe7ba40",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 noter que pour aller plus vite, nous pouvons d\u00e9finir cette variable dans le fichier <code>.env</code>.</span>\n<span class=\"paragraph\">Temporairement, pour v\u00e9rifier que notre code fonctionne, nous allons modifier le param\u00e8tre <code>automl_max_evals</code> \u00e0 <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>. </span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">\u00c0 noter que pour aller plus vite, nous pouvons d\u00e9finir cette variable dans le fichier <code>.env</code>.</span>\n<span class=\"paragraph\">Temporairement, pour v\u00e9rifier que notre code fonctionne, nous allons modifier le param\u00e8tre <code>automl_max_evals</code> \u00e0 <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>.</span></span>"
           }
         }
       ],
@@ -279,19 +214,13 @@
       "console": []
     },
     {
-      "id": "AjVT",
-      "code_hash": "9834bafb343087285c71539728717c5d",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "pHFh",
-      "code_hash": "30ca641e636bd2ca785d474c539c8b9c",
+      "code_hash": "c860dd1e1149f2676bdd2c9e72a93a27",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Apr\u00e8s quelques dizaines de secondes, le run devrait \u00eatre visible sous MLflow.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry2.png\" /></span>\n<span class=\"paragraph\">N'oublions pas, puisque le test est concluant, de remettre <code>automl_max_evals</code> \u00e0 sa valeur d'origine.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Apr\u00e8s quelques dizaines de secondes, le run devrait \u00eatre visible sous MLflow.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry2.png\" />\n<img alt=\"alt\" src=\"public/model_registry3_1.png\" /></span>\n<span class=\"paragraph\">N'oublions pas, puisque le test est concluant, de remettre <code>automl_max_evals</code> \u00e0 sa valeur d'origine.</span></span>"
           }
         }
       ],
@@ -299,12 +228,12 @@
     },
     {
       "id": "NCOB",
-      "code_hash": "0cff7ef10cdb60d75acec33bd316bdf8",
+      "code_hash": "f38cf2deeb68133f6d131db8f04f579a",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pipeline-de-deploiement-vers-mlflow\">Pipeline de d\u00e9ploiement vers MLflow</h2>\n<span class=\"paragraph\">Pour l'instant, nous avons uniquement effectu\u00e9 du tracking. Bien que cela soit pratique pour historiser et garder une trace des diff\u00e9rentes ex\u00e9cutions des pipelines d'entra\u00eenement, cela ne permet pas directement de g\u00e9rer efficacement des <strong>versions de mod\u00e8les</strong>.</span>\n<h3 id=\"registre-de-modeles\">Registre de mod\u00e8les</h3>\n<span class=\"paragraph\">Le <strong>Model Registry</strong> (registre de mod\u00e8les) est un composant de MLflow qui permet de g\u00e9rer des versions de mod\u00e8les de Machine Learning, en proposant \u00e9galement des <strong>stages</strong> (\u00e9tats).</span>\n<ul>\n<li>Le tag <strong>staging</strong> correspond \u00e0 un mod\u00e8le consid\u00e9r\u00e9 comme pr\u00e9-production.</li>\n<li>Le tag <strong>production</strong> correspond \u00e0 un mod\u00e8le qui serait en environnement de production.</li>\n<li>Le tag <strong>archived</strong> pour les anciens mod\u00e8les staging ou production archiv\u00e9s.</li>\n</ul>\n<span class=\"paragraph\">C'est un composant particuli\u00e8rement utile pour g\u00e9rer le cycle de vie des mod\u00e8les, car le cycle staging, production et archive est couramment appliqu\u00e9 lorsque des mod\u00e8les sont mis \u00e0 jour r\u00e9guli\u00e8rement. Sous MLflow, l'onglet Models permet d'afficher tous les mod\u00e8les enregistr\u00e9s.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry4.png\" /></span>\n<span class=\"paragraph\">Retournons dans les exp\u00e9riences et choisissons le dernier run que nous avons lanc\u00e9. En cliquant sur <code>model</code> dans les artifacts, un bouton <em>Register Model</em> appara\u00eet \u00e0 droite.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry5.png\" /></span>\n<span class=\"paragraph\">En cliquant dessus, nous allons pouvoir ajouter manuellement le mod\u00e8le au registre. Pour cela, nous devons cr\u00e9er un nouveau mod\u00e8le que l'on nommera <code>purchase_predict</code>.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry6.png\" /></span>\n<span class=\"paragraph\">En retournant dans Models, nous voyons que la version 1 (le mod\u00e8le que nous venons d'ajouter est bien pr\u00e9sent).</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry7.png\" /></span>\n<span class=\"paragraph\">En cliquant dessus, nous avons acc\u00e8s \u00e0 plus de d\u00e9tails sur les diff\u00e9rentes versions pr\u00e9sentes.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry8.png\" /></span>\n<span class=\"paragraph\">Pour une version sp\u00e9cifique, nous pouvons manuellement transitionner vers un \u00e9tat de pr\u00e9-production ou de production. L'objectif sera d'automatiser cette t\u00e2che pour automatiquement changer l'\u00e9tat d'un mod\u00e8le que l'on aura entra\u00een\u00e9.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry9.png\" /></span>\n<h3 id=\"pipeline-de-deploiement\">Pipeline de d\u00e9ploiement</h3>\n<span class=\"paragraph\">Une fois l'entra\u00eenement r\u00e9alis\u00e9, nous allons \u00e9galement impl\u00e9menter dans Kedro un pipeline qui va permettre de transitionner l'\u00e9tat d'un mod\u00e8le en staging ou production. Pour cela, nous allons cr\u00e9er un pipepline <code>deployment</code> avec les trois fichiers <code>__init__.py</code>, <code>nodes.py</code> et <code>pipeline.py</code>. Le fichier <code>__init__.py</code> contiendra les m\u00eames instructions.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pipeline-de-deploiement-vers-mlflow\">Pipeline de d\u00e9ploiement vers MLflow</h2>\n<span class=\"paragraph\">Pour l'instant, nous avons uniquement effectu\u00e9 du tracking. Bien que cela soit pratique pour historiser et garder une trace des diff\u00e9rentes ex\u00e9cutions des pipelines d'entra\u00eenement, cela ne permet pas directement de g\u00e9rer efficacement des <strong>versions de mod\u00e8les</strong>.</span>\n<h3 id=\"registre-de-modeles\">Registre de mod\u00e8les</h3>\n<span class=\"paragraph\">Le <strong>Model Registry</strong> (registre de mod\u00e8les) est un composant de MLflow qui permet de g\u00e9rer des versions de mod\u00e8les de Machine Learning, en proposant \u00e9galement des <strong>stages</strong> (\u00e9tats).</span>\n<ul>\n<li>Le tag <strong>staging</strong> correspond \u00e0 un mod\u00e8le consid\u00e9r\u00e9 comme pr\u00e9-production.</li>\n<li>Le tag <strong>production</strong> correspond \u00e0 un mod\u00e8le qui serait en environnement de production.</li>\n<li>Le tag <strong>archived</strong> pour les anciens mod\u00e8les staging ou production archiv\u00e9s.</li>\n</ul>\n<span class=\"paragraph\">C'est un composant particuli\u00e8rement utile pour g\u00e9rer le cycle de vie des mod\u00e8les, car le cycle staging, production et archive est couramment appliqu\u00e9 lorsque des mod\u00e8les sont mis \u00e0 jour r\u00e9guli\u00e8rement. Sous MLflow, l'onglet Models permet d'afficher tous les mod\u00e8les enregistr\u00e9s.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry4.png\" /></span>\n<span class=\"paragraph\">Retournons dans les exp\u00e9riences et choisissons le dernier run que nous avons lanc\u00e9. En bas de la page, nous avons une sectione nomm\u00e9 \"Logged models\". Cliquez sur \"model\" qui se trouve en dessous de \"Model name\", un bouton <em>Register Model</em> appara\u00eet \u00e0 droite.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry5_1.png\" />\nEn cliquant dessus, nous allons pouvoir ajouter manuellement le mod\u00e8le au registre. Pour cela, nous devons cr\u00e9er un nouveau mod\u00e8le que l'on nommera <code>purchase_predict</code>.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry_6.png\" /></span>\n<span class=\"paragraph\">En retournant dans Models, nous voyons que la version 1 (le mod\u00e8le que nous venons d'ajouter est bien pr\u00e9sent).</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention :</span>\n<span class=\"paragraph\">Depuis la version 3, MLFlow a chang\u00e9 la mani\u00e8re de g\u00e9rer les version des mod\u00e8les.\nPar le pass\u00e9, nous avons :</span>\n<ul>\n<li>Version 1: Staging</li>\n<li>Version 2: Production</li>\n</ul>\n<span class=\"paragraph\">Aujourd'hui, nous avons plusieurs version avec plusieurs \u00e9tats comme le montre cet image</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry7.png\" /></span>\n<ul>\n<li>Cliquez sur \"Try it now\"</li>\n</ul>\n</div>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry8.png\" /></span>\n<span class=\"paragraph\">En cliquant dessus, nous avons acc\u00e8s \u00e0 plus de d\u00e9tails sur les diff\u00e9rentes versions pr\u00e9sentes.</span>\n<span class=\"paragraph\">Pour une version sp\u00e9cifique, nous pouvons manuellement transitionner vers un \u00e9tat de pr\u00e9-production ou de production (Pour l'ancien mode).</span>\n<span class=\"paragraph\">Pour une version sp\u00e9cifique, nous pouvons attribuer un tag pour dire dans quel \u00e9tat est le mod\u00e8le. A savoir qu'un mod\u00e8le peut poss\u00e9der plusieurs tags en m\u00eame temps (Nouveau mode, celui que nous travaillons actuellement)</span>\n<span class=\"paragraph\">L'objectif sera d'automatiser cette t\u00e2che pour automatiquement changer l'\u00e9tat d'un mod\u00e8le que l'on aura entra\u00een\u00e9.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry9.png\" /></span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/registry_model_9.png\" /></span></span>"
           }
         }
       ],
@@ -312,12 +241,32 @@
     },
     {
       "id": "aqbW",
-      "code_hash": "648f3c4d141bd9cdc8ae27c2aea37c7a",
-      "outputs": [],
+      "code_hash": "8e55983550af10d3ea33295151160411",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"pipeline-de-deploiement\">Pipeline de d\u00e9ploiement</h3>\n<span class=\"paragraph\">Une fois l'entra\u00eenement r\u00e9alis\u00e9, nous allons \u00e9galement impl\u00e9menter dans Kedro un pipeline qui va permettre de transitionner l'\u00e9tat d'un mod\u00e8le en staging ou production.</span>\n<span class=\"paragraph\">Pour cela, nous allons cr\u00e9er un pipepline <code>deployment</code>.</span>\n<span class=\"paragraph\">Nous rappelons donc la commande pour cr\u00e9er un pipeline comme le suit :\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">uv</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"w\"> </span><span class=\"n\">pipeline</span><span class=\"w\"> </span><span class=\"n\">create</span><span class=\"w\"> </span><span class=\"n\">loading</span>\n</code></pre></div></span></span>"
+          }
+        }
+      ],
       "console": []
     },
     {
-      "id": "TRpd",
+      "id": "TXez",
+      "code_hash": "8aef3461ffa71f7a9a7c26363c57cbc0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Bien \u00e9videment, notre <code>__init.py__</code> poss\u00e8dera une ligne pour charger les <code>.env</code></span>\n<div class=\"admonition danger\">\n<p class=\"admonition-title\">Danger</span>\n<span class=\"paragraph\">Une piqure de rappel ne fait pas de mal, ne <strong>JAMAIS</strong> commit un <code>.env</code> sous peine d'\u00eatre licenci\u00e9 pour le motif faute grave, avec un \u00e9ventuel poursuite judiciaire par l'\u00e9quipe cyber-s\u00e9curit\u00e9, car votre entreprise se retrouve dans le journal de 20h pour une fuite de donn\u00e9es vers les forums du darknet.</span>\n<span class=\"paragraph\">La France est actuellement champion des fuites de donn\u00e9es, ne soyez pas le prochain sur la liste.</span>\n</div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
       "code_hash": "7fe7b4f7e6b1e299d783cd561eaf421c",
       "outputs": [
         {
@@ -330,13 +279,7 @@
       "console": []
     },
     {
-      "id": "TXez",
-      "code_hash": "452511d764da2bf3a1c2f2748a57f1f8",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "dNNg",
+      "id": "wlCL",
       "code_hash": "00b1eef81aeed46d7e479c908acc91ac",
       "outputs": [
         {
@@ -349,13 +292,7 @@
       "console": []
     },
     {
-      "id": "yCnT",
-      "code_hash": "d8e29402542d7cbd8e8aae0583ff5aff",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "wlCL",
+      "id": "wAgl",
       "code_hash": "07985503235236ada5774ae4cfab4f8b",
       "outputs": [
         {
@@ -368,13 +305,20 @@
       "console": []
     },
     {
-      "id": "kqZH",
-      "code_hash": "4b3d1036fdb470921abd59ceda283621",
-      "outputs": [],
+      "id": "rEll",
+      "code_hash": "76fd5cd9bf0d8aae3008c793609a8316",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mlflow_model_registry: (\n    \"purchase_predict\"  # Name of model registry of this project\n)</span></span>"
+          }
+        }
+      ],
       "console": []
     },
     {
-      "id": "wAgl",
+      "id": "dGlV",
       "code_hash": "4d292a7787cd2d7f2114772ffe54da73",
       "outputs": [
         {
@@ -387,91 +331,55 @@
       "console": []
     },
     {
-      "id": "rEll",
-      "code_hash": "d19a0b4bec45768fa3e7cdbcdbdb258f",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "dGlV",
-      "code_hash": "9dd48f7a6b463898eadd30e2e3ad43e8",
+      "id": "SdmI",
+      "code_hash": "d895a4b8d866faff675731e62a65b697",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Avant de passer \u00e0 la suite, nous devons d\u00e9finir notre ml_run_id qui va r\u00e9cup\u00e9rer le num\u00e9ro du run depuis l'entrainement afin de passer l'information lors du d\u00e9ploiement. Il sera d\u00e9finit dans notre catalogue</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mo.md(r\"\\\"\\\"\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Pipeline</span><span class=\"p\">,</span> <span class=\"n\">node</span>\n\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">):</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">(</span>\n        <span class=\"p\">[</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">push_to_model_registry</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_run_id&quot;</span><span class=\"p\">],</span>\n                <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">stage_model</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">],</span>\n                <span class=\"kc\">None</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n        <span class=\"p\">]</span>\n    <span class=\"p\">)</span>\n</code></pre></div>\n\"\\\"\\\")</span></span>"
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "SdmI",
-      "code_hash": "8de1431d9ca927c420bc2545927fbcaa",
-      "outputs": [],
       "console": []
     },
     {
       "id": "lgWD",
-      "code_hash": "f776fb74b9686c28e71fad2e24d141f6",
+      "code_hash": "9b9d0daf0a7cb12d7e5fc4eefbe774c9",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Il ne reste plus qu'\u00e0 renseigner ce pipeline dans <code>hooks.py</code>.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Avant de passer \u00e0 la suite, nous devons d\u00e9finir notre <code>ml_run_id</code> qui va r\u00e9cup\u00e9rer le num\u00e9ro du run depuis l'entrainement afin de passer l'information lors du d\u00e9ploiement. Il sera d\u00e9finit dans notre catalogue</span></span>"
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "yOPj",
-      "code_hash": "4cab4a2b9c20695011d9daade156c895",
-      "outputs": [],
       "console": []
     },
     {
       "id": "fwwy",
-      "code_hash": "a75a64f7c71fe9e6bb521889d16bf758",
+      "code_hash": "52487ce4152ca4485afbbd4d82c5f3fa",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous obtenons le pipeline suivant.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry10.png\" /></span>\n<span class=\"paragraph\">Lan\u00e7ons une ex\u00e9cution globale (en sp\u00e9cifiant l\u00e0-aussi le param\u00e8tre <code>automl_max_evals</code> \u00e0 1 pour acc\u00e9lerer les calculs.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mo.md(r\"\\\"\\\"\nNous obtenons le pipeline suivant.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/kedro-pipeline.png\" /></span>\n<span class=\"paragraph\">Lan\u00e7ons une ex\u00e9cution globale (en sp\u00e9cifiant l\u00e0-aussi le param\u00e8tre <code>automl_max_evals</code> \u00e0 1 pour acc\u00e9lerer les calculs.\n\"\\\"\\\")</span></span>"
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "LJZf",
-      "code_hash": "2c7276d38156cdc0ccb646a284e084f3",
-      "outputs": [],
       "console": []
     },
     {
       "id": "urSm",
-      "code_hash": "c5d5b49a8d917573c94531fe09709c80",
+      "code_hash": "89ddb70822699d61c65aa2fcd48df443",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Puisque nous sommes en environnement staging, sur MLflow, le mod\u00e8le enregistr\u00e9 doit avoir l'\u00e9tat correspondant.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry12.png\" /></span>\n<span class=\"paragraph\">Nous avons donc \u00e0 la fois la <em>Latest Version</em> \u00e0 2, et c'est elle qui est actuellement en staging.</span>\n<span class=\"paragraph\">L'int\u00e9gralit\u00e9 des pipelines ont \u00e9t\u00e9 r\u00e9alis\u00e9es, ce qui donne pour le pipeline <code>global</code> un ensemble assez important d'\u00e9tapes.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/model_registry11.png\" /></span>\n<blockquote>\n<span class=\"paragraph\">\u2753 En quoi envoyer le mod\u00e8le vers le registre peut nous \u00eatre utile ?</span>\n</blockquote>\n<span class=\"paragraph\">Ce qui va \u00eatre puissant, c'est que l'on sera capable de r\u00e9cup\u00e9rer, dans un projet diff\u00e9rent que Kedro, le mod\u00e8le le plus \u00e0 jour. Ainsi, on <strong>d\u00e9couple fortement</strong> la phase d'exp\u00e9rimentation/d'entra\u00eenement du mod\u00e8le et la phase de d\u00e9ploiement, qui est une bonne pratique du Cloud.</span>\n<span class=\"paragraph\">Comme toujours, il ne faut pas h\u00e9siter \u00e0 r\u00e9guli\u00e8rement pousser son code vers le d\u00e9p\u00f4t Git.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Puisque nous sommes en environnement staging, sur MLflow, le mod\u00e8le enregistr\u00e9 doit avoir l'\u00e9tat correspondant.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/model_registry12.png\" /></span>\n<span class=\"paragraph\">Nous avons donc \u00e0 la fois la <em>Latest Version</em> \u00e0 2, et c'est elle qui est actuellement en staging.</span>\n<span class=\"paragraph\">L'int\u00e9gralit\u00e9 des pipelines ont \u00e9t\u00e9 r\u00e9alis\u00e9es, ce qui donne pour le pipeline <code>global</code> un ensemble assez important d'\u00e9tapes.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 En quoi envoyer le mod\u00e8le vers le registre peut nous \u00eatre utile ?</span>\n</blockquote>\n<span class=\"paragraph\">Ce qui va \u00eatre puissant, c'est que l'on sera capable de r\u00e9cup\u00e9rer, dans un projet diff\u00e9rent que Kedro, le mod\u00e8le le plus \u00e0 jour. Ainsi, on <strong>d\u00e9couple fortement</strong> la phase d'exp\u00e9rimentation/d'entra\u00eenement du mod\u00e8le et la phase de d\u00e9ploiement, qui est une bonne pratique du Cloud.</span>\n<span class=\"paragraph\">Comme toujours, il ne faut pas h\u00e9siter \u00e0 r\u00e9guli\u00e8rement pousser son code vers le d\u00e9p\u00f4t Git.</span></span>"
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "jxvo",
-      "code_hash": "8f041692b475f0f31cc59372bb8867b4",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "mWxS",
-      "code_hash": "55e99aa2fa8c340c997be3d1bd27e15c",
-      "outputs": [],
       "console": []
     },
     {
@@ -488,19 +396,13 @@
       "console": []
     },
     {
-      "id": "YWSi",
-      "code_hash": "9799dc01c3a34676a42ccf63893376ee",
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "zlud",
-      "code_hash": "c85b4a3a959a457220605864422f770f",
+      "code_hash": "e3142e6fdb9be54c1cf5861e0d2c9562",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">On n'oubliera pas d'ajouter la cl\u00e9 SSH \u00e0 l'agent avec de pousser vers le d\u00e9p\u00f4t.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Pour de raison \u00e9videntes de pricing, <a href=\"https://cloud.google.com/products/secure-source-manager/pricing?hl=en#secure-source-manager-pricing\" rel=\"noopener noreferrer\" target=\"_blank\">https://cloud.google.com/products/secure-source-manager/pricing?hl=en#secure-source-manager-pricing</a></span>\n<span class=\"paragraph\">Nous n'allons pas utiliser le service Secure Source Manager, afin d'avoir notre propre instance de Git.</span>\n<span class=\"paragraph\">\u00c0 la place, nous allons devoir mettre le projet sur GitHub.</span>\n<ul>\n<li>Cr\u00e9ez \u00e0 pr\u00e9sent un r\u00e9pertoire Git pour ce projet. Ce projet consititura la pipeline d'entrainement.</li>\n</ul>\n<span class=\"paragraph\">Il nous restera plus qu'\u00e0 appliquer les push sur la branche <code>staging</code></span>\n<div class=\"language-text codehilite\"><pre><span></span><code>git push -u origin staging\n</code></pre></div></span>"
           }
         }
       ],
@@ -508,25 +410,6 @@
     },
     {
       "id": "tZnO",
-      "code_hash": "b903fbdb8882d16d8effe1990399a407",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "xvXZ",
-      "code_hash": "bc59702b0d5144a96237a5cface277ba",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Sur <a href=\"https://source.cloud.google.com/\" target=\"_blank\">Cloud Source</a>, la branche <code>staging</code> est d\u00e9sormais visible.</span></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "CLip",
       "code_hash": "66d07517c4a4d367b466cbf176ac8f4d",
       "outputs": [
         {
@@ -536,6 +419,132 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "d70800e94d46ed05d03a7b4019df3ea8",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "380a032b445994a2ea50913f00aa5b8c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "5c01920d850a6609d839466cec01917c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "636fa834251abaab2387073862fa038c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "e7c3ee1feb7aa505d540aaaccf53c6e6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "78efaacdf1faa79602688779a94e9bcd",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "9db918971135adccc3f4e05b60378b5d",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "8887e5cbf8888a059f9aae910af8bcf2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "378b44f70fea62c5cc23a6124ed94aff",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "56ca5622e6fc0909f4781a4a389d5068",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "e3d7c6c19cb1a4d7cef34e61e6ef158b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "648f3c4d141bd9cdc8ae27c2aea37c7a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "83813d502c0bf677da5f2d9fcd598721",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "d8e29402542d7cbd8e8aae0583ff5aff",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "8de1431d9ca927c420bc2545927fbcaa",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "jxvo",
+      "code_hash": "8f041692b475f0f31cc59372bb8867b4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "55e99aa2fa8c340c997be3d1bd27e15c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "c98ace5e0cb8f21c7fe94f85b577dade",
+      "outputs": [],
       "console": []
     }
   ]
