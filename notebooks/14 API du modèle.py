@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.20.4"
 app = marimo.App()
 
 
@@ -360,6 +360,7 @@ def _(mo):
     from mlflow.tracking import MlflowClient
 
     ENV = os.getenv("ENV")
+    MLFLOW_REGISTRY_NAME = os.getenv("MLFLOW_REGISTRY_NAME")
 
     # Le warning est déjà guardé par le fichier __init__.py, pas besoin de le répéter ici
     mlflow.set_tracking_uri(os.getenv("MLFLOW_SERVER"))  # ty: ignore[invalid-argument-type]
@@ -444,6 +445,7 @@ def _(mo):
                         X = X.drop(col, axis=1)
                 return self.model.predict(X)
             return None
+
     ```
     """)
     return
@@ -536,7 +538,9 @@ def _(mo):
 
     ```
     import pandas as pd
-    from flask import request, jsonify
+    from flask import Flask, request, jsonify
+
+    from purchase_predict_api.src.model import Model
 
     app = Flask(__name__)
     model = Model()
@@ -552,7 +556,7 @@ def _(mo):
     def predict():
         body = request.get_json()
         df = pd.read_json(body)
-        results = [int(x) for x in model_1.predict(df).flatten()]
+        results = [int(x) for x in model.predict(df).flatten()]
         return (jsonify(results), 200)
 
 
@@ -579,8 +583,8 @@ def _():
     import os
 
     # N'oubliez pas de mettre le path du projet kedro ici
-    path_kedro = "/Users/noobzik/Documents/Kaggle/purchase-predict"
-    dataset = pd.read_csv(os.path.join(path_kedro, "data/03_primary/primary.csv"))
+    path_kedro = r"your_kedro_path"
+    dataset = pd.read_csv(os.path.join(path_kedro, r"data\03_primary\primary.csv"))
     dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return (dataset,)
 
@@ -710,6 +714,8 @@ app._unparsable_cell(
 def _(mo):
     mo.md(r"""
     Une fois terminé, nous pouvons tuer les processus `gunicorn` avec la commande suivante.
+
+    Cette commande n'est disponible que pour les personnes syant fait le tp sur linux
     """)
     return
 
@@ -787,10 +793,7 @@ def _(mo):
 
     ```
     git checkout -b staging
-    # Pour ajouter la clé SSH à l'agent Git
-    eval "$(ssh-agent -s)"
-    chmod 600 ~/ssh/git_key
-    ssh-add ~/ssh/git_key
+
     # On pousse vers le dépôt sur la branche staging
     git push -u origin staging
     ```
