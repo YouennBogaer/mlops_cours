@@ -445,6 +445,7 @@ def _(mo):
                         X = X.drop(col, axis=1)
                 return self.model.predict(X)
             return None
+
     ```
     """)
     return
@@ -539,6 +540,8 @@ def _(mo):
     import pandas as pd
     from flask import Flask, request, jsonify
 
+    from purchase_predict_api.src.model import Model
+
     app = Flask(__name__)
     model = Model()
 
@@ -553,7 +556,7 @@ def _(mo):
     def predict():
         body = request.get_json()
         df = pd.read_json(body)
-        results = [int(x) for x in model_1.predict(df).flatten()]
+        results = [int(x) for x in model.predict(df).flatten()]
         return (jsonify(results), 200)
 
 
