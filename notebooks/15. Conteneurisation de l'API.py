@@ -52,21 +52,105 @@ def _(mo):
 
     Bonne chance !
 
+    ### Création des clées Fine-grained tokens
+    Nous allons d'abord ajouter le plugin `Google Cloud Build` qui nous servira pour plus tard :
+    - https://github.com/marketplace/google-cloud-build
+
+    Afin de pouvoir télécharger sur la futur VM que nous allons déployer pour notre API, nous allons devoir créer un Fine-Grained token disponible à cette adresse : https://github.com/settings/personal-access-tokens
+
+    Au niveau des permissions, nous allons mettre les informations suivantes:
+    - Metadata
+    - Contents
+
+    Ensuite, il faudra le stocker vers Google Secret manager : https://console.cloud.google.com/security/secret-manager
+    1. Créer un secret
+    2. Saisir un nom du secret
+    3. Saisir une date d'expiration
+    4. Cliquer sur créer un secret
+
+    ### Création de la VM
+
     Créons une VM `docker`. En modifiant les informations de l'instance, nous devons définir le service account que vous venez de créer.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/docker_api1.png" />
+    Nous utiliserons la configuration suivante :
+    - e2-small
+    - Aucune sauvegarde
+    - Autoriser le traffic http et https
+    - Choisir dans la sécurité, le service account que vous avez crée
+    - Et n'oubliez pas d'autoriser làccès à l'ensemble des API depuis la VM.
 
-    Enregistrons les paramètres et démarrons l'instance. En s'y connectant en SSH, nous pouvons cloner le dépôt `purchase_predict_api` depuis GitHub En cliquant sur le bouton pour cloner, copions la commande via **SDK Google Cloud**. La commande de clonage via SSH ne fonctionnera pas puisque nous n'avons pas configuré de clés.
+
+    Enregistrons les paramètres et démarrons l'instance. En s'y connectant en SSH, nous pouvons cloner le dépôt `purchase_predict_api` depuis GitHub En cliquant sur le bouton pour cloner.
+
+    - Commençons par installer git
+    ```
+    sudo apt install git
+    ```
+    - Et clonez le répertoire
+
+    Mais ce qu'il va se passer, c'est qu'on avoir avoir une erreur car nous n'avons pqs encore importer la Secret que nous avons affecté avant.
+
+    Pour cela, nous allons lancer cette commande :
+    ```
+    export GH_TOKEN=$(gcloud secrets versions access latest --secret="<Nom Du Secret>")
+    ```
+
+    Il peut être assez répétitif de réaliser cette commande à chaque rémarrage. Nous avons donc deux options :
+    1. Le rendre persistant à l'aide de Github dans le VM pour les prochaines executions.
+    2. Le rendre persistant au niveau de la VM, rendant le répertoire indépendant.
+
+    La première solution n'est pas la bonne, en effet, nous devrions importer la clée manuellement pour la première fois, cloner le répertoire afin de le rendre persistant. Ce n'est pas terrible en cas de modification non désiré qui est push dans le répertoire.
+
+    La deuxième solution en revanche est plus interéssante, en effet, cela nous permet de le faire dès l'initalisation et par la suite, dupliquer cette VM sous la forme de template pour les autres VM si besoin.
+
+    Nous choisirons donc la deuxième solution :
+    ```
+    echo 'export GH_TOKEN=$(gcloud secrets versions access latest --secret="<NOM DU SECERT>")' >> ~/.bashrc
+    ```
+
+    Mais en réalisant le clone, on vous demande une `public key`, pas terrible en effet, il faudra faire le clone à laide de la commande suivante :
+
+    ```
+    git clone https://${GH_TOKEN}@github.com/<username>/<repertoire>.git
+    ```
+
+    Et là, ça fonctionne !
     """)
     return
 
 
-app._unparsable_cell(
-    r"""
-    gcloud source repos clone purchase_predict_api --project=xxxxxxxxxxxx
-    """,
-    name="_"
-)
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Nous allons installer Docker
+
+    Mais avant, nous devons inclure le répertoire propriétaire de docker dans la base de APT :
+    ```
+    # Add Docker's official GPG key:
+    sudo apt update
+    sudo apt install ca-certificates curl
+    sudo install -m 0755 -d /etc/apt/keyrings
+    sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+    sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+    # Add the repository to Apt sources:
+    sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+    Types: deb
+    URIs: https://download.docker.com/linux/debian
+    Suites: $(. /etc/os-release && echo "$VERSION_CODENAME")
+    Components: stable
+    Signed-By: /etc/apt/keyrings/docker.asc
+    EOF
+
+    sudo apt update
+    ```
+
+    Il nous reste plus qu'à lancer l'installation :
+    ```
+    sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    ```
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -96,7 +180,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    FROM ghcr.io/astral-sh/uv:python3.12-alpine
+    FROM ghcr.io/astral-sh/uv:python3.12-trixie-slim
 
     # Indispensable pour LightGBM
     RUN apt update
@@ -258,7 +342,8 @@ def _():
     import requests
     import pandas as pd
 
-    dataset = pd.read_csv(os.path.expanduser("data/primary.csv"))
+    path_kedro = "/Users/noobzik/Documents/kaggle/purchase-predict/data/03_primary"
+    dataset = pd.read_csv(os.path.join(path_kedro, "primary.csv"))
     dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return dataset, requests
 
@@ -272,7 +357,7 @@ def _(dataset):
 @app.cell
 def _(dataset, requests):
     requests.post(
-        "http://34.68.228.194/predict",  # Remplacer par l'adresse IP de l'instance Docker
+        "http://35.202.248.201/predict",  # Remplacer par l'adresse IP de l'instance Docker
         json=dataset.sample(n=10).to_json(),
     ).json()
     return
@@ -292,7 +377,7 @@ def _(mo):
 
     ### Registre de conteneurs Google Cloud
 
-    Dirigeons-nous vers le <a href="https://console.cloud.google.com/artifacts" target="_blank">Container Registry</a> et créons un nouveau registre comme nous l'avions fait avec DockerHub.
+    Dirigeons-nous vers le <a href="https://console.cloud.google.com/artifacts" target="_blank">Artifact Registry</a> et créons un nouveau registre comme nous l'avions fait avec DockerHub.
 
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/docker_api2.png" />
 
@@ -300,7 +385,12 @@ def _(mo):
 
     - Cliquez sur Create Repository et ensuite, nous allons choisir le format Docker.
     - En ce qui concerne le nom du repository, nous allons mettre purchased-docker (Attention, le _ ne fonctionne pas ici)
-    - Pour les besoin du TP et de le garder simple, nous désactiverons le scan des vulnabilités.
+    - Pour les besoin du TP et de le garder simple, nous désactiverons le scan des vulnabilités. En terme de région, nous choisissons `us-central1`.
+    - Récupérez le path généré par Google Artifact Registry
+
+    ![alt](public/artifact_registry_path.png)
+
+    - Dans la VM de l'api, nous allons configurer la connexion avec la commande suivante :
 
     ```
     gcloud auth configure-docker us-central1-docker.pkg.dev
@@ -368,7 +458,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    sudo docker tag purchase_predict_api gcr.io/training-ml-engineer/purchase_predict_api
+    sudo docker tag purchase_predict_api us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
     """,
     name="_"
 )
@@ -384,7 +474,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    sudo docker push gcr.io/training-ml-engineer/purchase_predict_api
+    sudo docker push us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
     """,
     name="_"
 )
@@ -459,7 +549,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    ping: mlflow.europe-west3-c.c.training-ml-engineer.internal: Nom ou service inconnu
+    ping: mlflow.us-central1-c.c.esgi-352608.internal: Nom ou service inconnu
     """,
     name="_"
 )
@@ -482,7 +572,7 @@ app._unparsable_cell(
     ENV=staging
     MLFLOW_SERVER=http://mlflow.europe-west3-c.c.training-ml-engineer.internal/
     MLFLOW_REGISTRY_NAME=purchase_predict
-    DOCKER_IMAGE=gcr.io/training-ml-engineer/purchase_predict_api
+    DOCKER_IMAGE=us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
     """,
     name="_"
 )
@@ -518,13 +608,13 @@ app._unparsable_cell(
     Requires=docker.service
 
     [Service]
-    EnvironmentFile=/etc/default/purchase_predict_api
+    EnvironmentFile=/home/rakib_hernandez/purchase_predict_2026_api/.env
     TimeoutStartSec=0
     Restart=always
     ExecStartPre=-/usr/bin/docker stop $DOCKER_IMAGE
     ExecStartPre=-/usr/bin/docker rm $DOCKER_IMAGE
     ExecStartPre=/usr/bin/docker pull $DOCKER_IMAGE
-    ExecStart=/usr/bin/docker run --env-file /etc/default/purchase_predict_api -p 0.0.0.0:80:80 $DOCKER_IMAGE
+    ExecStart=/usr/bin/docker run --env-file /home/rakib_hernandez/purchase_predict_2026_api/.env -p 0.0.0.0:80:80 $DOCKER_IMAGE
 
     [Install]
     WantedBy=multi-user.target
@@ -619,7 +709,7 @@ def _(mo):
 @app.cell
 def _(dataset, requests):
     requests.post(
-        "http://34.68.228.194/predict",  # Remplacer par l'adresse IP de l'instance Docker
+        "http://35.239.206.95/predict",  # Remplacer par l'adresse IP de l'instance Docker
         json=dataset.sample(n=10).to_json(),
     ).json()
     return
