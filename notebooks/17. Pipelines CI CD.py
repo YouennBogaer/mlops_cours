@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.20.4"
 app = marimo.App()
 
 
@@ -35,7 +35,8 @@ def _(mo):
 
     L'approche CI/CD, bien connue des DevOps, permet d'améliorer la fréquence de distribution des applications en implémentant des déclenchements automatisés. L'objectif de cette approche est de garantir que les nouvelles fonctionnalités ou améliorations d'un code/application s'intègrent correctement dans un environnement et puisse être directement déployé sans intervention humaine.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cicd1.png" />
+    ![alt](public/cicd1.png)
+
 
     Plus précisément, nous pouvons différencier d'une part l'acronyme « CI » de l'acronyme « CD ».
 
@@ -66,8 +67,7 @@ def _(mo):
 
     Construisons le pipeline CI/CD qui se charge d'entraîner un modèle optimisé : le projet `purchase_predict`.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_training.png" />
-
+    ![alt](public/pipeline_training.png)
 
     Le pipeline d'entraînement du modèle peut être scindé en deux étapes.
 
@@ -81,66 +81,15 @@ def _(mo):
     Le service <a href="https://console.cloud.google.com/cloud-build/builds" target="_blank">Cloud Build</a> permet de générer des builds et/ou de compiler des applications en serverless.
 
     Créons le fichier `install.sh` à la racine du projet `purchase_predict`. Dans ce fichier Bash, nous allons y insérer les commandes permettant d'installer les dépendances nécessaire dans un environnement vierge.
-    """)
-    return
 
+    ```
+    #!/bin/bash
+    set -e
 
-app._unparsable_cell(
-    r"""
-    pip install --upgrade pip
-    pip install -r requirements.txt
-    """,
-    name="_"
-)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    Le fichier `requirements.txt` contient toutes les dépendances **avec leurs versions spécifiques**. Ce fichier est important il va s'assurer que les dépendances installées seront identiques à celles de la production.
-    """)
-    return
-
-
-app._unparsable_cell(
-    r"""
-    ipython>=8.10
-    jupyterlab>=3.0
-    kedro-datasets>=3.0
-    kedro-viz>=6.7.0
-    kedro[jupyter]~=0.19.10
-    notebook
-    scikit-learn~=1.6.1
-    python-dotenv==1.0.1
-    pandas==2.2.3
-    lightgbm==4.5.0
-    hyperopt==0.2.7
-    mlflow==2.20.0
-    kedro==0.19.10
-    kedro-viz==10.1.0
-    google-cloud-storage==2.19.0
-    pre_commit==4.1.0
-    seaborn==0.13.2
-    pytest
-    pytest-cov
-    gcsfs
-    """,
-    name="_"
-)
-
-
-@app.cell(hide_code=True)
-def _(mo):
-    mo.md(r"""
-    ## Google Secret
-
-    Le container que nous avons généré pour vous est basé sur l'environnement Astral UV dans le but d'accélérer le temps du build. Mais nous n'avons pas les commandes gcloud, important pour pouvoir accéder à nos ressources interne comme Google Cloud Storage.
-
-    Pour cela, nous allons devoir contourner cette problématique en passant par un environnement secret de Google pour pouvoir s'authentifier dans notre container.
-
-    1. Allez dans [Secret Manager](https://console.cloud.google.com/security/secret-manager) et ensuite cliquez sur `+ Create Secret`
-    2. Donnez lui un nom (pour ma part j'ai mis cloud-build) et uploadez votre clée json Service Account possédant les autorisations d'accès à Cloud Build, Compute Engine, Artifact Registry ainsi que Cloud Storage.
-    3. Sauvegardez les paramètres, nous allons réutiliser cette clée lors de la construction du cloudbuild.yml
+    apt-get update && apt-get install -y --no-install-recommends \
+        libgomp1 git \
+      && rm -rf /var/lib/apt/lists/*
+    ```
     """)
     return
 
@@ -159,31 +108,16 @@ app._unparsable_cell(
     r"""
     # Liste des Cloud Builders : https://console.cloud.google.com/gcr/images/cloud-builders/GLOBAL
     steps:
-    - name: "noobzik/uv-gcp-cloud-build"
-      id: CI
-      entrypoint: /bin/bash
-      secretEnv: ['SERVICE_ACCOUNT']
-      env:
-        - PROJECT_ID=$PROJECT_ID
-      args:
-      - -c
-      - |
-        echo "$$SERVICE_ACCOUNT" > service_account.json
-        if ! gcloud auth activate-service-account --key-file=service_account.json; then
-          echo "ERROR: gcloud authenfication failed!"
-          exit 1
-        fi
-        gcloud config set project "$PROJECT_ID"
-        chmod a+x install.sh &&
-        ./install.sh &&
-        source .venv/bin/activate &&
-        pytest .
+      - name: "ghcr.io/astral-sh/uv:python3.12-trixie-slim"
+        id: CI
+        entrypoint: /bin/sh
+        args:
+          - "-c"
+          - "chmod a+x install.sh && ./install.sh && uv sync && uv run pytest ."
+        env:
+          - "UV_CACHE_DIR=/root/.cache/uv"
 
     logs_bucket: gs://purchase_predict/logs_build_cloud_build
-    availableSecrets:
-      secretManager:
-      - versionName: projects/$PROJECT_ID/secrets/cloud-build/versions/1
-        env: SERVICE_ACCOUNT
     """,
     name="_"
 )
@@ -194,30 +128,31 @@ def _(mo):
     mo.md(r"""
     Analysons chaque champ de ce fichier. Le paramètre `steps` va permettre de définir différentes étapes indépendantes qui seront exécutées séquentiellement par Cloud Build. À noter que dans le cas de notre pipeline CI, nous n'avons pour l'instant qu'une seule étape.
 
-    Ensuite, nous allons configurer cette étape. Dans un premier temps, nous spécifions dans `name` l'image Docker à utiliser pour exécuter le pipeline. Nous utilisons celle proposée par défaut pour Python 3.8, mais la <a href="https://console.cloud.google.com/gcr/images/cloud-builders/GLOBAL" target="_blank">liste des Cloud Builders</a> possède différentes images. Ensuite, avec `id`, nous lui attribuons un identifiant/nom.
-    secretEnv nous permet de récupérer la variable SERVICE_ACCOUNT contenant le fichier json que nous avons uploadé tout à l'heure. Elle permet de mettre à disposition cette variable au sein de cette étape.
+    Ensuite, nous allons configurer cette étape. Dans un premier temps, nous spécifions dans `name` l'image Docker à utiliser pour exécuter le pipeline. Nous utilisons celle proposée par Astral uv afin de pouvoir éviter d'installer UV à la main.
+
+    Ensuite, avec `id`, nous lui attribuons un identifiant/nom.
 
     Les deux autres champs vont spécifier la commande à exécuter.
     - Le champ `entrypoint` spécifie le programme à exécuter. Il peut s'agit, comme ici, de l'interpréteur Bash, mais cela peut également faire référence à un autre interpréteur ou à une application tierce.
     - La liste `args` contient les arguments qui seront passés en paramètres au programme.
-    - Nous remarquons qu'il y a deux `$` à notre environnement secret, c'est la notation officielle concernant l'utilisation d'un Secret Manager
+    - Le champs `env` permet de définir la liste des variables d'environnement. Nous avons fixé `uv` pour vous si vous souhaitez à l'avenir, optimiser les temps de builds
 
     Il est en théorie possible de tout condenser en une seule ligne sur `entrypoint`, mais l'avantage du champ `args` est que la lecture des différents arguments sous forme de liste est plus lisible, notamment lorsqu'il y en a beaucoup.
 
-    <div class="alert alert-block alert-info">
-        Il n'est pas possible d'avoir plusieurs points d'entrée pour une même étape. Par exemple, il ne sera pas possible d'exécuter plusieurs commandes Bash en une seule étape.
-    </div>
+    /// danger | Remarque importante
+    Il n'est pas possible d'avoir plusieurs points d'entrée pour une même étape. Par exemple, il ne sera pas possible d'exécuter plusieurs commandes Bash en une seule étape.
+    ///
 
     C'est d'ailleurs pour cette raison que l'on utilise `&&` ici pour exécuter plusieurs commandes Bash les unes à la suite des autres. Lorsqu'il y a beaucoup de commandes Bash à utiliser, il est préférable de les ajouter dans un fichier comme `install.sh` et de garder dans la configuration Cloud Build uniquement les commandes importantes comme l'installation globale ou l'exécution propre à cette étape.
 
-    Les arguments permettent de donner les droits d'exécution à l'utilisateur dans l'environnement Cloud Build (`a+x`), nous exécution le fichier `install.sh` pour y installer les dépendances de Kedro et enfin, nous lançons les tests unitaires avec `pytest`.
+    Les arguments permettent de donner les droits d'exécution à l'utilisateur dans l'environnement Cloud Build (`a+x`), nous exécution le fichier `install.sh` pour y installer les dépendances de Kedro et enfin, nous lançons les tests unitaires avec `uv run pytest`.
 
     Nous allons stocker les logs de notre Cloud Build dans notre bucket `purchase_predict` dans un dossier qui lui est dédié
-    Et enfin, nous paramétrons la récupération de notre Secret Manager que nous avons définie plus haut. La variable `$PROJECT_ID` sera automatiquement remplacé par Cloud Run à travers des variables dites de substitution. [En voici une liste complète des variables de substitution](https://cloud.google.com/build/docs/configuring-builds/substitute-variable-values?hl=en)
+
 
     Dans Cloud Build, créons un nouveau déclencheur que nous appelerons `build-purchase-predict-staging`.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_build1.png" />
+    ![alt](public/ci-1.png)
 
     Ce déclencheur sera appelé dès lors qu'un push sera effectué sur le dépôt Cloud Source `purchase_predict`. Nous pouvons spécifier la branche avec `staging` sous forme d'expression régulière. Ce déclencheur en concerne dont **que l'environnement de pré-production**.
 
@@ -279,7 +214,7 @@ def _(mo):
     mo.md(r"""
     Dans <a href="https://console.cloud.google.com/cloud-build/builds" target="_blank">l'historique de compilation</a>, un nouveau build devrait apparaître.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_build2.png" />
+    ![alt](public/cloud_build_2.png)
 
     Au bout de plusieurs minutes, une fois que l'environnement a installé toutes les dépendances, les tests sont lancés. S'il n'y a pas d'erreur, c'est que les tests unitaires de `pytest` ont réussis.
 
@@ -294,49 +229,30 @@ app._unparsable_cell(
     r"""
     # Liste des Cloud Builders : https://console.cloud.google.com/gcr/images/cloud-builders/GLOBAL
     steps:
-    - name: "noobzik/uv-gcp-cloud-build"
-      id: CI
-      entrypoint: /bin/bash
-      secretEnv: ['SERVICE_ACCOUNT']
-      env:
-        - PROJECT_ID=$PROJECT_ID
-      args:
-      - -c
-      - |
-        echo "$$SERVICE_ACCOUNT" > service_account.json
-        if ! gcloud auth activate-service-account --key-file=service_account.json; then
-          echo "ERROR: gcloud authenfication failed!"
-          exit 1
-        fi
-        gcloud config set project "$PROJECT_ID"
-        chmod a+x install.sh &&
-        ./install.sh &&
-        source .venv/bin/activate &&
-        pytest .
-    - name: "noobzik/uv-gcp-cloud-build"
-      id: CD
-      entrypoint: /bin/bash
-      secretEnv: ['SERVICE_ACCOUNT']
-      args:
-      - -c
-      - |
-        echo "$$SERVICE_ACCOUNT" > service_account.json
-        if ! gcloud auth activate-service-account --key-file=service_account.json; then
-          echo "ERROR: gcloud authenfication failed!"
-          exit 1
-        fi
-        gcloud config set project "$PROJECT_ID"
-        chmod a+x install.sh && ./install.sh && source .venv/bin/activate && kedro run
-      env:
-      - 'ENV=$BRANCH_NAME'
-      - 'MLFLOW_SERVER=$_MLFLOW_SERVER'
+      - name: "ghcr.io/astral-sh/uv:python3.12-trixie-slim"
+        id: CI
+        entrypoint: /bin/sh
+        args:
+          - "-c"
+          - "chmod a+x install.sh && ./install.sh && uv sync && uv run pytest ."
+        env:
+          - "UV_CACHE_DIR=/root/.cache/uv" # 👈 explicit cache path
+
+      - name: "ghcr.io/astral-sh/uv:python3.12-trixie-slim"
+        id: CD
+        entrypoint: /bin/bash
+        args:
+          - "-c"
+          - "chmod a+x install.sh && ./install.sh && uv run kedro run"
+        env:
+          - "ENV=$BRANCH_NAME"
+          - "MLFLOW_SERVER=$_MLFLOW_SERVER"
+          - "DO_NOT_TRACK=1"
+          - "UV_CACHE_DIR=/root/.cache/uv" # 👈 same path
+        waitFor: ["CI"]
 
 
     logs_bucket: gs://purchase_predict
-    availableSecrets:
-      secretManager:
-      - versionName: projects/$PROJECT_ID/secrets/cloud-build/versions/1
-        env: SERVICE_ACCOUNT
     """,
     name="_"
 )
@@ -349,10 +265,14 @@ def _(mo):
 
     - La première variable d'environnement `ENV`, utilisée pour versionner le modèle sur MLflow, récupère la valeur de `BRANCH_NAME`, qui sera automatiquement remplacé par Cloud Build par la branche sur laquelle s'exécute le déclencheur. Ainsi, il n'y a pas besoin de spécifier précisément `staging` ou `production`, puisque cela dépendra du nom de la branche Git.
     - La deuxième variable `MLFLOW_SERVER` fait référence à l'adresse du serveur MLflow. Ce qui est particulier est que nous utilisons une **variable de substitution** `_MLFLOW_SERVER`. En effet, il n'est pas possible de mettre le nom de domaine de MLflow parce que Cloud Build ne s'exécute pas dans le VPC (réseau local) contenant l'instance MLflow : il n'aura donc pas la possibilité de résoudre le nom de domaine. Nous allons alors ajouter cette variable de substition dans les paramètres du déclencheur pour surcharger la variable d'environnement.
+    - La troisième variable `DO_NOT_TRACK` est pour kedro, afin de le faire taire sur la récolte de données.
+    - La quatrième nous en avons déjà parlé au dessus lors de la `CI`
 
-    Pour cela, modifions le déclencheur et ajoutons-y la substitution avec l'adresse IP du serveur MLflow.
+    Et enfin nous avons la clée `waitFor`, permettant d'attendre la fin d'execution de la `CI` avant de lancer la `CD`
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_build3.png" />
+    Il nous manque un paramètre à ajouter, c'est la surcharge de variable pour `MLFLOW_SERVER` Pour cela, modifions le déclencheur et ajoutons-y la substitution avec l'adresse IP du serveur MLflow.
+
+    ![alt](public/cloud_build3.png)
 
     Après avoir mis à jour le fichier `cloudbuild.yaml`, nous pouvons de nouveau envoyer les nouvelles références vers le dépôt.
     """)
@@ -362,7 +282,7 @@ def _(mo):
 app._unparsable_cell(
     r"""
     git commit -am "Added CD pipeline in Cloud Build configuration file"
-    git push google staging
+    git push
     """,
     name="_"
 )
@@ -403,11 +323,11 @@ def _(mo):
 
     Sur l'interface MLflow, nous pouvons voir que le modèle optimisé a bien été récupéré et versionné vers l'état `Staging`.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_build5.png" />
+    ![alt](public/cloud_build_4.png)
 
     Pour synthétiser, nous avons crée le pipeline suivant.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cicd2.png" />
+    ![alt](public/cicd2.png)
     """)
     return
 
