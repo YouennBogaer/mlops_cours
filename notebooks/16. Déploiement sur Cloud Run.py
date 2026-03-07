@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.20.4"
 app = marimo.App()
 
 
@@ -49,7 +49,7 @@ def _(mo):
 
     En d'autres termes, en tant que développeur/ML Engineer, nous n'aurons pas besoin de configurer les serveurs et tout ce qui englobe leur gestion avec du serverless. Nous nous concentrons uniquement sur la conception du code. Ainsi, le fournisseur Cloud va lui-même gérer l'équilibrage de charge, le provisionnement de ressources et la mise à jour des serveurs.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless.png" width="500" />
+    ![alt](public/serverless.png)
 
     > ❓ Mais alors, comment ça marche ?
 
@@ -63,7 +63,7 @@ def _(mo):
 
     Dans une architecture serverless, les microservices sont omni-présents. Contrairement à une application monolithique dont l'intégralité des composantes seraient exécutées sur un seul et même serveur, chaque application ou composante en microservices sont exécutés indépendamment des autres, en tant que services mais avec des fonctionnalités précises. Plusieurs applications vont donc interagir entre-elles, et ce couplage faible, bien qu'une bonne pratique dans le Cloud, ajoute des difficultés.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless2.png" />
+    ![alt](public/serverless2.png)
 
     Il convient donc de **cartographier et documenter** l'ensemble de ces services, puisque lorsque dans un projet, il y a plusieurs dizaines de fonctions serverless, cela peut devenir compliqué à maintenir.
 
@@ -71,15 +71,14 @@ def _(mo):
 
     Un autre point très important concerne les fonctions sans états. En effet, lorsqu'un code est exécuté sur une fonction serverless, chaque appel à cette fonction est indépendante des précédentes. Il faut donc que le traitement réalisé par une fonction puisse être reproduit à chaque instant. De plus, cette exécution est **limitée dans le temps** : en règle général, les fonctions serverless ne peuvent être exécutées que sur plusieurs minutes au maximum.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless3.png" />
-
+    ![https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless3.png](public/serverless3.png)
     Ainsi, chaque exécution ne peut stocker des informations persistantes qui seront conservées pour les prochaines exécutions : c'est le principe du **stateless**.
 
     > ❓ Mais alors comment stocker des variables ou partager des informations entre les exécutions ?
 
     Dans ce cas, il est préférable d'utiliser une base de données (base SQL, base clé/valeur, ...) pour stocker ces variables et informations qui seront ré-utilisées.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless4.png" />
+    ![alt](public/serverless4.png)
 
     ### Cold Start
 
@@ -87,7 +86,7 @@ def _(mo):
 
     Lorsqu'une fonction est souvent requêtée (plusieurs par secondes/minutes), alors la fonction reste chargée en mémoire. En revanche, si aucune requête n'est pas envoyée pendant un laps de temps, alors la fonction associée n'est plus chargée en mémoire pour en libérer de l'espace sur le serveur physique. Si une autre requêtes survient par la suite, alors ce temps de chargement de la fonction dans le serveur physique représente ce **démarrage à froid**.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/serverless6.png" />
+    ![alt](public/serverless6.png)
 
     Ce temps de latence peut dépendre de plusieurs paramètres : taille de la fonction à charger en mémoire, langage et méthode d'exécution de la fonction ou fournisseur Cloud.
     """)
@@ -103,25 +102,23 @@ def _(mo):
 
     ### Connecteur VPC
 
-    Nous allons créer un <a href="https://console.cloud.google.com/networking/connectors" target="_blank">accès au VPC sans serveur</a>. Lorsque Cloud Run exécutera le conteneur, ce dernier ne sera pas forcément exécuté dans un instance de notre VPC (réseau local dans le Cloud) contenant notamment l'instance MLFlow. Si l'on essaie d'accéder à cette instance avec son nom de domaine (qui est interne), alors nous obtiendrons la même erreur que lorsque nous avonns essayé de contacter l'instance via un ping depuis notre machine.
+    Nous allons créer un <a href="https://console.cloud.google.com/networking/networks/list" target="_blank">accès VPC</a>. Lorsque Cloud Run exécutera le conteneur, ce dernier ne sera pas forcément exécuté dans un instance de notre VPC (réseau local dans le Cloud) contenant notamment l'instance MLFlow. Si l'on essaie d'accéder à cette instance avec son nom de domaine (qui est interne), alors nous obtiendrons la même erreur que lorsque nous avonns essayé de contacter l'instance via un ping depuis notre machine.
 
-    L'accès au VPC sans serveur permet de créer une connexion sécurisée permettant à des services Google Cloud d'interagir avec des serveurs présents dans notre VPC sans avoir besoin de les rendre accessible via Internet, et donc de minimiser les risques.
+    L'accès au VPC permet de créer une connexion sécurisée permettant à des services Google Cloud d'interagir avec des serveurs présents dans notre VPC sans avoir besoin de les rendre accessible via Internet, et donc de minimiser les risques.
 
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run14.png" />
 
     Avec cette configuration, Cloud Run pourra accéder à notre VPC si on lui spécifie notamment un connecteur VPC associé à notre réseau. Commençons par créer un nouvel accès VPC sans serveur.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run11.png" />
+    ![alt](public/vpc-1.png)
 
-    <div class="alert alert-block alert-warning">
-        La plage d'adresses IP du connecteur VPC ne doit pas chevaucher des adresses IP déjà attribuées. Cette liste est <a href="https://console.cloud.google.com/networking/networks/list" target="_blank">disponible ici</a>.
-    </div>
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run10.png" />
+    Choisissons par exemple la plage d'adresses IP `10.8.0.0/28` proposée par défaut. Etnsuite nous autorisons l'accès privé à Google Access.
 
-    Choisissons par exemple la plage d'adresses IP `10.8.0.0/28` proposée par défaut. Après plusieurs dizaines de secondes, le connecteur VPC est opérationnel.
+    Il ne reste plus qu'à configurer le pare-feu pour autoriser les connexion SSH pour notre vm MLFlow, ainsi que les connexions depuis l'exterieur pour toute adresse IP.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run12.png" />
+
+    Après plusieurs dizaines de secondes, le connecteur VPC est opérationnel.
     """)
     return
 
@@ -131,33 +128,48 @@ def _(mo):
     mo.md(r"""
     ### Service Cloud Run
 
-    Créons le service <a href="https://console.cloud.google.com/run" target="_blank">Cloud Run</a> pour exécuter notre API.
+    Créons le service <a href="https://console.cloud.google.com/run/services" target="_blank">Cloud Run</a> pour exécuter notre API, en cliquant sur Deploy container.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run1.png" />
+    ![alt](public/cloud-run-setup1.png)
 
-    Les premiers paramètres, dont le nom du service ou la région, ne peuvent pas être modifiés par la suite. Chaque service est associé à des **révisions**, qui est semblable à la notion de versions.
+    Le premier paramètre consiste à choisir un type de déploiement. Nous utiliserons artifact registry.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run2.png" />
+    Nous devons donc ensuite choisir l'URL du container.
+
+    Le nom du service ou la région, ne peuvent pas être modifiés par la suite. Chaque service est associé à des **révisions**, qui est semblable à la notion de versions. En cas d'erreur de configuration, il faudra le supprimer et le recréer.
+
+    D'un point de vu sécurité, si c'est une inférence privée, il faudra paramétrer l'authetification. Mais comme nous sommes dans la pratique du cours, il faudra choisir l'autorisation d'accès publique.
+
+    Au niveau de la facturation, elle sera basé sur le nombre de requête, étant donné la nature du cours. Selon le projet, il est interessant de passer à la facturation de l'instance.
+
+    Ceci est un point important car cela vous permettre de gérer la scalabilité de votre inférence en fonction de la demande et du budget allouée.
+
+    ![alt](public/cloud-run-settings1.png)
 
     Par défaut, le port $80$ est le port d'écoute de l'instance Docker. Il est également possible d'utiliser d'autres ports (et même conseillé) lorsque l'on utilise des services managés comme Cloud Run. Nous attribuons également des ressources alloués à notre service.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run15.png" />
+    ![alt](public/cloud-run-setup2.png)
 
     Ensuite, dans le menu Variables, nous pouvons y insérer les variables d'environnements telles que nous les avions utilisés lorsque nous avions exécuter le conteneur sur l'instance Docker.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run3.png" />
+    ![](public/cloud-run3.png)
 
     Enfin, il reste à associer l'accès VPC sans serveur au service Cloud Run dans le menu Connexions.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run8.png" />
+    ![alt](public/cloud-run-setup4.png)
 
-    Pour terminer, nous sélectionnons dans la dernière étape l'option permettant d'autoriser n'importe quel trafic entrant sur notre service. À terme, ce sera une API qui aura le rôle d'authentifier les utilisateurs lorsqu'une authentification sera nécessaire.
+    Pour terminer, nous allons associer le Service Account dédié à l'API à notre Cloud Run
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run4.png" />
+    ![alt](public/cloud-run-setup5.png)
+
+
+
+    nous sélectionnons dans la dernière étape l'option permettant d'autoriser n'importe quel trafic entrant sur notre service. À terme, ce sera une API qui aura le rôle d'authentifier les utilisateurs lorsqu'une authentification sera nécessaire.
+
 
     Une fois lancé, après plusieurs secondes pour configurer et lancer le service, ce dernier devrait être opérationnel.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run5.png" />
+    ![alt](public/cloud-run-setup6.png)
 
     Nous pouvons tester avec une requête comme nous l'avions fait pour l'instance Docker. L'avantage ici, c'est qu'il n'y a plus d'adresse IP et Cloud Run fournit automatiquement une URL pour le service.
     """)
@@ -170,7 +182,8 @@ def _():
     import requests
     import pandas as pd
 
-    dataset = pd.read_csv(os.path.expanduser("data/primary.csv"))
+    path_kedro = "/Users/noobzik/Documents/kaggle/purchase-predict/data/03_primary"
+    dataset = pd.read_csv(os.path.join(path_kedro, "primary.csv"))
     dataset = dataset.drop(["user_session", "user_id", "purchased"], axis=1)
     return dataset, requests
 
@@ -178,8 +191,8 @@ def _():
 @app.cell
 def _(dataset, requests):
     requests.post(
-        "https://purchase-predict-api-808424404935.us-central1.run.app/predict",  # Remplacer par l'URL du service Cloud Run
-        json=dataset.sample(n=10).to_json()
+        "https://purchase-predict-api-808424404935.europe-west1.run.app/predict",  # Remplacer par l'URL du service Cloud Run
+        json=dataset.sample(n=10).to_json(),
     ).json()
     return
 
@@ -189,7 +202,7 @@ def _(mo):
     mo.md(r"""
     Les différentes requêtes HTTP peuvent être visualisés sous l'onglet Journaux.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/cloud_run13.png" />
+    ![alt](public/cloud-run-setup7.png)
     """)
     return
 
