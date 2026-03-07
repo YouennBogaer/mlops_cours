@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.20.4"
 app = marimo.App()
 
 
@@ -381,16 +381,17 @@ def _(mo):
 
     <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/docker_api2.png" />
 
-    <blockquote class="imgur-embed-pub" lang="en" data-id="a/iCFNTzS" data-context="false" ><a href="//imgur.com/a/iCFNTzS"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
 
     - Cliquez sur Create Repository et ensuite, nous allons choisir le format Docker.
+
+    ![alt](public/repository_1.png)
+
     - En ce qui concerne le nom du repository, nous allons mettre purchased-docker (Attention, le _ ne fonctionne pas ici)
     - Pour les besoin du TP et de le garder simple, nous désactiverons le scan des vulnabilités. En terme de région, nous choisissons `us-central1`.
     - Récupérez le path généré par Google Artifact Registry
+    - Dans la VM de l'api, nous allons configurer la connexion avec la commande suivante :
 
     ![alt](public/artifact_registry_path.png)
-
-    - Dans la VM de l'api, nous allons configurer la connexion avec la commande suivante :
 
     ```
     gcloud auth configure-docker us-central1-docker.pkg.dev
@@ -452,16 +453,12 @@ app._unparsable_cell(
 def _(mo):
     mo.md(r"""
     L'utilisation de `sudo` est importante, car cela va créer les fichiers de configuration dans `/root`, car Docker est utilisé avec `sudo`. Avant d'envoyer l'image vers le registre, attribuons-lui un tag permettant de faire référence à notre projet Google Cloud.
+
+    ```
+    sudo docker tag purchase_predict_api us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
+    ```
     """)
     return
-
-
-app._unparsable_cell(
-    r"""
-    sudo docker tag purchase_predict_api us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
-    """,
-    name="_"
-)
 
 
 @app.cell(hide_code=True)
@@ -490,13 +487,10 @@ def _(mo):
     ### Nom de domaine du serveur MLflow
 
     Avant de configurer les fichiers `systemd` pour exécuter automatiquement le conteneur sur la machine, récupérons le nom de domaine de l'instance MLflow. Après connexion SSH, nous pouvons simplement utiliser la commande suivante.
+    ```
+    hostname -f
+    ```
     """)
-    return
-
-
-@app.cell
-def _(f, hostname):
-    hostname - f
     return
 
 
