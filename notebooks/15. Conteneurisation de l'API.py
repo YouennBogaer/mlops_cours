@@ -379,9 +379,6 @@ def _(mo):
 
     Dirigeons-nous vers le <a href="https://console.cloud.google.com/artifacts" target="_blank">Artifact Registry</a> et créons un nouveau registre comme nous l'avions fait avec DockerHub.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/docker_api2.png" />
-
-
     - Cliquez sur Create Repository et ensuite, nous allons choisir le format Docker.
 
     ![alt](public/repository_1.png)
