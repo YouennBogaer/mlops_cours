@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.20.4"
 app = marimo.App()
 
 
@@ -42,7 +42,7 @@ def _(mo):
 
 app._unparsable_cell(
     r"""
-    git checkout master
+    git checkout main
     git merge staging
     """,
     name="_"
@@ -84,11 +84,11 @@ def _(mo):
 
     Nous pouvons dupliquer le déclencheur `build-purchase-predict-staging` (qui conservera les variables d'environnement) et modifier la branche sur laquelle lancer le déclencheur.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod2.png" />
+    ![alt](public/pipeline_prod2.png)
 
     Au total, nous avons 4 déclencheurs : deux par projet, qui correspondent aux environnements de pré-production et de production.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod3.png" />
+    ![alt](public/pipeline_prod3.png)
 
     Retournons sur VS Code et ajoutons les fichiers au référentiel Git.
     """)
@@ -99,7 +99,7 @@ app._unparsable_cell(
     r"""
     git add .
     git commit -am "Cloud Build trigger for production environment"
-    git push google master
+    git push orgin main
     """,
     name="_"
 )
@@ -110,11 +110,11 @@ def _(mo):
     mo.md(r"""
     L'exécution se mets alors en route.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod4.png" />
+    ![alt](public/pipeline_prod4.png)
 
     Là-aussi, d'après la troisième étape du fichier `cloudbuild.yaml`, un autre build sera lancé pour l'API.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod5.png" />
+    ![alt](public/pipeline_prod5.png)
 
     Après plusieurs minutes d'attente (entraînement du modèle et conteneurisation de l'API), l'API devrait être déployée sur le cluster K8s.
     """)
@@ -142,13 +142,13 @@ def _(mo):
     mo.md(r"""
     Par ailleurs, sur <a href="\" target="_blank">Cloud Logging</a>, nous devrions voir les logs associés.
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod7.png" />
+    ![alt](public/pipeline_prod7.png)
 
     Nous remarquons 4 groupes de logs identiques, qui correspondent aux 2 instances `gunicorn` en exécution dans les deux pods.
 
     Notre environnement est enfin au complet !
 
-    <img src="https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pipeline_prod6.png" />
+    ![alt](public/pipeline_prod6.png)
 
     Nous avons automatisé le déploiement aussi bien sur l'environnement de pré-production (staging) que l'environnement de production.
     """)
