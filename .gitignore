@@ -4,3 +4,6 @@ notebooks/__marimo__
 .idea
 data
 uv.lock
+
+# GCS account key
+mlflow.json

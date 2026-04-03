@@ -1,20 +1,14 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.19.9"
+    "marimo_version": "0.22.0",
+    "script_metadata_hash": null
   },
   "cells": [
     {
       "id": "Hbol",
       "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -32,12 +26,12 @@
     },
     {
       "id": "vblA",
-      "code_hash": "61bc0c443f8a2f3344b1a88c7a073181",
+      "code_hash": "d5e3369185db5c4f6130fb80db567e38",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"tester-des-applications\">Tester des applications</h2>\n<span class=\"paragraph\">Avant de rentrer dans le d\u00e9tails des tests d'algorithmes de Machine Learning, d\u00e9crivons tout d'abord les bonnes pratiques h\u00e9rit\u00e9es du d\u00e9veloppement logiciel.</span>\n<h2 id=\"1-tests-logiciels\">1. Tests logiciels</h2>\n<span class=\"paragraph\">Dans ce contexte, une suite de tests inclut habituellement trois composantes.</span>\n<ul>\n<li>Les <strong>tests unitaires</strong>, o\u00f9 l'on s'assurer qu'une portion atomique du code fonctionne correctement (par exemple, une fonction). En r\u00e8gle g\u00e9n\u00e9rale, ce sont des tests rapides et faciles \u00e0 mettre en place.</li>\n<li>Les <strong>tests de r\u00e9gression</strong>, o\u00f9 l'on doit s'assurer que le d\u00e9veloppement d'une nouvelle fonctionnalit\u00e9 ne va pas faire survenir un bug d\u00e9j\u00e0 rencontr\u00e9 par le pass\u00e9.</li>\n<li>Les <strong>tests d'int\u00e9gration</strong>, o\u00f9 on cherche \u00e0 voir si la fonctionnalit\u00e9 d\u00e9velopp\u00e9e va \u00eatre correctement int\u00e9gr\u00e9 dans l'application sans g\u00e9n\u00e9rer des erreurs dues \u00e0 son interaction avec d'autres composantes. Ces erreurs sont en pratique plus difficiles \u00e0 pr\u00e9venir, d'o\u00f9 la difficult\u00e9 de construire des tests d'int\u00e9gration efficaces.</li>\n</ul>\n<span class=\"paragraph\">Dans les faits, les bonnes pratiques n\u00e9cessitent de suivre plusieurs conventions. En travail collaboratif, notamment avec <code>git</code>, les r\u00e8gles de base suivantes sont appliqu\u00e9es.</span>\n<ul>\n<li>Ne <strong>jamais fusionner de branches</strong> si les tests ne sont pas valides.</li>\n<li><strong>Toujours \u00e9crire des tests</strong> pour de nouvelles fonctionnalit\u00e9s.</li>\n<li>Lorsque l'on corrige un bug, <strong>toujours \u00e9crire le test</strong> et l'appliquer sur la correction.</li>\n</ul>\n<h2 id=\"2-tests-de-modeles-de-machine-learning\">2. Tests de mod\u00e8les de Machine Learning</h2>\n<span class=\"paragraph\">Essayons maintenant de transposer ce que nous venons de voir pour tester les mod\u00e8les de Machine Learning. Une fois un mod\u00e8le de Machine Learning calibr\u00e9, nous souhaiterions obtenir un rapport d'\u00e9valuation contenant les informations suivantes.</span>\n<ul>\n<li>Performances avec des m\u00e9triques d\u00e9finies sur des sous-ensembles (<code>X_test</code> par exemple).</li>\n<li>Graphes de validation : courbe PR, courbe ROC, densit\u00e9 des classes, courbe de calibration.</li>\n<li>Audit du mod\u00e8le avec des mod\u00e8les d'interpr\u00e9tabilit\u00e9 (PDP, valeurs de Shapley).</li>\n<li>Sous-population o\u00f9 le mod\u00e8le g\u00e9n\u00e8re des faux-positifs ou faux-n\u00e9gatifs avec un fort degr\u00e9 de confiance.</li>\n</ul>\n<span class=\"paragraph\">Par ailleurs, on y retrouve \u00e9galement d'autres bonnes pratiques qui s'inscrivent toujours dans une logique de d\u00e9marche de qualit\u00e9.</span>\n<ul>\n<li><strong>Toujours sauvegarder</strong> les hyper-param\u00e8tres, sous-\u00e9chantillons utilis\u00e9s et le mod\u00e8le entra\u00een\u00e9.</li>\n<li>Mettre \u00e0 jour un environnement de production avec <strong>un mod\u00e8le aux meilleures performances</strong> ou selon un seuil minimal.</li>\n</ul>\n<span class=\"paragraph\">Face \u00e0 ces besoins de tester, nous pouvons voir que calculer des performances sur un sous-\u00e9chantillon ou afficher des courbes n'est pas suffisant pour s'assurer que le mod\u00e8le est \u00ab valide \u00bb. Pour les syst\u00e8mes de Machine Learning, nous devrions effectuer deux m\u00e9thodes en parall\u00e8le.</span>\n<ul>\n<li><strong>L'\u00e9valuation de mod\u00e8le</strong>, o\u00f9 l'on calcule ses performances, audite son fonctionnement et affiche des courbes.</li>\n<li>Le <strong>test de mod\u00e8le</strong> o\u00f9 l'on d\u00e9veloppe des tests explicites pour v\u00e9rifier que le comportement du mod\u00e8le est bien celui attendu.</li>\n</ul></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"tester-des-applications\">Tester des applications</h2>\n<span class=\"paragraph\">Avant de rentrer dans le d\u00e9tails des tests d'algorithmes de Machine Learning, d\u00e9crivons tout d'abord les bonnes pratiques h\u00e9rit\u00e9es du d\u00e9veloppement logiciel.</span>\n<h2 id=\"1-tests-logiciels\">1. Tests logiciels</h2>\n<span class=\"paragraph\">Dans ce contexte, une suite de tests inclut habituellement trois composantes.</span>\n<ul>\n<li>Les <strong>tests unitaires</strong>, o\u00f9 l'on s'assurer qu'une portion atomique du code fonctionne correctement (par exemple, une fonction). En r\u00e8gle g\u00e9n\u00e9rale, ce sont des tests rapides et faciles \u00e0 mettre en place.</li>\n<li>Les <strong>tests de r\u00e9gression</strong>, o\u00f9 l'on doit s'assurer que le d\u00e9veloppement d'une nouvelle fonctionnalit\u00e9 ne va pas faire survenir un bug d\u00e9j\u00e0 rencontr\u00e9 par le pass\u00e9.</li>\n<li>Les <strong>tests d'int\u00e9gration</strong>, o\u00f9 on cherche \u00e0 voir si la fonctionnalit\u00e9 d\u00e9velopp\u00e9e va \u00eatre correctement int\u00e9gr\u00e9 dans l'application sans g\u00e9n\u00e9rer des erreurs dues \u00e0 son interaction avec d'autres composantes. Ces erreurs sont en pratique plus difficiles \u00e0 pr\u00e9venir, d'o\u00f9 la difficult\u00e9 de construire des tests d'int\u00e9gration efficaces.</li>\n</ul>\n<div class=\"admonition note\">\n<p class=\"admonition-title\">Note</span>\n<span class=\"paragraph\">Dans les faits, les bonnes pratiques n\u00e9cessitent de suivre plusieurs conventions. En travail collaboratif, notamment avec <code>git</code>, les r\u00e8gles de base suivantes sont appliqu\u00e9es.</span>\n<ul>\n<li>Ne <strong>jamais fusionner de branches</strong> si les tests ne sont pas valides.</li>\n<li><strong>Toujours \u00e9crire des tests</strong> pour de nouvelles fonctionnalit\u00e9s.</li>\n<li>Lorsque l'on corrige un bug, <strong>toujours \u00e9crire le test</strong> et l'appliquer sur la correction.</li>\n</ul>\n</div>\n<h2 id=\"2-tests-de-modeles-de-machine-learning\">2. Tests de mod\u00e8les de Machine Learning</h2>\n<span class=\"paragraph\">Essayons maintenant de transposer ce que nous venons de voir pour tester les mod\u00e8les de Machine Learning. Une fois un mod\u00e8le de Machine Learning calibr\u00e9, nous souhaiterions obtenir un rapport d'\u00e9valuation contenant les informations suivantes.</span>\n<ul>\n<li>Performances avec des m\u00e9triques d\u00e9finies sur des sous-ensembles (<code>X_test</code> par exemple).</li>\n<li>Graphes de validation : courbe PR, courbe ROC, densit\u00e9 des classes, courbe de calibration.</li>\n<li>Audit du mod\u00e8le avec des mod\u00e8les d'interpr\u00e9tabilit\u00e9 (PDP, valeurs de Shapley).</li>\n<li>Sous-population o\u00f9 le mod\u00e8le g\u00e9n\u00e8re des faux-positifs ou faux-n\u00e9gatifs avec un fort degr\u00e9 de confiance.</li>\n</ul>\n<span class=\"paragraph\">Par ailleurs, on y retrouve \u00e9galement d'autres bonnes pratiques qui s'inscrivent toujours dans une logique de d\u00e9marche de qualit\u00e9.</span>\n<ul>\n<li><strong>Toujours sauvegarder</strong> les hyper-param\u00e8tres, sous-\u00e9chantillons utilis\u00e9s et le mod\u00e8le entra\u00een\u00e9.</li>\n<li>Mettre \u00e0 jour un environnement de production avec <strong>un mod\u00e8le aux meilleures performances</strong> ou selon un seuil minimal.</li>\n</ul>\n<span class=\"paragraph\">Face \u00e0 ces besoins de tester, nous pouvons voir que calculer des performances sur un sous-\u00e9chantillon ou afficher des courbes n'est pas suffisant pour s'assurer que le mod\u00e8le est \u00ab valide \u00bb. Pour les syst\u00e8mes de Machine Learning, nous devrions effectuer deux m\u00e9thodes en parall\u00e8le.</span>\n<ul>\n<li><strong>L'\u00e9valuation de mod\u00e8le</strong>, o\u00f9 l'on calcule ses performances, audite son fonctionnement et affiche des courbes.</li>\n<li>Le <strong>test de mod\u00e8le</strong> o\u00f9 l'on d\u00e9veloppe des tests explicites pour v\u00e9rifier que le comportement du mod\u00e8le est bien celui attendu.</li>\n</ul></span>"
           }
         }
       ],
@@ -71,7 +65,7 @@
     },
     {
       "id": "PKri",
-      "code_hash": "6af645ce0b1bf399fe3513308b630b92",
+      "code_hash": "1943b60c0062671e83541a8fd82079bd",
       "outputs": [
         {
           "type": "data",
@@ -214,7 +208,7 @@
     },
     {
       "id": "ROlb",
-      "code_hash": "adc52619a5431f310b7391b1056cf18e",
+      "code_hash": "3b7d48727547c050506d69ec497c241f",
       "outputs": [],
       "console": []
     },
@@ -271,19 +265,19 @@
       "console": []
     },
     {
-      "id": "iYEb",
-      "code_hash": null,
-      "outputs": [],
-      "console": []
-    },
-    {
       "id": "ulZA",
-      "code_hash": "f75a7a50d1ef5fb2326e1e1073853552",
+      "code_hash": "7d7ea5886222835b58f72fd381d5a404",
       "outputs": [],
       "console": []
     },
     {
       "id": "ecfG",
+      "code_hash": "f75a7a50d1ef5fb2326e1e1073853552",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
       "code_hash": "c83c30cd065ae9de21b1820d08300376",
       "outputs": [
         {
@@ -296,13 +290,13 @@
       "console": []
     },
     {
-      "id": "Pvdt",
-      "code_hash": "4923bcc09693ac063571901dd7deb7e3",
+      "id": "ZBYS",
+      "code_hash": "c7e67ffc8f6fa77a0a9554835f5f1cec",
       "outputs": [],
       "console": []
     },
     {
-      "id": "ZBYS",
+      "id": "aLJB",
       "code_hash": "728deb2b92a2e51b84551d2824708c14",
       "outputs": [
         {
@@ -315,13 +309,13 @@
       "console": []
     },
     {
-      "id": "aLJB",
-      "code_hash": "250c9081d049424258d277593fe03d34",
+      "id": "nHfw",
+      "code_hash": "1bc40e8f3609a1379a1a46f4ba0a933c",
       "outputs": [],
       "console": []
     },
     {
-      "id": "nHfw",
+      "id": "xXTn",
       "code_hash": "8299cdce31ba61c0f305f33e25d3d85e",
       "outputs": [
         {
@@ -334,13 +328,13 @@
       "console": []
     },
     {
-      "id": "xXTn",
-      "code_hash": "5a748c120135eca0627c0c3b4985e917",
+      "id": "AjVT",
+      "code_hash": "c1fa27d8e3d61783781849bb4c03d82f",
       "outputs": [],
       "console": []
     },
     {
-      "id": "AjVT",
+      "id": "pHFh",
       "code_hash": "f3875c92c54847b28d069477814c8695",
       "outputs": [
         {
@@ -353,7 +347,7 @@
       "console": []
     },
     {
-      "id": "pHFh",
+      "id": "NCOB",
       "code_hash": "31c84df714051b0863074bb928cf48e1",
       "outputs": [
         {
@@ -366,7 +360,7 @@
       "console": []
     },
     {
-      "id": "NCOB",
+      "id": "aqbW",
       "code_hash": "dfb5147d0741e470d9f414552c66e197",
       "outputs": [
         {
@@ -379,13 +373,13 @@
       "console": []
     },
     {
-      "id": "aqbW",
-      "code_hash": "e176495db444ffb7a21e8f6e63d2a624",
+      "id": "TRpd",
+      "code_hash": "f4c053a1c062be12317b89131ba14261",
       "outputs": [],
       "console": []
     },
     {
-      "id": "TRpd",
+      "id": "TXez",
       "code_hash": "73ebf8438b18584e7cd7f3cc1e481727",
       "outputs": [
         {
@@ -398,13 +392,13 @@
       "console": []
     },
     {
-      "id": "TXez",
-      "code_hash": "1c26761357feebf84078d1ec23fd7438",
+      "id": "dNNg",
+      "code_hash": "29f552e347eea3e42c71c59430d15f08",
       "outputs": [],
       "console": []
     },
     {
-      "id": "dNNg",
+      "id": "yCnT",
       "code_hash": "f9684d4aaac25b3c0cc8d0693a21c718",
       "outputs": [
         {
@@ -417,13 +411,13 @@
       "console": []
     },
     {
-      "id": "yCnT",
-      "code_hash": "cd46e7ce82b409f43b142aacd9189e6c",
+      "id": "wlCL",
+      "code_hash": "eaacfada3d47290925ec2da097307fe9",
       "outputs": [],
       "console": []
     },
     {
-      "id": "wlCL",
+      "id": "kqZH",
       "code_hash": "08556a975162da21db451c84aab44882",
       "outputs": [
         {
@@ -436,13 +430,13 @@
       "console": []
     },
     {
-      "id": "kqZH",
-      "code_hash": "e6ee5c3f89593a3e262db2c61875489f",
+      "id": "wAgl",
+      "code_hash": "9d4cdba53f67971409d1e44674ee534d",
       "outputs": [],
       "console": []
     },
     {
-      "id": "wAgl",
+      "id": "rEll",
       "code_hash": "6c7adc4eb934cb40c7d0db7a1b39d8df",
       "outputs": [
         {
@@ -455,13 +449,13 @@
       "console": []
     },
     {
-      "id": "rEll",
+      "id": "dGlV",
       "code_hash": "cc2a7e51c4e19b4aa8b87de4eac4dc20",
       "outputs": [],
       "console": []
     },
     {
-      "id": "dGlV",
+      "id": "SdmI",
       "code_hash": "884b118e9c7333ec73ee54bc03377984",
       "outputs": [
         {
@@ -474,7 +468,7 @@
       "console": []
     },
     {
-      "id": "SdmI",
+      "id": "lgWD",
       "code_hash": "5605266ffdee5851224aef491b49c68c",
       "outputs": [
         {
@@ -487,13 +481,13 @@
       "console": []
     },
     {
-      "id": "lgWD",
-      "code_hash": "120f2e216255f60e4d9ec8cc4dfbec38",
+      "id": "yOPj",
+      "code_hash": "b4fefe129fdd311e27111c580eb42055",
       "outputs": [],
       "console": []
     },
     {
-      "id": "yOPj",
+      "id": "fwwy",
       "code_hash": "7dc1f755fe86fcb0dd5a797e9109420a",
       "outputs": [
         {

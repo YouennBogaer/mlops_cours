@@ -1,10 +1,16 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.20.4",
+    "marimo_version": "0.22.0",
     "script_metadata_hash": null
   },
   "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
     {
       "id": "MJUe",
       "code_hash": "58f3875a003ea6b8fd7f4f258665001d",
@@ -32,6 +38,12 @@
       "console": []
     },
     {
+      "id": "bkHC",
+      "code_hash": "d70800e94d46ed05d03a7b4019df3ea8",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "lEQa",
       "code_hash": "5a72dbc7f4a8f594cdbe4a97f10414b0",
       "outputs": [
@@ -42,6 +54,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "380a032b445994a2ea50913f00aa5b8c",
+      "outputs": [],
       "console": []
     },
     {
@@ -58,6 +76,12 @@
       "console": []
     },
     {
+      "id": "SFPL",
+      "code_hash": "5c01920d850a6609d839466cec01917c",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "BYtC",
       "code_hash": "3deff9f538d010e513c02ba652490fd5",
       "outputs": [
@@ -68,6 +92,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "636fa834251abaab2387073862fa038c",
+      "outputs": [],
       "console": []
     },
     {
@@ -84,6 +114,12 @@
       "console": []
     },
     {
+      "id": "emfo",
+      "code_hash": "e7c3ee1feb7aa505d540aaaccf53c6e6",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "Hstk",
       "code_hash": "17a5299761189fe08412649457153904",
       "outputs": [
@@ -97,6 +133,12 @@
       "console": []
     },
     {
+      "id": "nWHF",
+      "code_hash": "78efaacdf1faa79602688779a94e9bcd",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "iLit",
       "code_hash": "d595bac4ee6c17c11998954115e1f659",
       "outputs": [
@@ -107,6 +149,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "9db918971135adccc3f4e05b60378b5d",
+      "outputs": [],
       "console": []
     },
     {
@@ -136,6 +184,12 @@
       "console": []
     },
     {
+      "id": "TqIu",
+      "code_hash": "8887e5cbf8888a059f9aae910af8bcf2",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "Vxnm",
       "code_hash": "3a2b53377edeba2850f4211647ff5a5f",
       "outputs": [
@@ -149,6 +203,12 @@
       "console": []
     },
     {
+      "id": "DnEU",
+      "code_hash": "378b44f70fea62c5cc23a6124ed94aff",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "ulZA",
       "code_hash": "c6dfee080bf34d999afd7f8e59556bed",
       "outputs": [
@@ -159,6 +219,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "a54c3a91ba6d90abb0717b2417d79637",
+      "outputs": [],
       "console": []
     },
     {
@@ -188,6 +254,12 @@
       "console": []
     },
     {
+      "id": "aLJB",
+      "code_hash": "e3d7c6c19cb1a4d7cef34e61e6ef158b",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "nHfw",
       "code_hash": "14e242c5fb829ea6d64ea7963fe7ba40",
       "outputs": [
@@ -211,6 +283,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
+      "outputs": [],
       "console": []
     },
     {
@@ -241,15 +319,21 @@
     },
     {
       "id": "aqbW",
-      "code_hash": "8e55983550af10d3ea33295151160411",
+      "code_hash": "f8ec52c6cacad6e2d1cb6088c9ffa865",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"pipeline-de-deploiement\">Pipeline de d\u00e9ploiement</h3>\n<span class=\"paragraph\">Une fois l'entra\u00eenement r\u00e9alis\u00e9, nous allons \u00e9galement impl\u00e9menter dans Kedro un pipeline qui va permettre de transitionner l'\u00e9tat d'un mod\u00e8le en staging ou production.</span>\n<span class=\"paragraph\">Pour cela, nous allons cr\u00e9er un pipepline <code>deployment</code>.</span>\n<span class=\"paragraph\">Nous rappelons donc la commande pour cr\u00e9er un pipeline comme le suit :\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">uv</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"w\"> </span><span class=\"n\">pipeline</span><span class=\"w\"> </span><span class=\"n\">create</span><span class=\"w\"> </span><span class=\"n\">loading</span>\n</code></pre></div></span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"pipeline-de-deploiement\">Pipeline de d\u00e9ploiement</h3>\n<span class=\"paragraph\">Une fois l'entra\u00eenement r\u00e9alis\u00e9, nous allons \u00e9galement impl\u00e9menter dans Kedro un pipeline qui va permettre de transitionner l'\u00e9tat d'un mod\u00e8le en staging ou production.</span>\n<span class=\"paragraph\">Pour cela, nous allons cr\u00e9er un pipepline <code>deployment</code>.</span>\n<span class=\"paragraph\">Nous rappelons donc la commande pour cr\u00e9er un pipeline comme le suit :\n<div class=\"language-text codehilite\"><pre><span></span><code>uv run kedro pipeline create deployment\n</code></pre></div></span></span>"
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "648f3c4d141bd9cdc8ae27c2aea37c7a",
+      "outputs": [],
       "console": []
     },
     {
@@ -279,6 +363,12 @@
       "console": []
     },
     {
+      "id": "yCnT",
+      "code_hash": "83813d502c0bf677da5f2d9fcd598721",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "wlCL",
       "code_hash": "00b1eef81aeed46d7e479c908acc91ac",
       "outputs": [
@@ -289,6 +379,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "d8e29402542d7cbd8e8aae0583ff5aff",
+      "outputs": [],
       "console": []
     },
     {
@@ -306,12 +402,12 @@
     },
     {
       "id": "rEll",
-      "code_hash": "76fd5cd9bf0d8aae3008c793609a8316",
+      "code_hash": "c6ef7404d6e622fa6ca9d396f136e6cd",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mlflow_model_registry: (\n    \"purchase_predict\"  # Name of model registry of this project\n)</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-verilog codehilite\"><pre><span></span><code><span class=\"nl\">mlflow_model_registry:</span><span class=\"w\"> </span><span class=\"p\">(</span>\n<span class=\"w\">    </span><span class=\"s\">&quot;purchase_predict&quot;</span><span class=\"w\">  </span><span class=\"p\">#</span><span class=\"w\"> </span><span class=\"n\">Name</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">model</span><span class=\"w\"> </span><span class=\"n\">registry</span><span class=\"w\"> </span><span class=\"n\">of</span><span class=\"w\"> </span><span class=\"n\">this</span><span class=\"w\"> </span><span class=\"n\">project</span>\n<span class=\"p\">)</span>\n</code></pre></div></span>"
           }
         }
       ],
@@ -332,12 +428,12 @@
     },
     {
       "id": "SdmI",
-      "code_hash": "d895a4b8d866faff675731e62a65b697",
+      "code_hash": "f81764cb09da260acbab7d525431a55b",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mo.md(r\"\\\"\\\"\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Pipeline</span><span class=\"p\">,</span> <span class=\"n\">node</span>\n\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">):</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">(</span>\n        <span class=\"p\">[</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">push_to_model_registry</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_run_id&quot;</span><span class=\"p\">],</span>\n                <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n            <span class=\"n\">node</span><span class=\"p\">(</span>\n                <span class=\"n\">stage_model</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">],</span>\n                <span class=\"kc\">None</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n        <span class=\"p\">]</span>\n    <span class=\"p\">)</span>\n</code></pre></div>\n\"\\\"\\\")</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Pipeline</span><span class=\"p\">,</span> <span class=\"n\">Node</span>\n\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">):</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">(</span>\n        <span class=\"p\">[</span>\n            <span class=\"n\">Node</span><span class=\"p\">(</span>\n                <span class=\"n\">push_to_model_registry</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_run_id&quot;</span><span class=\"p\">],</span>\n                <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n            <span class=\"n\">Node</span><span class=\"p\">(</span>\n                <span class=\"n\">stage_model</span><span class=\"p\">,</span>\n                <span class=\"p\">[</span><span class=\"s2\">&quot;params:mlflow_model_registry&quot;</span><span class=\"p\">,</span> <span class=\"s2\">&quot;mlflow_model_version&quot;</span><span class=\"p\">],</span>\n                <span class=\"kc\">None</span><span class=\"p\">,</span>\n            <span class=\"p\">),</span>\n        <span class=\"p\">]</span>\n    <span class=\"p\">)</span>\n</code></pre></div></span>"
           }
         }
       ],
@@ -357,16 +453,28 @@
       "console": []
     },
     {
+      "id": "yOPj",
+      "code_hash": "8de1431d9ca927c420bc2545927fbcaa",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "fwwy",
-      "code_hash": "52487ce4152ca4485afbbd4d82c5f3fa",
+      "code_hash": "093fd830025d843f7e2913a265607cb0",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">mo.md(r\"\\\"\\\"\nNous obtenons le pipeline suivant.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/kedro-pipeline.png\" /></span>\n<span class=\"paragraph\">Lan\u00e7ons une ex\u00e9cution globale (en sp\u00e9cifiant l\u00e0-aussi le param\u00e8tre <code>automl_max_evals</code> \u00e0 1 pour acc\u00e9lerer les calculs.\n\"\\\"\\\")</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous obtenons le pipeline suivant.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/kedro-pipeline.png\" /></span>\n<span class=\"paragraph\">Lan\u00e7ons une ex\u00e9cution globale (en sp\u00e9cifiant l\u00e0-aussi le param\u00e8tre <code>automl_max_evals</code> \u00e0 1 pour acc\u00e9lerer les calculs.</span></span>"
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "LJZf",
+      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
+      "outputs": [],
       "console": []
     },
     {
@@ -383,6 +491,18 @@
       "console": []
     },
     {
+      "id": "jxvo",
+      "code_hash": "8f041692b475f0f31cc59372bb8867b4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "mWxS",
+      "code_hash": "55e99aa2fa8c340c997be3d1bd27e15c",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "CcZR",
       "code_hash": "af8cfc4ee7ddb5862077825e4128c358",
       "outputs": [
@@ -393,6 +513,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "YWSi",
+      "code_hash": "c98ace5e0cb8f21c7fe94f85b577dade",
+      "outputs": [],
       "console": []
     },
     {
@@ -419,132 +545,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "bkHC",
-      "code_hash": "d70800e94d46ed05d03a7b4019df3ea8",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "PKri",
-      "code_hash": "380a032b445994a2ea50913f00aa5b8c",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "SFPL",
-      "code_hash": "5c01920d850a6609d839466cec01917c",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "RGSE",
-      "code_hash": "636fa834251abaab2387073862fa038c",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "emfo",
-      "code_hash": "e7c3ee1feb7aa505d540aaaccf53c6e6",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "nWHF",
-      "code_hash": "78efaacdf1faa79602688779a94e9bcd",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ZHCJ",
-      "code_hash": "9db918971135adccc3f4e05b60378b5d",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TqIu",
-      "code_hash": "8887e5cbf8888a059f9aae910af8bcf2",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "DnEU",
-      "code_hash": "378b44f70fea62c5cc23a6124ed94aff",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ecfG",
-      "code_hash": "56ca5622e6fc0909f4781a4a389d5068",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "aLJB",
-      "code_hash": "e3d7c6c19cb1a4d7cef34e61e6ef158b",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "AjVT",
-      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TRpd",
-      "code_hash": "648f3c4d141bd9cdc8ae27c2aea37c7a",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "yCnT",
-      "code_hash": "83813d502c0bf677da5f2d9fcd598721",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "kqZH",
-      "code_hash": "d8e29402542d7cbd8e8aae0583ff5aff",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "yOPj",
-      "code_hash": "8de1431d9ca927c420bc2545927fbcaa",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "LJZf",
-      "code_hash": "41140f4a5f061dfdb9bea610f9a263d2",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "jxvo",
-      "code_hash": "8f041692b475f0f31cc59372bb8867b4",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "mWxS",
-      "code_hash": "55e99aa2fa8c340c997be3d1bd27e15c",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "YWSi",
-      "code_hash": "c98ace5e0cb8f21c7fe94f85b577dade",
-      "outputs": [],
       "console": []
     }
   ]

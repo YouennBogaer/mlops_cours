@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.22.0"
 app = marimo.App()
 
 
@@ -98,7 +98,7 @@ def _():
     )
 
     # Mettez le chemin de votre kedro local ici, nous allons lancer les cellules pour la suite
-    path_kedro = "/Users/noobzik/Documents/Kaggle/purchase-predict/"
+    path_kedro = "/home/youenn/Documents/mlops/TP/tp-mlops-6/"
     X_train = pd.read_csv(
         os.path.expanduser(path_kedro + "data/05_model_input/X_train.csv")
     )
@@ -121,6 +121,7 @@ def _():
         mlflow,
         mtick,
         os,
+        path_kedro,
         plt,
         precision_recall_curve,
         y_test,
@@ -192,6 +193,7 @@ def _(
     hyp_params,
     infer_signature,
     mlflow,
+    path_kedro,
     y_test,
     y_train,
 ):
@@ -209,7 +211,7 @@ def _(
             X_train, model.predict(X_train)
         )  # On calcule le score du modèle sur le test
         input_example = X_test.iloc[0:1].copy()
-        mlflow.log_artifact("data/04_feature/transform_pipeline.pkl")
+        mlflow.log_artifact(path_kedro + "data/04_feature/transform_pipeline.pkl")
         mlflow.sklearn.log_model(
             model, "model", signature=signature, input_example=input_example
         )  # Inférer la signature du modèle
@@ -268,11 +270,14 @@ def _(
     mlflow,
     mtick,
     os,
+    path_kedro,
     plt,
     precision_recall_curve,
     y_test,
     y_train,
 ):
+    print(path_kedro)
+
     def save_pr_curve(X, y, model):
         plt.figure(figsize=(16, 11))
         prec, recall, _ = precision_recall_curve(
@@ -284,7 +289,7 @@ def _(
         plt.title("PR Curve", fontsize=16)
         plt.gca().xaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
         plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter(1, 0))
-        plt.savefig(os.path.expanduser("data/pr_curve.png"))
+        plt.savefig(os.path.expanduser(path_kedro + "data/pr_curve.png"))
         plt.close()
 
 
@@ -300,7 +305,7 @@ def _(
             mlflow.log_params(hyp_params)
             mlflow.log_metric("f1", score)
             mlflow.log_artifact(
-                os.path.expanduser("data/pr_curve.png"), artifact_path="plots"
+                os.path.expanduser(path_kedro + "data/pr_curve.png"), artifact_path="plots"
             )
 
             # Inférer la signature du modèle
@@ -463,6 +468,9 @@ def _(mo):
 def _(mo):
     mo.md(r"""
     La dernière étape consiste à activer le service et à l'exécuter. Avec `daemon-reload`, nous activons le service MLflow.
+
+    (Ajout Youenn)
+    Taper les commandes suivantes dans la console de la VM (SSH)
     """)
     return
 
@@ -510,6 +518,18 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    Si mlflow n'apparait pas à l'addresse ip externe, on peut déjà vérifier si il tourne tout de même : sudo systemctl status mlflow.
+
+    Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f
+
+    Si le service est actif, ça signifie que c'est google ou le navigateur qui le bloque.
+    Exemple : problemes avec Brave et son bloqueur de pubs.
+    Si ça vient de GCS, pour empecher le bloquage on peut créer une règle de pare-feu sur Google Cloud Storage :
+    * Nom : allow-mlflow-http
+    * Cibles : "Toutes les instances du réseau"
+    * Plages IP sources : 0.0.0.0/0 (pour autoriser tout le monde)
+    * Protocoles et ports : Cochez TCP et tapez 80.
+
     Maintenant, en visitant la page web à l'adresse IP externe de la VM, l'interface MLflow apparaît.
 
     Ajoutons la clé JSON que nous avons téléchargé, vers le dossier data
@@ -528,6 +548,8 @@ def _():
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    (Ajout Youenn) mlfow.json, la clé du service account destiné à mlflow, à placer dans le dossier notebooks du projet marimo
+
     Pour spécifier vers quel serveur nous allons envoyer les artifacts et le modèle, il faut spécifier le nom de domaine ou l'adresse IP avec `set_tracking_uri`.
     """)
     return
@@ -540,10 +562,10 @@ def _(mlflow, os):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.expanduser(
         "notebooks/mlflow.json"
     )
-    mlflow.set_tracking_uri("http://136.114.127.11:80")
+    mlflow.set_tracking_uri("http://35.231.231.72:80")
     # Authentification à Google Cloud avec la clé correspondant au compte de service MLflow
     # Nouvel URI de l'interface MLflow
-    client = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
+    cloud_client = storage.Client()  # Mettez l'adresse de Google Compute Engine ici
     return
 
 
@@ -565,6 +587,7 @@ def _(
     infer_signature,
     mlflow,
     os,
+    path_kedro,
     save_pr_curve,
     y_test,
     y_train,
@@ -581,13 +604,13 @@ def _(
             mlflow.log_params(hyp_params)
             mlflow.log_metric("f1", score)
             mlflow.log_artifact(
-                os.path.expanduser("data/pr_curve.png"), artifact_path="plots"
+                os.path.expanduser(path_kedro + "data/pr_curve.png"), artifact_path="plots"
             )
             signature = infer_signature(X_train, model.predict(X_train))
             input_example = X_test.iloc[0:1].copy()
             mlflow.sklearn.log_model(
                 model,
-                name="model",
+                artifact_path="model",
                 signature=signature,
                 input_example=input_example,
             )
@@ -613,6 +636,14 @@ def _(hyp_params, train_model):
 def _(mo):
     mo.md(r"""
     Et voilà ! L'interface MLflow devrait à présent afficher le modèle stocké sur Google Storage.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    (Ajout Youenn) Pour stopper la VM quand on ne l'utilise pas, il est conseillé d'arreter. Suspendre garde la RAM active et donc continue de facturer.
     """)
     return
 

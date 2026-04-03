@@ -1,9 +1,16 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.19.9"
+    "marimo_version": "0.22.0",
+    "script_metadata_hash": null
   },
   "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
     {
       "id": "MJUe",
       "code_hash": "56dbc55ce23f449409a6c3e5b558872b",
@@ -19,15 +26,21 @@
     },
     {
       "id": "vblA",
-      "code_hash": "5b6465930329f22fa54b3d5b9cf44192",
+      "code_hash": "400c5cca352f3186159640f3ecd20c1d",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"la-norme-pep-8\">La norme PEP 8</h2>\n<span class=\"paragraph\">Si tu as d\u00e9j\u00e0 recherch\u00e9 de l'aide sur Google par rapport \u00e0 un probl\u00e8me Python, peut \u00eatre que l'expression <em>PEP 8</em> ne t'es pas \u00e9trang\u00e8re. Et pour cause : il s'agit de la norme Python qui sp\u00e9cifie quelles sont les bonnes pratiques en terme de style de code.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi 8 ? Et d'ailleurs, \u00e7a veut dire quoi PEP ?</span>\n</blockquote>\n<span class=\"paragraph\">Revenons \u00e0 l'origine du langage Python : il a \u00e9t\u00e9 initialement construit par une personne, Guido van Rossum, en 1991. Bien \u00e9videmment, au fur et \u00e0 mesure que le langage gagne en popularit\u00e9, de plus en plus de d\u00e9veloppeurs exp\u00e9riment\u00e9s viennent pr\u00eater main forte \u00e0 Guido pour am\u00e9liorer le langage Python et y ajouter de nouvelles fonctionnalit\u00e9s.</span>\n<span class=\"paragraph\">Mais voil\u00e0, comment s'organiser correctement lorsque des dizaines, centaines voir milliers de personnes travaillent ensemble ? Dans la plupart du temps, le plus simple est le <strong>commentaire</strong> : un utilisateur souhaite qu'une nouvelle fonctionnalit\u00e9 soit pr\u00e9sente, il va donc proposer une am\u00e9lioration, la justifier et la d\u00e9tailler. Habituellement, on appelle cela des <strong>RFC</strong> (<em>Requests for comments</em>), et ces demandes sont centralis\u00e9es dans des documents de sp\u00e9cifications techniques.</span>\n<span class=\"paragraph\"><strong>PEP</strong> (pour <em>Python Enhancement Proposals</em>), c'est justement les propositions d'am\u00e9liorations pour le langage Python. Et <a href=\"https://www.python.org/dev/peps/pep-0008/\" target=\"_blank\">PEP 8</a>, c'est donc la huiti\u00e8me proposition d'am\u00e9lioration (ordre chronologique) qui fut \u00e9mise en juillet 2001. Et PEP 8, dont le nom est <strong>Style Guide for Python Code</strong>, fournit un v\u00e9ritable guide sur diverses bonnes pratiques.</span>\n<ul>\n<li>Structurer efficacement son code (espaces, retours \u00e0 la ligne, taille maximum de ligne).</li>\n<li>Adopter les conventions de nommage des variables.</li>\n<li>Commenter correctement son code.</li>\n<li>Utiliser la Docstring pour cr\u00e9er une documentation (extension via <a href=\"https://www.python.org/dev/peps/pep-0257/\" target=\"_blank\">PEP 257</a>).</li>\n</ul>\n<span class=\"paragraph\">Suivre la PEP 8, c'est <strong>suivre les recommandations officielles</strong> pour \u00e9crire du code qui respecte un format adopt\u00e9 par le plus grand nombre.</span>\n<div class=\"alert alert-block alert-info\">\n    Cette norme n'est pas rigide dans le sens o\u00f9 certains projets peuvent s'affranchir de certaines contraintes (comme la taille maximale d'une ligne, fix\u00e9e \u00e0 79 par d\u00e9faut pour PEP 8).\n</div>\n\n<span class=\"paragraph\">Prenons comme exemple les premi\u00e8res sp\u00e9cifications dans <a href=\"https://www.python.org/dev/peps/pep-0008/#indentation\" target=\"_blank\">Code Lay-out</a> pour l'indentation.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pep8_1.jpg\" /></span>\n<span class=\"paragraph\">Cette premi\u00e8re r\u00e8gle statue que les arguments d'une fonction, lorsqu'il y a un saut de ligne, doivent \u00eatre align\u00e9s sur la m\u00eame colonne que celui du premier argument.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"la-norme-pep-8\">La norme PEP 8</h2>\n<span class=\"paragraph\">Si tu as d\u00e9j\u00e0 recherch\u00e9 de l'aide sur Google par rapport \u00e0 un probl\u00e8me Python, peut \u00eatre que l'expression <em>PEP 8</em> ne t'es pas \u00e9trang\u00e8re. Et pour cause : il s'agit de la norme Python qui sp\u00e9cifie quelles sont les bonnes pratiques en terme de style de code.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi 8 ? Et d'ailleurs, \u00e7a veut dire quoi PEP ?</span>\n</blockquote>\n<span class=\"paragraph\">Revenons \u00e0 l'origine du langage Python : il a \u00e9t\u00e9 initialement construit par une personne, Guido van Rossum, en 1991. Bien \u00e9videmment, au fur et \u00e0 mesure que le langage gagne en popularit\u00e9, de plus en plus de d\u00e9veloppeurs exp\u00e9riment\u00e9s viennent pr\u00eater main forte \u00e0 Guido pour am\u00e9liorer le langage Python et y ajouter de nouvelles fonctionnalit\u00e9s.</span>\n<span class=\"paragraph\">Mais voil\u00e0, comment s'organiser correctement lorsque des dizaines, centaines voir milliers de personnes travaillent ensemble ? Dans la plupart du temps, le plus simple est le <strong>commentaire</strong> : un utilisateur souhaite qu'une nouvelle fonctionnalit\u00e9 soit pr\u00e9sente, il va donc proposer une am\u00e9lioration, la justifier et la d\u00e9tailler. Habituellement, on appelle cela des <strong>RFC</strong> (<em>Requests for comments</em>), et ces demandes sont centralis\u00e9es dans des documents de sp\u00e9cifications techniques.</span>\n<span class=\"paragraph\"><strong>PEP</strong> (pour <em>Python Enhancement Proposals</em>), c'est justement les propositions d'am\u00e9liorations pour le langage Python. Et <a href=\"https://www.python.org/dev/peps/pep-0008/\" target=\"_blank\">PEP 8</a>, c'est donc la huiti\u00e8me proposition d'am\u00e9lioration (ordre chronologique) qui fut \u00e9mise en juillet 2001. Et PEP 8, dont le nom est <strong>Style Guide for Python Code</strong>, fournit un v\u00e9ritable guide sur diverses bonnes pratiques.</span>\n<ul>\n<li>Structurer efficacement son code (espaces, retours \u00e0 la ligne, taille maximum de ligne).</li>\n<li>Adopter les conventions de nommage des variables.</li>\n<li>Commenter correctement son code.</li>\n<li>Utiliser la Docstring pour cr\u00e9er une documentation (extension via <a href=\"https://www.python.org/dev/peps/pep-0257/\" target=\"_blank\">PEP 257</a>).</li>\n</ul>\n<span class=\"paragraph\">Suivre la PEP 8, c'est <strong>suivre les recommandations officielles</strong> pour \u00e9crire du code qui respecte un format adopt\u00e9 par le plus grand nombre.</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention</span>\n<span class=\"paragraph\">Cette norme n'est pas rigide dans le sens o\u00f9 certains projets peuvent s'affranchir de certaines contraintes (comme la taille maximale d'une ligne, fix\u00e9e \u00e0 79 par d\u00e9faut pour PEP 8).</span>\n</div>\n<span class=\"paragraph\">Prenons comme exemple les premi\u00e8res sp\u00e9cifications dans <a href=\"https://www.python.org/dev/peps/pep-0008/#indentation\" target=\"_blank\">Code Lay-out</a> pour l'indentation.</span>\n<span class=\"paragraph\"><img src=\"https://blent-learning-user-ressources.s3.eu-west-3.amazonaws.com/training/ml_engineer_facebook/img/pep8_1.jpg\" /></span>\n<span class=\"paragraph\">Cette premi\u00e8re r\u00e8gle statue que les arguments d'une fonction, lorsqu'il y a un saut de ligne, doivent \u00eatre align\u00e9s sur la m\u00eame colonne que celui du premier argument.</span></span>"
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "6f76b3dd96d337049e1428a052ec4fdf",
+      "outputs": [],
       "console": []
     },
     {
@@ -44,6 +57,12 @@
       "console": []
     },
     {
+      "id": "PKri",
+      "code_hash": "d635ef4613446f74e80255e07873e4a0",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "Xref",
       "code_hash": "a884d9797de1bd2cc79517c35cf03474",
       "outputs": [
@@ -57,13 +76,19 @@
       "console": []
     },
     {
+      "id": "SFPL",
+      "code_hash": "010b291e56f3d1c2f8bbdcc3368bc2f5",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "BYtC",
-      "code_hash": "5dcc30ea55f648d0ec5e60cea28d92f8",
+      "code_hash": "12771fc43a58e9ee4b0069f2d147f810",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, m\u00eame constat, les arguments ne sont pas align\u00e9s. Si l'on souhaite donc ramener \u00e0 une indentation suppl\u00e9mentaire (qui \u00e9tait de base \u00e0 0 car la variable <code>resultat</code> est \u00e0 la toute premi\u00e8re colonne), il faut donc privil\u00e9gier la deuxi\u00e8me \u00e9criture.</span>\n<span class=\"paragraph\">Par ailleurs, PEP 8 est strict concernant l'indentation : <strong>utiliser 4 espaces par niveau d'identation</strong>. M\u00eame s'il est possible d'utiliser les deux, les espaces constituent la m\u00e9thode d'indentation pr\u00e9f\u00e9r\u00e9e.</span>\n<div class=\"alert alert-block alert-warning\">\n    Attention \u00e0 ne pas m\u00e9langer le caract\u00e8re de tabulation et les 4 espaces dans un seul et m\u00eame fichier, car le programme ne pourra pas \u00eatre ex\u00e9cut\u00e9.\n</div>\n\n<span class=\"paragraph\">Autre exemple de recommandations : <strong>les espaces dans les expressions</strong>. Pour PEP 8, les r\u00e8gles suivantes doivent \u00eatre respect\u00e9es.</span>\n<ul>\n<li>Toujours un espace apr\u00e8s et jamais avant une virgule pour s\u00e9parer les arguments ou les cl\u00e9s des valeurs.</li>\n<li>Jamais d'espace entre les crochets d'une liste ou d'un dictionnaire.</li>\n<li>Toujours un espace avant et apr\u00e8s les conditions binaires (op\u00e9rations math\u00e9matiques, conditions).</li>\n<li>Jamais d'espace avant ou apr\u00e8s les parenth\u00e8ses.</li>\n</ul>\n<span class=\"paragraph\">Il ne s'agit que de quelques exemples, que l'on retrouve en-dessous.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ici, m\u00eame constat, les arguments ne sont pas align\u00e9s. Si l'on souhaite donc ramener \u00e0 une indentation suppl\u00e9mentaire (qui \u00e9tait de base \u00e0 0 car la variable <code>resultat</code> est \u00e0 la toute premi\u00e8re colonne), il faut donc privil\u00e9gier la deuxi\u00e8me \u00e9criture.</span>\n<span class=\"paragraph\">Par ailleurs, PEP 8 est strict concernant l'indentation : <strong>utiliser 4 espaces par niveau d'identation</strong>. M\u00eame s'il est possible d'utiliser les deux, les espaces constituent la m\u00e9thode d'indentation pr\u00e9f\u00e9r\u00e9e.</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention</span>\n<span class=\"paragraph\">Attention \u00e0 ne pas m\u00e9langer le caract\u00e8re de tabulation et les 4 espaces dans un seul et m\u00eame fichier, car le programme ne pourra pas \u00eatre ex\u00e9cut\u00e9.</span>\n</div>\n<span class=\"paragraph\">Autre exemple de recommandations : <strong>les espaces dans les expressions</strong>. Pour PEP 8, les r\u00e8gles suivantes doivent \u00eatre respect\u00e9es.</span>\n<ul>\n<li>Toujours un espace apr\u00e8s et jamais avant une virgule pour s\u00e9parer les arguments ou les cl\u00e9s des valeurs.</li>\n<li>Jamais d'espace entre les crochets d'une liste ou d'un dictionnaire.</li>\n<li>Toujours un espace avant et apr\u00e8s les conditions binaires (op\u00e9rations math\u00e9matiques, conditions).</li>\n<li>Jamais d'espace avant ou apr\u00e8s les parenth\u00e8ses.</li>\n</ul>\n<span class=\"paragraph\">Il ne s'agit que de quelques exemples, que l'on retrouve en-dessous.</span></span>"
           }
         }
       ],
@@ -370,12 +395,12 @@
     },
     {
       "id": "TRpd",
-      "code_hash": "d1429f0e4fd1a32a5e0026ed6fba82e3",
+      "code_hash": "6d8fffd50322d197cf88c2658ed244e8",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">D'apr\u00e8s ce que nous voyons, le refactoring a fonctionn\u00e9.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi <code>black</code> n'a pas d\u00e9tect\u00e9 que la variable <code>liste</code> n'est pas d\u00e9finie ?</span>\n</blockquote>\n<span class=\"paragraph\">Tout simplement parce que <code>black</code> fait du <strong>refactoring de code</strong> : il ne va pas toucher ou s'int\u00e9resser aux noms des variables, aux importations, etc. Ce qui l'int\u00e9resse, ce sont les indentations, les espaces ou, de mani\u00e8re g\u00e9n\u00e9rale, l'agencement des caract\u00e8res.</span>\n<span class=\"paragraph\">En revanche, d'autres recommandations PEP 8, comme le nommage des variables, ne sera pas modifi\u00e9 par <code>black</code>. C'est donc tout l'int\u00e9r\u00eat ici d'utiliser <code>black</code> pour reformater le code, puis ensuite utiliser <code>flake8</code> pour v\u00e9rifier que le code reformat\u00e9 respecte bien PEP 8.</span>\n<span class=\"paragraph\">Un autre exemple ici, que nous avions utilis\u00e9 lors de l'optimisation bay\u00e9sienne pour LightGBM.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">D'apr\u00e8s ce que nous voyons, le refactoring a fonctionn\u00e9.</span>\n<blockquote>\n<span class=\"paragraph\">\u2753 Pourquoi <code>black</code> n'a pas d\u00e9tect\u00e9 que la variable <code>liste</code> n'est pas d\u00e9finie ?</span>\n</blockquote>\n<span class=\"paragraph\">Tout simplement parce que <code>black</code> fait du <strong>refactoring de code</strong> : il ne va pas toucher ou s'int\u00e9resser aux noms des variables, aux importations, etc. Ce qui l'int\u00e9resse, ce sont les indentations, les espaces ou, de mani\u00e8re g\u00e9n\u00e9rale, l'agencement des caract\u00e8res.</span>\n<span class=\"paragraph\">En revanche, d'autres recommandations PEP 8, comme le nommage des variables, ne sera pas modifi\u00e9 par <code>black</code>. C'est donc tout l'int\u00e9r\u00eat ici d'utiliser <code>black</code> pour reformater le code, puis ensuite utiliser <code>flake8</code> pour v\u00e9rifier que le code reformat\u00e9 respecte bien PEP 8.</span>\n<span class=\"paragraph\">Un autre exemple ici, que nous avions utilis\u00e9 lors de l'optimisation bay\u00e9sienne pour LightGBM.</span>\n<span class=\"paragraph\">La version du code est avant l'application de <code>astral/ty</code></span></span>"
           }
         }
       ],
@@ -422,12 +447,12 @@
     },
     {
       "id": "wlCL",
-      "code_hash": "b8d03da291eb6d0ba52440b53d9501e7",
+      "code_hash": "de21aacefc4947ee5ba2761ed6bfec6c",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">lightgbm.sklearn</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LGBMClassifier</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">hyperopt</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">hp</span><span class=\"p\">,</span> <span class=\"n\">tpe</span><span class=\"p\">,</span> <span class=\"n\">fmin</span>\n<span class=\"n\">MODEL_SPECS</span> <span class=\"o\">=</span> <span class=\"p\">{</span>\n    <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;class&quot;</span><span class=\"p\">:</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;max_evals&quot;</span><span class=\"p\">:</span> <span class=\"mi\">20</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.001</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">,</span> <span class=\"mi\">100</span><span class=\"p\">,</span> <span class=\"mi\">1000</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">,</span> <span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"mi\">12</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">128</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.3</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.5</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n        <span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n    <span class=\"p\">},</span>\n    <span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span>\n    <span class=\"p\">}</span>\n<span class=\"p\">}</span>\n</code></pre></div></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">lightgbm.sklearn</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">LGBMClassifier</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">hyperopt</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">hp</span><span class=\"p\">,</span> <span class=\"n\">tpe</span><span class=\"p\">,</span> <span class=\"n\">fmin</span>\n\n<span class=\"n\">MODEL_SPECS</span> <span class=\"o\">=</span> <span class=\"p\">{</span>\n    <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;class&quot;</span><span class=\"p\">:</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;max_evals&quot;</span><span class=\"p\">:</span> <span class=\"mi\">20</span><span class=\"p\">,</span>\n    <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.001</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">,</span> <span class=\"mi\">100</span><span class=\"p\">,</span> <span class=\"mi\">1000</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">,</span> <span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"mi\">12</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">128</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.3</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.5</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n        <span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n        <span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n    <span class=\"p\">},</span>\n    <span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span> <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span>\n    <span class=\"p\">}</span>\n<span class=\"p\">}</span>\n</code></pre></div></span>"
           }
         }
       ],
@@ -461,12 +486,12 @@
     },
     {
       "id": "rEll",
-      "code_hash": "d35e56b1580f10735dfc30e30945ecf2",
+      "code_hash": "a11f449693bacb72dca0701d4e003f98",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"les-deux-en-meme-temps-a-laide-de-ruff\">Les deux en m\u00eame temps \u00e0 l'aide de Ruff</h2>\n<span class=\"paragraph\">Les temps change avec l'arriv\u00e9 de Astral sur la sc\u00e8ne du d\u00e9veloppement python. En effet, apr\u00e8s vous avoir introduit l'utilisation de UV pour les environnement virtuels de python, l'\u00e9quipe avait commenc\u00e9 sur la sc\u00e8ne de python \u00e0 travers un outil qui s'appelle Ruff.</span>\n<span class=\"paragraph\">Ruff en simple, c'est la fusion de flake8 et de black.</span>\n<span class=\"paragraph\">Trois commandes \u00e0 retenir :</span>\n<ul>\n<li><code>uvx ruff check</code> permet d'avoir le comportement d'un linteur, comme flake8</li>\n<li><code>uvx ruff check --fix</code> permet de corriger les erreurs qui sont trouv\u00e9 \u00e0 l'aide de <code>check</code></li>\n<li><code>uvx ruff format</code> permet de corriger le fichier au niveau de la norme PEP8.</li>\n</ul></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"les-deux-en-meme-temps-a-laide-de-ruff\">Les deux en m\u00eame temps \u00e0 l'aide de Ruff</h2>\n<span class=\"paragraph\">Les temps changent avec l'arriv\u00e9 de Astral sur la sc\u00e8ne du d\u00e9veloppement python. En effet, apr\u00e8s vous avoir introduit l'utilisation de UV pour les environnement virtuels de python, l'\u00e9quipe avait commenc\u00e9 sur la sc\u00e8ne de python \u00e0 travers un outil qui s'appelle Ruff.</span>\n<span class=\"paragraph\">Ruff en simple, c'est la fusion de flake8 et de black.</span>\n<span class=\"paragraph\">Trois commandes \u00e0 retenir :</span>\n<ul>\n<li><code>uvx ruff check</code> permet d'avoir le comportement d'un linteur, comme flake8</li>\n<li><code>uvx ruff check --fix</code> permet de corriger les erreurs qui sont trouv\u00e9 \u00e0 l'aide de <code>check</code></li>\n<li><code>uvx ruff format</code> permet de corriger le fichier au niveau de la norme PEP8.</li>\n</ul></span>"
           }
         }
       ],
@@ -474,12 +499,12 @@
     },
     {
       "id": "dGlV",
-      "code_hash": "c6f5f3b3f43656a275b9b21af3458dd8",
+      "code_hash": "f3cc6403c9612f3f078d35b0e9087bc6",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pour-aller-plus-loin-ty-de-astral\">Pour aller plus loin : ty de Astral</h2>\n<span class=\"paragraph\">ty est tout nouveau, il a pour r\u00f4le de v\u00e9rifier strictement le typage de vos variables ainsi que vos m\u00e9thodes. Elle vous sera tr\u00e8s utile lorsque vous attaquerez la partie de FastAPI, plus tard dans le cours.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"pour-aller-plus-loin-ty-de-astral\">Pour aller plus loin : <code>ty</code> de Astral</h2>\n<span class=\"paragraph\"><code>ty</code> est tout nouveau, il a pour r\u00f4le de v\u00e9rifier strictement le typage de vos variables ainsi que vos m\u00e9thodes. Elle vous sera tr\u00e8s utile lorsque vous attaquerez la partie de FastAPI, plus tard dans le cours.</span>\n<span class=\"paragraph\">Par analogie, vous pouvez consid\u00e9rer que <code>astral/ty</code> est l'\u00e9quivalent d'un <code>gcc -Wall</code></span>\n<span class=\"paragraph\">D\u00e8s maintenant, nous vous recommendons tr\u00e8s fortement \u00e0 utiliser l'association de <code>astral/ruff</code> et <code>astral/ty</code> en plus de de <code>astral/uv</code>.</span>\n<span class=\"paragraph\">Elle seront tr\u00e8s prochainement le nouveau standard c\u00f4t\u00e9 OPS, si les tests en entreprise sont concluantes. Vous serez parmis les premiers \u00e0 les utiliser sans formation suppl\u00e9mentaire !</span>\n<span class=\"paragraph\">Point d'attention pour les entreprise qui pratiquent les package interm\u00e9diaires. C'est \u00e0 dire que certains paquets de la biblioth\u00e8que sont copi\u00e9s en interne pour des raisons de s\u00e9curit\u00e9s. (Notament aux applications et environnements interne qui ne doit jamais acc\u00e9der \u00e0 internet !)</span></span>"
           }
         }
       ],
@@ -487,6 +512,25 @@
     },
     {
       "id": "SdmI",
+      "code_hash": "94f2a7b483e8ffd1e67fd5869430b052",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La nouvelle version de notre mod\u00e8le doit \u00eatre typ\u00e9, et le meilleur moyen de le typer est l'utilisation d'un ModelSpec associ\u00e9 \u00e0 un type.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "4204b76f3b507176d67b74dee7d47736",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "yOPj",
       "code_hash": "60ba1013f8ac47e7e76e7d8b9794610f",
       "outputs": [
         {
@@ -496,30 +540,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "bkHC",
-      "code_hash": "6f76b3dd96d337049e1428a052ec4fdf",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "PKri",
-      "code_hash": "d635ef4613446f74e80255e07873e4a0",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "SFPL",
-      "code_hash": "010b291e56f3d1c2f8bbdcc3368bc2f5",
-      "outputs": [],
       "console": []
     }
   ]

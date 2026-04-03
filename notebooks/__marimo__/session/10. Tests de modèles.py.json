@@ -1,9 +1,16 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.19.9"
+    "marimo_version": "0.22.0",
+    "script_metadata_hash": "c8e5c93ab35bc7365612bc4d2431810f"
   },
   "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "c519ef52b152bbba6a925cbf893cefeb",
+      "outputs": [],
+      "console": []
+    },
     {
       "id": "MJUe",
       "code_hash": "6932befd968bfe31d5cc8418044b1d66",
@@ -31,16 +38,28 @@
       "console": []
     },
     {
+      "id": "bkHC",
+      "code_hash": "7d34b82cd496f30a66564a052a81ee24",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "lEQa",
-      "code_hash": "3c57568f89d39c207711c1fbe4a1f528",
+      "code_hash": "96495ec235ca434487dba571ce62bd88",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous r\u00e9-utilisons ici les deux fixtures <code>project_id</code> et <code>primary_folder</code> d\u00e9j\u00e0 pr\u00e9sentes dans les tests du pipeline <code>loading</code>. Nous utilisons la fonction <code>load_csv_from_bucket</code> pour r\u00e9cup\u00e9rer le jeu de donn\u00e9es de test depuis Cloud Storage afin d'utiliser une version non alt\u00e9r\u00e9e qui serait enregistr\u00e9e en local. En pratique, la fonction <code>load_csv_from_bucket</code> aura d\u00e9j\u00e0 \u00e9t\u00e9 test\u00e9e au pr\u00e9alable par <code>pytest</code>, nous pouvons donc l'utiliser ici pour charger les donn\u00e9es.</span>\n<div class=\"alert alert-block alert-warning\">\n    Il faut \u00e9viter de cr\u00e9er des d\u00e9pendances entre les tests : c'est pour cela que l'on red\u00e9fini ici les fixtures sans les importer depuis <code>loading/conftest.py</code>.\n</div>\n\n<span class=\"paragraph\">Cr\u00e9ons ensuite comme nous l'avions fait le fichier <code>test_nodes.py</code> dans le dossier <code>processing</code>.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Nous r\u00e9-utilisons ici les deux fixtures <code>project_id</code> et <code>primary_folder</code> d\u00e9j\u00e0 pr\u00e9sentes dans les tests du pipeline <code>loading</code>. Nous utilisons la fonction <code>load_csv_from_bucket</code> pour r\u00e9cup\u00e9rer le jeu de donn\u00e9es de test depuis Cloud Storage afin d'utiliser une version non alt\u00e9r\u00e9e qui serait enregistr\u00e9e en local. En pratique, la fonction <code>load_csv_from_bucket</code> aura d\u00e9j\u00e0 \u00e9t\u00e9 test\u00e9e au pr\u00e9alable par <code>pytest</code>, nous pouvons donc l'utiliser ici pour charger les donn\u00e9es.</span>\n<div class=\"admonition attention\">\n<p class=\"admonition-title\">Attention</span>\n<span class=\"paragraph\">Il faut \u00e9viter de cr\u00e9er des d\u00e9pendances entre les tests : c'est pour cela que l'on red\u00e9fini ici les fixtures sans les importer depuis <code>loading/conftest.py</code>.</span>\n</div>\n<span class=\"paragraph\">Cr\u00e9ons ensuite comme nous l'avions fait le fichier <code>test_nodes.py</code> dans le dossier <code>processing</code>.</span></span>"
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "bdf627cf27f5a201affd998b286e98c4",
+      "outputs": [],
       "console": []
     },
     {
@@ -57,6 +76,12 @@
       "console": []
     },
     {
+      "id": "SFPL",
+      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "BYtC",
       "code_hash": "2535c6ceac2733ecb04e6da0775373ce",
       "outputs": [
@@ -67,6 +92,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "1f5df8b1ccb9fffdaf80a41e003dea56",
+      "outputs": [],
       "console": []
     },
     {
@@ -83,6 +114,12 @@
       "console": []
     },
     {
+      "id": "emfo",
+      "code_hash": "0c83e436d97e1ebab729beefb32ec0e3",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "Hstk",
       "code_hash": "2b356959a4a03330a4481a0482cfe30c",
       "outputs": [
@@ -93,6 +130,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "655ea01cf5fbb7333e84399621606c3d",
+      "outputs": [],
       "console": []
     },
     {
@@ -109,6 +152,18 @@
       "console": []
     },
     {
+      "id": "ZHCJ",
+      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "5c37605a7322fd0ab552a2abf2e1400b",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "qnkX",
       "code_hash": "a290e1331b8e1994db4e27b460eeaebc",
       "outputs": [
@@ -119,6 +174,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "cd5f4ff373cb7704668c2638df55b5be",
+      "outputs": [],
       "console": []
     },
     {
@@ -135,6 +196,12 @@
       "console": []
     },
     {
+      "id": "DnEU",
+      "code_hash": "66b7df68543497641a2c5a6f879b99c7",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "ulZA",
       "code_hash": "25040faa77dca75bd83acd8d46f3d95b",
       "outputs": [
@@ -148,6 +215,12 @@
       "console": []
     },
     {
+      "id": "ecfG",
+      "code_hash": "3abb485f5bc64df3949ec768c00f052a",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "Pvdt",
       "code_hash": "52a40ef4b4af830ae2bc0b3977214509",
       "outputs": [
@@ -158,6 +231,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "5a748c120135eca0627c0c3b4985e917",
+      "outputs": [],
       "console": []
     },
     {
@@ -200,6 +279,12 @@
       "console": []
     },
     {
+      "id": "AjVT",
+      "code_hash": "579515656c1601cad16405c3d0701b85",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "pHFh",
       "code_hash": "354844886cf45788e6625dfbd8f5d72f",
       "outputs": [
@@ -210,6 +295,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "e8c721b692c2b4bba40a39e8e0610a23",
+      "outputs": [],
       "console": []
     },
     {
@@ -226,6 +317,12 @@
       "console": []
     },
     {
+      "id": "TRpd",
+      "code_hash": "f4e6246574737282e35e56644f974d6e",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "TXez",
       "code_hash": "133954f93877070fab272fa0a452e293",
       "outputs": [
@@ -236,6 +333,12 @@
           }
         }
       ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "4cd49ad4e15d4b629f90eada3f1eee1e",
+      "outputs": [],
       "console": []
     },
     {
@@ -252,6 +355,12 @@
       "console": []
     },
     {
+      "id": "wlCL",
+      "code_hash": "c8de6ed52cc75db061f8f4d34a27dc62",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "kqZH",
       "code_hash": "e5acff1bf6b898d83bf57bd16e535017",
       "outputs": [
@@ -265,7 +374,31 @@
       "console": []
     },
     {
+      "id": "wAgl",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "rEll",
+      "code_hash": "7a493f74f7ea6096fff61b54d758a9c9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "65fec1a54a9d4c8420ecbbe3225cf91a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "0f3c51865616336dfbedeb87604a9238",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lgWD",
       "code_hash": "f846e5c8eee92b2b40b4f802fda9f705",
       "outputs": [
         {
@@ -278,7 +411,13 @@
       "console": []
     },
     {
-      "id": "SdmI",
+      "id": "yOPj",
+      "code_hash": "216af1c813e020266c4c38aabfe677b2",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "fwwy",
       "code_hash": "bd0daf3ed2f327dc08bc640181be85e9",
       "outputs": [
         {
@@ -291,7 +430,13 @@
       "console": []
     },
     {
-      "id": "yOPj",
+      "id": "LJZf",
+      "code_hash": "7424f4e80fc02d27b91c4c7d1d9ef52b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "urSm",
       "code_hash": "f755e1be625f14291f887411186dcbc7",
       "outputs": [
         {
@@ -304,7 +449,7 @@
       "console": []
     },
     {
-      "id": "fwwy",
+      "id": "jxvo",
       "code_hash": "135b71327511687b9432efd7a2cb0df4",
       "outputs": [
         {
@@ -317,7 +462,13 @@
       "console": []
     },
     {
-      "id": "urSm",
+      "id": "mWxS",
+      "code_hash": "7660977b45b36519707f856520f5cd4c",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "CcZR",
       "code_hash": "327a4a3c0ccb4435bf346a943177be65",
       "outputs": [
         {
@@ -330,7 +481,13 @@
       "console": []
     },
     {
-      "id": "mWxS",
+      "id": "YWSi",
+      "code_hash": "d2313a5b7a4a4d448e3c0a518b19f77b",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "zlud",
       "code_hash": "ab814a24aa5787a4e2bec4f3bce610e7",
       "outputs": [
         {
@@ -343,7 +500,13 @@
       "console": []
     },
     {
-      "id": "YWSi",
+      "id": "tZnO",
+      "code_hash": "46653fce6d7b1e4e3cbde6a4410c423f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "xvXZ",
       "code_hash": "d74fcfd2ca1ccbe04416850f75117d66",
       "outputs": [
         {
@@ -356,7 +519,13 @@
       "console": []
     },
     {
-      "id": "tZnO",
+      "id": "CLip",
+      "code_hash": "f32cd5241c276bf547e9b27668f2fc3a",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "YECM",
       "code_hash": "b77c8d4d4349e016c552330c43878aed",
       "outputs": [
         {
@@ -369,7 +538,13 @@
       "console": []
     },
     {
-      "id": "CLip",
+      "id": "cEAS",
+      "code_hash": "06aba0fb1966477d0de5404125622513",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "iXej",
       "code_hash": "e60fa269bc0840e788fcd5c77301f3c9",
       "outputs": [
         {
@@ -382,7 +557,13 @@
       "console": []
     },
     {
-      "id": "cEAS",
+      "id": "EJmg",
+      "code_hash": "393803c781cb56d602d25fbc71527576",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "UmEG",
       "code_hash": "45db4f8787bd4af2c7c38752371b7dde",
       "outputs": [
         {
@@ -395,7 +576,19 @@
       "console": []
     },
     {
-      "id": "UmEG",
+      "id": "vEBW",
+      "code_hash": "da0909d5224699911b1375c4500f842e",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "kLmu",
+      "code_hash": "280718724debde7429cfd44ee6488bc6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "IpqN",
       "code_hash": "b6f1d92ad49667b104a749c101c08bb3",
       "outputs": [
         {
@@ -408,7 +601,13 @@
       "console": []
     },
     {
-      "id": "kLmu",
+      "id": "dxZZ",
+      "code_hash": "a2f79a71f017f21d85005f6a1b93f2a9",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dlnW",
       "code_hash": "cdc87b3fb3c84fb24f9f5114b4bbd264",
       "outputs": [
         {
@@ -421,33 +620,20 @@
       "console": []
     },
     {
-      "id": "IpqN",
-      "code_hash": "1c5ab14779a3293f6a9477724969f773",
+      "id": "TTti",
+      "code_hash": "ab0f8e1637acd449e206269e1ee80a1f",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"tests-unitaires-du-modele\">Tests unitaires du mod\u00e8le</h3>\n<span class=\"paragraph\">Au m\u00eame titre que les tests unitaires sont r\u00e9alis\u00e9s pour les fonctions de collecte et de transformation de donn\u00e9es, les tests unitaires pour le mod\u00e8le consistent \u00e0 v\u00e9rifier que ce dernier pr\u00e9dit la bonne r\u00e9ponse pour des observations qui sont suppos\u00e9es \u00eatre parfaitement classifi\u00e9es.</span>\n<span class=\"paragraph\">Une m\u00e9thode consiste \u00e0 calculer des <strong>prototypes</strong> : il s'agit d'observations qui <em>repr\u00e9sentent le plus</em> les donn\u00e9es. En d'autres termes, il s'agit d'un concept proches des centres de clusters form\u00e9s par les observations. Et un algorithme non-supervis\u00e9 permettant de d\u00e9tecter les prototypes est le <strong>k-m\u00e9do\u00efde</strong>, proche des k-moyennes dans son fonctionnement mais qui calcule le <a href=\"https://en.wikipedia.org/wiki/Medoid\" target=\"_blank\">m\u00e9do\u00efde</a>, point d'un cluster dont la distance avec tous les autres points est la plus petite.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"tests-unitaires-du-modele\">Tests unitaires du mod\u00e8le</h3>\n<span class=\"paragraph\">Au m\u00eame titre que les tests unitaires sont r\u00e9alis\u00e9s pour les fonctions de collecte et de transformation de donn\u00e9es, les tests unitaires pour le mod\u00e8le consistent \u00e0 v\u00e9rifier que ce dernier pr\u00e9dit la bonne r\u00e9ponse pour des observations qui sont suppos\u00e9es \u00eatre parfaitement classifi\u00e9es.</span>\n<span class=\"paragraph\">Une m\u00e9thode consiste \u00e0 calculer des <strong>prototypes</strong> : il s'agit d'observations qui <em>repr\u00e9sentent le plus</em> les donn\u00e9es. En d'autres termes, il s'agit d'un concept proches des centres de clusters form\u00e9s par les observations. Et un algorithme non-supervis\u00e9 permettant de d\u00e9tecter les prototypes est le <strong>k-m\u00e9do\u00efde</strong>, proche des k-moyennes dans son fonctionnement mais qui calcule le <a href=\"https://en.wikipedia.org/wiki/Medoid\" target=\"_blank\">m\u00e9do\u00efde</a>, point d'un cluster dont la distance avec tous les autres points est la plus petite.</span>\n<span class=\"paragraph\">Comme la m\u00e9thode des k-m\u00e9loide n'est pas encore disponible dans la librairie principale de scikit-learn, nous devrions la t\u00e9l\u00e9charger depuis les extras de scikit-learn. Cependant, elle poss\u00e8de un probl\u00e8me de compatibilit\u00e9 avec la nouvelle version de numpy, ce qui nous contraint \u00e0 utiliser KMeans pour le moment. Les r\u00e9sultats du tests risquent d'\u00eatre fauss\u00e9.</span></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "dxZZ",
-      "code_hash": "7a26ac6c03469ddb18959891223ad0bf",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-text codehilite\"><pre><span></span><code>uv add scikit-learn-extra\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "dlnW",
+      "id": "RKFZ",
       "code_hash": "aefb85f9845b3367403933372983e181",
       "outputs": [
         {
@@ -460,7 +646,13 @@
       "console": []
     },
     {
-      "id": "RKFZ",
+      "id": "IaQp",
+      "code_hash": "c5935c162ac3f670f2e1fe1528c42cf3",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "IWgg",
       "code_hash": "d9acc5b69a08b9ed641d07c96ad25afd",
       "outputs": [
         {
@@ -473,7 +665,13 @@
       "console": []
     },
     {
-      "id": "IWgg",
+      "id": "fCoF",
+      "code_hash": "f9c7003be3dab70a4aa7901e092d42d6",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "LkGn",
       "code_hash": "e978a62ac452641edbaf490af9dd1585",
       "outputs": [
         {
@@ -486,20 +684,26 @@
       "console": []
     },
     {
-      "id": "LkGn",
-      "code_hash": "1bd7b47618dcebbf28a1ecebf1ebb298",
+      "id": "zVRe",
+      "code_hash": "8c2f7d297fda0eef2980a7f8abd08ca7",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "woaO",
+      "code_hash": "3ac66059484494aa67128eb21de22fc8",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">L\u00e0-aussi, \u00e0 part la premi\u00e8re observation, toutes les autres sont pr\u00e9dites dans la classe positive. La derni\u00e8re observation est, quant-\u00e0-elle, plus difficile \u00e0 quantifier du fait des deux probabilit\u00e9s tr\u00e8s proches.</span>\n<span class=\"paragraph\">Nous pourrions ainsi extraire plusieurs prototypes de ce DataFrame. Attention n\u00e9anmoins, car ces donn\u00e9es repr\u00e9sentent uniquement un historique d'une journ\u00e9e, alors qu'en pratique, celles qui seront utilis\u00e9es pour calibrer le mod\u00e8le repr\u00e9sentent un historique de 7 jours.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">On se rend compte que toute les observations sont pr\u00e9dites dans la classe positive. Attention n\u00e9anmoins, car ces donn\u00e9es repr\u00e9sentent uniquement un historique d'une journ\u00e9e, alors qu'en pratique, celles qui seront utilis\u00e9es pour calibrer le mod\u00e8le repr\u00e9sentent un historique de 7 jours.</span></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "zVRe",
+      "id": "HnMC",
       "code_hash": "f1b5f019aa3b1e553e27849447f627ac",
       "outputs": [
         {
@@ -509,204 +713,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "bkHC",
-      "code_hash": "7d34b82cd496f30a66564a052a81ee24",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "PKri",
-      "code_hash": "a8f0b54b6bf6a7b2abe582a141596e68",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "SFPL",
-      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "RGSE",
-      "code_hash": "dde62f6d737873edd9b2f955a140683b",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "emfo",
-      "code_hash": "0c83e436d97e1ebab729beefb32ec0e3",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "nWHF",
-      "code_hash": "655ea01cf5fbb7333e84399621606c3d",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ZHCJ",
-      "code_hash": "924cdd088ae9de1f21f7a4894996b8e5",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ROlb",
-      "code_hash": "5c37605a7322fd0ab552a2abf2e1400b",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TqIu",
-      "code_hash": "cd5f4ff373cb7704668c2638df55b5be",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "DnEU",
-      "code_hash": "66b7df68543497641a2c5a6f879b99c7",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ecfG",
-      "code_hash": "3abb485f5bc64df3949ec768c00f052a",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "ZBYS",
-      "code_hash": "5a748c120135eca0627c0c3b4985e917",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "AjVT",
-      "code_hash": "ca99d3059f78163ec696f35ab25cc4a7",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "NCOB",
-      "code_hash": "e8c721b692c2b4bba40a39e8e0610a23",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TRpd",
-      "code_hash": "f4e6246574737282e35e56644f974d6e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "dNNg",
-      "code_hash": "4cd49ad4e15d4b629f90eada3f1eee1e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "wlCL",
-      "code_hash": "c8de6ed52cc75db061f8f4d34a27dc62",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "wAgl",
-      "code_hash": "0f3c51865616336dfbedeb87604a9238",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "dGlV",
-      "code_hash": "216af1c813e020266c4c38aabfe677b2",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "lgWD",
-      "code_hash": "7424f4e80fc02d27b91c4c7d1d9ef52b",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "LJZf",
-      "code_hash": "7660977b45b36519707f856520f5cd4c",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "jxvo",
-      "code_hash": "277f91d3e458eed027221862847ddc40",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "CcZR",
-      "code_hash": "46653fce6d7b1e4e3cbde6a4410c423f",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "zlud",
-      "code_hash": "f32cd5241c276bf547e9b27668f2fc3a",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "xvXZ",
-      "code_hash": "06aba0fb1966477d0de5404125622513",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "YECM",
-      "code_hash": "393803c781cb56d602d25fbc71527576",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "iXej",
-      "code_hash": "da0909d5224699911b1375c4500f842e",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "EJmg",
-      "code_hash": "82b0e15dd61bdd175caed68f14986466",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "vEBW",
-      "code_hash": "a2f79a71f017f21d85005f6a1b93f2a9",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "TTti",
-      "code_hash": "7b2ec2f44fc4142795aae56d0fa5b3b0",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "IaQp",
-      "code_hash": "2564896eccb4cc1167cabdfa1a92f314",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "fCoF",
-      "code_hash": "996ac6dbe5de73722157b21cf7d87333",
-      "outputs": [],
       "console": []
     }
   ]

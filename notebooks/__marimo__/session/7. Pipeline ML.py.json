@@ -1,9 +1,16 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.19.9"
+    "marimo_version": "0.22.0",
+    "script_metadata_hash": null
   },
   "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    },
     {
       "id": "MJUe",
       "code_hash": "03e0b6cf6c4421cee13bd6beaf3884ad",
@@ -45,6 +52,19 @@
     },
     {
       "id": "lEQa",
+      "code_hash": "0bfd6326c6850c704b5130236f99e736",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Ensuite, nous allons d\u00e9finir notre <code>ModelSpec</code> que nous avons vu pendant l'optimisation des hyper-param\u00e8tres.</span>\n<span class=\"paragraph\">Nous rappelons le code ici :</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"k\">class</span><span class=\"w\"> </span><span class=\"nc\">ModelSpec</span><span class=\"p\">(</span><span class=\"n\">TypedDict</span><span class=\"p\">,</span> <span class=\"n\">total</span><span class=\"o\">=</span><span class=\"kc\">True</span><span class=\"p\">):</span>\n    <span class=\"n\">name</span><span class=\"p\">:</span> <span class=\"nb\">str</span>\n    <span class=\"n\">model_class</span><span class=\"p\">:</span> <span class=\"n\">Callable</span><span class=\"p\">[</span><span class=\"o\">...</span><span class=\"p\">,</span> <span class=\"n\">Any</span><span class=\"p\">]</span>  <span class=\"c1\"># Covers LGBMClassifier()</span>\n    <span class=\"n\">params</span><span class=\"p\">:</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"n\">Any</span><span class=\"p\">]</span>  <span class=\"c1\"># Accepts hp.uniform etc.</span>\n    <span class=\"n\">override_schemas</span><span class=\"p\">:</span> <span class=\"nb\">dict</span><span class=\"p\">[</span><span class=\"nb\">str</span><span class=\"p\">,</span> <span class=\"nb\">type</span><span class=\"p\">]</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
       "code_hash": "42a04d2957aa73993401890b7000457c",
       "outputs": [
         {
@@ -57,26 +77,13 @@
       "console": []
     },
     {
-      "id": "PKri",
-      "code_hash": "7ea8ebb1fa06585e538351d6548a8474",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-carbon codehilite\"><pre><span></span><code><span class=\"nx\">MODELS</span><span class=\"w\"> </span><span class=\"p\">=</span><span class=\"w\"> </span><span class=\"p\">[</span>\n<span class=\"w\">    </span><span class=\"p\">{</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;name&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"s\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;class&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">LGBMClassifier</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;params&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">{</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;objective&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"s\">&quot;binary&quot;</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;verbose&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;learning_rate&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;learning_rate&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.001</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">100</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1000</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">20</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">12</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">6</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">8</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">128</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.3</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;subsample&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">uniform</span><span class=\"p\">(</span><span class=\"s\">&quot;subsample&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"m m-Double\">0.5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"nx\">quniform</span><span class=\"p\">(</span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">20</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"kd\">choice</span><span class=\"p\">(</span><span class=\"s\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"nx\">e</span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">]),</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">hp</span><span class=\"p\">.</span><span class=\"kd\">choice</span><span class=\"p\">(</span><span class=\"s\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"nx\">e</span><span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">2</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">5</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"mi\">10</span><span class=\"p\">]),</span>\n<span class=\"w\">        </span><span class=\"p\">},</span>\n<span class=\"w\">        </span><span class=\"s\">&quot;override_schemas&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"p\">{</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_leaves&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;max_depth&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">            </span><span class=\"s\">&quot;num_iterations&quot;</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">int</span><span class=\"p\">,</span>\n<span class=\"w\">        </span><span class=\"p\">},</span>\n<span class=\"w\">    </span><span class=\"p\">}</span>\n<span class=\"p\">]</span>\n</code></pre></div></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
       "id": "Xref",
-      "code_hash": "1e80dd3fd435aa0eb01e4c425fc85878",
+      "code_hash": "8d8e1ff8a058d076f38fd468770ca37a",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via <code>\"class\"</code>, le TY de astral nous reverra l'erreur suivante :\n<div class=\"language-mysql codehilite\"><pre><span></span><code><span class=\"k\">Error</span><span class=\"w\"> </span><span class=\"k\">at</span><span class=\"w\"> </span><span class=\"n\">model_conf</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"k\">next</span><span class=\"p\">(</span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">in</span><span class=\"w\"> </span><span class=\"n\">MODELS</span><span class=\"w\"> </span><span class=\"k\">if</span><span class=\"w\"> </span><span class=\"n\">isinstance</span><span class=\"p\">(</span><span class=\"k\">instance</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"err\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"err\">]</span><span class=\"p\">))</span>\n<span class=\"n\">Argument</span><span class=\"w\"> </span><span class=\"k\">to</span><span class=\"w\"> </span><span class=\"k\">function</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`isinstance`</span><span class=\"w\"> </span><span class=\"k\">is</span><span class=\"w\"> </span><span class=\"n\">incorrect</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">Expected</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`type | UnionType | tuple[Divergent, ...]`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"k\">found</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Unknown | str | &lt;class &#39;LGBMClassifier&#39;&gt; | dict[Unknown | str, Unknown | str | int] | dict[Unknown | str, Unknown | &lt;class &#39;int&#39;&gt;]`</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">ty</span><span class=\"w\"> </span><span class=\"n\">invalid</span><span class=\"o\">-</span><span class=\"n\">argument</span><span class=\"o\">-</span><span class=\"k\">type</span><span class=\"p\">)</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Nous allons devoir cr\u00e9er une fonction qui v\u00e9rifie le typage afin que faire taire cette erreur lanc\u00e9 par <code>ty</code></span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-py codehilite\"><pre><span></span><code><span class=\"c1\"># Type the MODELS list</span>\n<span class=\"n\">MODELS</span><span class=\"p\">:</span> <span class=\"nb\">list</span><span class=\"p\">[</span><span class=\"n\">ModelSpec</span><span class=\"p\">]</span> <span class=\"o\">=</span> <span class=\"p\">[</span>\n    <span class=\"p\">{</span>\n        <span class=\"s2\">&quot;name&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;LightGBM&quot;</span><span class=\"p\">,</span>\n        <span class=\"s2\">&quot;model_class&quot;</span><span class=\"p\">:</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">,</span>\n        <span class=\"s2\">&quot;params&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n            <span class=\"s2\">&quot;objective&quot;</span><span class=\"p\">:</span> <span class=\"s2\">&quot;binary&quot;</span><span class=\"p\">,</span>\n            <span class=\"s2\">&quot;verbose&quot;</span><span class=\"p\">:</span> <span class=\"o\">-</span><span class=\"mi\">1</span><span class=\"p\">,</span>\n            <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.001</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">,</span> <span class=\"mi\">100</span><span class=\"p\">,</span> <span class=\"mi\">1000</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">,</span> <span class=\"mi\">4</span><span class=\"p\">,</span> <span class=\"mi\">12</span><span class=\"p\">,</span> <span class=\"mi\">6</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">,</span> <span class=\"mi\">8</span><span class=\"p\">,</span> <span class=\"mi\">128</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;colsample_bytree&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.3</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">uniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;subsample&quot;</span><span class=\"p\">,</span> <span class=\"mf\">0.5</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">quniform</span><span class=\"p\">(</span><span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">20</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">),</span>\n            <span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_alpha&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n            <span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">:</span> <span class=\"n\">hp</span><span class=\"o\">.</span><span class=\"n\">choice</span><span class=\"p\">(</span><span class=\"s2\">&quot;reg_lambda&quot;</span><span class=\"p\">,</span> <span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">,</span> <span class=\"mf\">1e-1</span><span class=\"p\">,</span> <span class=\"mi\">1</span><span class=\"p\">,</span> <span class=\"mi\">2</span><span class=\"p\">,</span> <span class=\"mi\">5</span><span class=\"p\">,</span> <span class=\"mi\">10</span><span class=\"p\">]),</span>\n        <span class=\"p\">},</span>\n        <span class=\"s2\">&quot;override_schemas&quot;</span><span class=\"p\">:</span> <span class=\"p\">{</span>\n            <span class=\"s2\">&quot;num_leaves&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span>\n            <span class=\"s2\">&quot;min_child_samples&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span>\n            <span class=\"s2\">&quot;max_depth&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span>\n            <span class=\"s2\">&quot;num_iterations&quot;</span><span class=\"p\">:</span> <span class=\"nb\">int</span><span class=\"p\">,</span>\n        <span class=\"p\">},</span>\n    <span class=\"p\">}</span>\n<span class=\"p\">]</span>\n</code></pre></div></span>"
           }
         }
       ],
@@ -84,12 +91,12 @@
     },
     {
       "id": "SFPL",
-      "code_hash": "2c692054904c811e46a5556d3c82e20c",
+      "code_hash": "24c3ff94bed2a0d53da9747d4fd71680",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">get_model_config</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">:</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"nb\">dict</span><span class=\"p\">:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"n\">Returns</span> <span class=\"n\">the</span> <span class=\"n\">configuration</span> <span class=\"n\">dictionary</span> <span class=\"k\">for</span> <span class=\"n\">the</span> <span class=\"n\">given</span> <span class=\"n\">model</span> <span class=\"n\">instance</span><span class=\"o\">.</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span>\n    <span class=\"k\">if</span> <span class=\"nb\">isinstance</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">,</span> <span class=\"n\">LGBMClassifier</span><span class=\"p\">):</span>\n        <span class=\"k\">return</span> <span class=\"n\">MODELS</span><span class=\"p\">[</span><span class=\"mi\">0</span><span class=\"p\">]</span>  <span class=\"c1\"># Or match by type</span>\n    <span class=\"k\">raise</span> <span class=\"ne\">ValueError</span><span class=\"p\">(</span><span class=\"sa\">f</span><span class=\"s2\">&quot;Unsupported model: </span><span class=\"si\">{</span><span class=\"nb\">type</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">)</span><span class=\"si\">}</span><span class=\"s2\">&quot;</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"admonition note\">\n<p class=\"admonition-title\">Note</span>\n<span class=\"paragraph\">Si nous tentons de faire la suite en comparant directement le bon typage de notre classe via <code>\"class\"</code>, le <code>astral/ty</code> de astral nous reverra l'erreur suivante :\n<div class=\"language-mysql codehilite\"><pre><span></span><code><span class=\"k\">Error</span><span class=\"w\"> </span><span class=\"k\">at</span><span class=\"w\"> </span><span class=\"n\">model_conf</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"k\">next</span><span class=\"p\">(</span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"w\"> </span><span class=\"k\">in</span><span class=\"w\"> </span><span class=\"n\">MODELS</span><span class=\"w\"> </span><span class=\"k\">if</span><span class=\"w\"> </span><span class=\"n\">isinstance</span><span class=\"p\">(</span><span class=\"k\">instance</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">m</span><span class=\"err\">[</span><span class=\"s2\">&quot;class&quot;</span><span class=\"err\">]</span><span class=\"p\">))</span>\n<span class=\"n\">Argument</span><span class=\"w\"> </span><span class=\"k\">to</span><span class=\"w\"> </span><span class=\"k\">function</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`isinstance`</span><span class=\"w\"> </span><span class=\"k\">is</span><span class=\"w\"> </span><span class=\"n\">incorrect</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">Expected</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`type | UnionType | tuple[Divergent, ...]`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"k\">found</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Unknown | str | &lt;class &#39;LGBMClassifier&#39;&gt; | dict[Unknown | str, Unknown | str | int] | dict[Unknown | str, Unknown | &lt;class &#39;int&#39;&gt;]`</span><span class=\"w\"> </span><span class=\"p\">(</span><span class=\"n\">ty</span><span class=\"w\"> </span><span class=\"n\">invalid</span><span class=\"o\">-</span><span class=\"n\">argument</span><span class=\"o\">-</span><span class=\"k\">type</span><span class=\"p\">)</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Nous allons devoir cr\u00e9er une fonction qui v\u00e9rifie le typage afin que faire taire cette erreur lanc\u00e9 par <code>ty</code></span>\n</div></span>"
           }
         }
       ],
@@ -97,6 +104,19 @@
     },
     {
       "id": "BYtC",
+      "code_hash": "ce38726f0886de2bcac1eb8ea7005559",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><div class=\"language-python codehilite\"><pre><span></span><code><span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">get_model_config</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">:</span> <span class=\"n\">BaseEstimator</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">ModelSpec</span><span class=\"p\">:</span>\n    <span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;\\&quot;</span><span class=\"s2\">Returns the configuration dictionary for the given model instance.&quot;</span>\\<span class=\"s2\">&quot;</span><span class=\"se\">\\&quot;</span>\n    <span class=\"k\">for</span> <span class=\"n\">model_spec</span> <span class=\"ow\">in</span> <span class=\"n\">MODELS</span><span class=\"p\">:</span>\n        <span class=\"n\">model_cls</span><span class=\"p\">:</span> <span class=\"nb\">type</span> <span class=\"o\">=</span> <span class=\"n\">model_spec</span><span class=\"p\">[</span><span class=\"s2\">&quot;model_class&quot;</span><span class=\"p\">]</span>  <span class=\"c1\"># type: ignore (or guard below)</span>\n        <span class=\"k\">if</span> <span class=\"nb\">isinstance</span><span class=\"p\">(</span><span class=\"n\">model_cls</span><span class=\"p\">,</span> <span class=\"nb\">type</span><span class=\"p\">)</span> <span class=\"ow\">and</span> <span class=\"nb\">isinstance</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">,</span> <span class=\"n\">model_cls</span><span class=\"p\">):</span>\n            <span class=\"k\">return</span> <span class=\"n\">model_spec</span>\n    <span class=\"k\">raise</span> <span class=\"ne\">ValueError</span><span class=\"p\">(</span><span class=\"sa\">f</span><span class=\"s2\">&quot;Unsupported model: </span><span class=\"si\">{</span><span class=\"nb\">type</span><span class=\"p\">(</span><span class=\"n\">instance</span><span class=\"p\">)</span><span class=\"si\">}</span><span class=\"s2\">&quot;</span><span class=\"p\">)</span>\n</code></pre></div></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
       "code_hash": "ba35ec5536904d9be204a70e9e5175ae",
       "outputs": [
         {
@@ -109,7 +129,7 @@
       "console": []
     },
     {
-      "id": "RGSE",
+      "id": "Kclp",
       "code_hash": "84a7793ce52ba7adbcc2c7943081e04f",
       "outputs": [
         {
@@ -122,7 +142,7 @@
       "console": []
     },
     {
-      "id": "Kclp",
+      "id": "emfo",
       "code_hash": "6ecd665f780c880c97aa233875a81e87",
       "outputs": [
         {
@@ -135,7 +155,7 @@
       "console": []
     },
     {
-      "id": "emfo",
+      "id": "Hstk",
       "code_hash": "2aa6594b8cd375ffdf3b152ac2a16d3f",
       "outputs": [
         {
@@ -148,7 +168,7 @@
       "console": []
     },
     {
-      "id": "Hstk",
+      "id": "nWHF",
       "code_hash": "68d5f23a6089512eaf0609c43f83cb39",
       "outputs": [
         {
@@ -161,7 +181,7 @@
       "console": []
     },
     {
-      "id": "nWHF",
+      "id": "iLit",
       "code_hash": "0f04731976050a7025dba8128eaa4f9c",
       "outputs": [
         {
@@ -174,20 +194,20 @@
       "console": []
     },
     {
-      "id": "iLit",
+      "id": "ZHCJ",
       "code_hash": "5b1a6e6cfc8d6865a036fe194d732efb",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"creation-du-pipeline\">Cr\u00e9ation du pipeline</h3>\n<span class=\"paragraph\">Derni\u00e8re \u00e9tape : construire le pipeline dans le fichier <code>pipeline.py</code>. Avant toute chose, nous allons d\u00e9finir le mod\u00e8le (optimis\u00e9) dans le Data Catalog afin de l'enregistrer une fois entra\u00een\u00e9. On utilise le type <code>pickle.PickleDataset</code> pour enregistrer un mod\u00e8le au format binaire sur le disque.</span>\n<span class=\"paragraph\">Ce qui donne</span>\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">model</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pickle</span><span class=\"o\">.</span><span class=\"na\">PickleDataset</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/06_model/</span><span class=\"n\">model</span><span class=\"o\">.</span><span class=\"na\">pkl</span>\n</code></pre></div>\n<span class=\"paragraph\">et dans le <code>parameters.yml</code>\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">test_ratio</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"mf\">0.3</span>\n<span class=\"n\">automl_max_evals</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"mi\">10</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Pour la pipeline, il n'y a qu'un seul node \u00e0 d\u00e9finir:</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Node</span><span class=\"p\">,</span> <span class=\"n\">Pipeline</span>  <span class=\"c1\"># noqa</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">.nodes</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">auto_ml</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">Pipeline</span><span class=\"p\">:</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">([</span>\n        <span class=\"n\">Node</span><span class=\"p\">(</span><span class=\"n\">auto_ml</span><span class=\"p\">,</span>\n             <span class=\"p\">[</span>\n                <span class=\"s2\">&quot;X_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;X_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;params:automl_max_evals&quot;</span>\n            <span class=\"p\">],</span>\n            <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">model</span><span class=\"o\">=</span><span class=\"s2\">&quot;model&quot;</span><span class=\"p\">),)</span>\n    <span class=\"p\">])</span>\n</code></pre></div></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"creation-du-pipeline\">Cr\u00e9ation du pipeline</h3>\n<span class=\"paragraph\">Derni\u00e8re \u00e9tape : construire le pipeline dans le fichier <code>pipeline.py</code>. Avant toute chose, nous allons d\u00e9finir le mod\u00e8le (optimis\u00e9) dans le Data Catalog afin de l'enregistrer une fois entra\u00een\u00e9. On utilise le type <code>pickle.PickleDataset</code> pour enregistrer un mod\u00e8le au format binaire sur le disque.</span>\n<span class=\"paragraph\">Ce qui donne</span>\n<div class=\"language-carbon codehilite\"><pre><span></span><code><span class=\"nx\">model</span><span class=\"p\">:</span>\n<span class=\"w\">  </span><span class=\"k\">type</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">pickle</span><span class=\"p\">.</span><span class=\"nx\">PickleDataset</span>\n<span class=\"w\">  </span><span class=\"nx\">filepath</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">data</span><span class=\"o\">/</span><span class=\"mi\">06</span><span class=\"nx\">_model</span><span class=\"o\">/</span><span class=\"nx\">model</span><span class=\"p\">.</span><span class=\"nx\">pkl</span>\n</code></pre></div>\n<span class=\"paragraph\">et dans le <code>parameters.yml</code>\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>test_ratio: 0.3\nautoml_max_evals: 10\n</code></pre></div></span>\n<span class=\"paragraph\">Pour la pipeline, il n'y a qu'un seul node \u00e0 d\u00e9finir:</span>\n<div class=\"language-py codehilite\"><pre><span></span><code><span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">kedro.pipeline</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">Node</span><span class=\"p\">,</span> <span class=\"n\">Pipeline</span>  <span class=\"c1\"># noqa</span>\n<span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">.nodes</span><span class=\"w\"> </span><span class=\"kn\">import</span> <span class=\"n\">auto_ml</span>\n\n<span class=\"k\">def</span><span class=\"w\"> </span><span class=\"nf\">create_pipeline</span><span class=\"p\">(</span><span class=\"o\">**</span><span class=\"n\">kwargs</span><span class=\"p\">)</span> <span class=\"o\">-&gt;</span> <span class=\"n\">Pipeline</span><span class=\"p\">:</span>\n    <span class=\"k\">return</span> <span class=\"n\">Pipeline</span><span class=\"p\">([</span>\n        <span class=\"n\">Node</span><span class=\"p\">(</span><span class=\"n\">auto_ml</span><span class=\"p\">,</span>\n             <span class=\"p\">[</span>\n                <span class=\"s2\">&quot;X_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_train&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;X_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;y_test&quot;</span><span class=\"p\">,</span>\n                <span class=\"s2\">&quot;params:automl_max_evals&quot;</span>\n            <span class=\"p\">],</span>\n            <span class=\"nb\">dict</span><span class=\"p\">(</span><span class=\"n\">model</span><span class=\"o\">=</span><span class=\"s2\">&quot;model&quot;</span><span class=\"p\">),)</span>\n    <span class=\"p\">])</span>\n</code></pre></div></span>"
           }
         }
       ],
       "console": []
     },
     {
-      "id": "ZHCJ",
+      "id": "ROlb",
       "code_hash": "1a7f00e50d6b4e56e8e6181efa2191be",
       "outputs": [
         {
@@ -200,7 +220,7 @@
       "console": []
     },
     {
-      "id": "ROlb",
+      "id": "qnkX",
       "code_hash": "ad7f3134df876feac502b20a9e3dd049",
       "outputs": [
         {
@@ -213,7 +233,7 @@
       "console": []
     },
     {
-      "id": "qnkX",
+      "id": "TqIu",
       "code_hash": "ac4ac40e2debcd6a34ecac94e843eee5",
       "outputs": [
         {
@@ -226,7 +246,7 @@
       "console": []
     },
     {
-      "id": "TqIu",
+      "id": "Vxnm",
       "code_hash": "26eae2d5a721d564dbdcdc8efa28b217",
       "outputs": [
         {
@@ -239,7 +259,7 @@
       "console": []
     },
     {
-      "id": "Vxnm",
+      "id": "DnEU",
       "code_hash": "8f7e8358e671699a01d42dcc4dbf321a",
       "outputs": [
         {
@@ -252,26 +272,13 @@
       "console": []
     },
     {
-      "id": "DnEU",
+      "id": "ulZA",
       "code_hash": "2fa4c7dcb7fd4cbf9f07184619b025f1",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En lan\u00e7ant la commande\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">uv</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"n\">pipeline</span><span class=\"w\"> </span><span class=\"n\">loading</span>\n</code></pre></div></span>\n<span class=\"paragraph\">On se retrouve face \u00e0 l'erreur suivante :\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">DefaultCredentialsError</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">Your</span><span class=\"w\"> </span><span class=\"k\">default</span><span class=\"w\"> </span><span class=\"n\">credentials</span><span class=\"w\"> </span><span class=\"n\">were</span><span class=\"w\"> </span><span class=\"n\">not</span><span class=\"w\"> </span><span class=\"n\">found</span><span class=\"o\">.</span><span class=\"w\"> </span><span class=\"n\">To</span><span class=\"w\"> </span><span class=\"kd\">set</span><span class=\"w\"> </span><span class=\"n\">up</span><span class=\"w\"> </span><span class=\"n\">Application</span><span class=\"w\"> </span><span class=\"n\">Default</span><span class=\"w\"> </span><span class=\"n\">Credentials</span><span class=\"o\">,</span><span class=\"w\"> </span><span class=\"n\">see</span>\n<span class=\"n\">https</span><span class=\"o\">://</span><span class=\"n\">cloud</span><span class=\"o\">.</span><span class=\"na\">google</span><span class=\"o\">.</span><span class=\"na\">com</span><span class=\"sr\">/docs/authentication/external/s</span><span class=\"n\">et</span><span class=\"o\">-</span><span class=\"n\">up</span><span class=\"o\">-</span><span class=\"n\">adc</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"n\">more</span><span class=\"w\"> </span><span class=\"n\">information</span><span class=\"o\">.</span>\n</code></pre></div></span>\n<span class=\"paragraph\">Nous devons configurer les cr\u00e9dentials de Google en local pour pouvoir faire fonctionner la pipeline de chargement.</span>\n<span class=\"paragraph\">Mais avant de faire ces \u00e9tapes, il faudra r\u00e9aliser les actions suivantes:</span>\n<ol>\n<li>Cr\u00e9er son compte Google Cloud Plateform.</li>\n</ol>\n<div class=\"admonition attention\">\n<span class=\"paragraph\">Au 8 f\u00e9vrier 2026, Google Cloud Plateform demande la fourniture d'une carte bleu, sous paiement de 10e, remboursable sur demande, afin de d'activer les essaies.</span>\n</div>\n<div class=\"admonition danger\">\n<span class=\"paragraph\">En aucun cas vous devez cliquer sur un bouton similaire \u00e0 \"passer en compte payant\" sous peine de facturation suppl\u00e9mentaire.</span>\n</div>\n<ol start=\"3\">\n<li>\n<span class=\"paragraph\">Cr\u00e9er un bucket sur Google Cloud Storage (Le service \u00e9quivalent sur AWS est S3)</span>\n<div class=\"language-mysql highlight\"><pre><span></span><code><span class=\"o\">-</span><span class=\"w\"> </span><span class=\"n\">Pour</span><span class=\"w\"> </span><span class=\"n\">cela</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">il</span><span class=\"w\"> </span><span class=\"n\">faut</span><span class=\"w\"> </span><span class=\"n\">taper</span><span class=\"w\"> </span><span class=\"n\">dans</span><span class=\"w\"> </span><span class=\"n\">la</span><span class=\"w\"> </span><span class=\"n\">barre</span><span class=\"w\"> </span><span class=\"n\">de</span><span class=\"w\"> </span><span class=\"n\">recherche</span><span class=\"w\"> </span><span class=\"n\">S3</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">et</span><span class=\"w\"> </span><span class=\"n\">cliquer</span><span class=\"w\"> </span><span class=\"n\">sur</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Bucket`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">puis</span><span class=\"w\"> </span><span class=\"n\">sur</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Cr\u00e9er`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">et</span><span class=\"w\"> </span><span class=\"n\">laisser</span><span class=\"w\"> </span><span class=\"n\">les</span><span class=\"w\"> </span><span class=\"n\">param\u00e8tres</span><span class=\"w\"> </span><span class=\"n\">par</span><span class=\"w\"> </span><span class=\"n\">d\u00e9fault</span><span class=\"p\">.</span>\n</code></pre></div>\n</li>\n<li>\n<span class=\"paragraph\">Uploader les fichiers csv de \"primary.csv\" vers le bucket que vous venez de cr\u00e9er</span>\n<ul>\n<li>Pour cela, il faut aller dans bucket, Importer des fichiers</li>\n<li>Ouvrir un Terminal GCP et tapper les commande suivante (\u00e0 adapter)\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>gsutil cp gs://purchase_predict/primary.zip /tmp\nmkdir -p /tmp/primary\nunzip /tmp/primary.zip\ngsutil cp -r unzipped_content gs://purchase_predict/primary/\n</code></pre></div></li>\n</ul>\n</li>\n<li>G\u00e9n\u00e9rer un Service Account pour le projet avec les acc\u00e8s \u00e0 Google Cloud Storage</li>\n<li>Cr\u00e9er une cl\u00e9e d'authentification pour le PC Local</li>\n</ol></span>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "ulZA",
-      "code_hash": "ab9cafb1e382c25272a68eed9125d053",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"creation-dun-compte-de-service\">Cr\u00e9ation d'un compte de service</h3>\n<span class=\"paragraph\">Une r\u00e8gle de s\u00e9curit\u00e9 en Cloud Computing consiste \u00e0 cr\u00e9er des <strong>r\u00f4les</strong> en fonction des services et des cas d'utilisation. Sous GCP, les <strong>comptes de services</strong> permettent de d\u00e9finir des r\u00f4les aux applications qui vont faire appel \u00e0 certains services, avec un certain niveau d'habilitation tout en garantissant une s\u00e9curit\u00e9 \u00e9lev\u00e9e.</span>\n<span class=\"paragraph\">Nous allons nommer ce compte de service <code>purchase-predict</code> avec le r\u00f4le <em>Lecteur des objets de l'espace de stockage</em>, ce qui autorisera la lecture des donn\u00e9es depuis l'ext\u00e9rieur.</span>\n<span class=\"paragraph\"><img alt=\"\" src=\"public/pipeline_ml2.png\" /></span>\n<span class=\"paragraph\">La description du compte de service n'est pas obligatoire, mais elle permet de pr\u00e9senter rapidement quelles applications vont utiliser ce compte de service car cela n'est pas toujours clair lorsqu'il y en a beaucoup.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/pipeline_ml3.png\" /></span>\n<span class=\"paragraph\">En s\u00e9curit\u00e9 du Cloud, il faut adopter le <strong>principe du moindre privil\u00e8ge</strong> : il faut donner uniquement les acc\u00e8s n\u00e9cessaires, c'est-\u00e0-dire juste ce qu'il faut pour que l'application fonctionne, jamais plus.</span>\n<span class=\"paragraph\">Apr\u00e8s avoir cr\u00e9e le compte de service, nous pouvons cr\u00e9er une cl\u00e9 au format JSON et la t\u00e9l\u00e9charger.</span>\n<div class=\"alert alert-block alert-danger\">\n    La cl\u00e9 du compte de service est \u00e9quivalent \u00e0 un mot de passe. Il ne faut jamais la divulguer ou la laisser dans un projet o\u00f9 Git ajouterai ce fichier \u00e0 un d\u00e9p\u00f4t distant.\n</div>\n\n<span class=\"paragraph\">Heureusement pour nous, Kedro a pr\u00e9vu de cas de figure. Tous les mots de passes et cl\u00e9s de services, lorsqu'ils sont utilis\u00e9 sur des environnement de d\u00e9veloppement, doivent \u00eatre plac\u00e9s dans le dossier <code>conf/local</code>, qui est ignor\u00e9 par Git. Ajoutons le fichier <code>service-account.json</code> dans ce dossier en ins\u00e9rant le contenu de la cl\u00e9 JSON t\u00e9l\u00e9charg\u00e9e.</span>\n<span class=\"paragraph\">Il reste maintenant \u00e0 sp\u00e9cifier le chemin d'acc\u00e8s \u00e0 la cl\u00e9 du compte de service dans la variable d'environnement <code>GOOGLE_APPLICATION_CREDENTIALS</code>. \u00c0 noter que cette manipulation sera n\u00e9cessaire <strong>lorsque l'on d\u00e9marre un nouveau terminal</strong>.</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">En lan\u00e7ant la commande\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">uv</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"n\">kedro</span><span class=\"w\"> </span><span class=\"n\">run</span><span class=\"w\"> </span><span class=\"o\">--</span><span class=\"n\">pipeline</span><span class=\"w\"> </span><span class=\"n\">loading</span>\n</code></pre></div></span>\n<span class=\"paragraph\">On se retrouve face \u00e0 l'erreur suivante :\n<div class=\"language-teratermmacro codehilite\"><pre><span></span><code><span class=\"nv\">DefaultCredentialsError</span>:<span class=\"w\"> </span><span class=\"nv\">Your</span><span class=\"w\"> </span><span class=\"nv\">default</span><span class=\"w\"> </span><span class=\"nv\">credentials</span><span class=\"w\"> </span><span class=\"nv\">were</span><span class=\"w\"> </span><span class=\"nv\">not</span><span class=\"w\"> </span><span class=\"nv\">found</span>.<span class=\"w\"> </span><span class=\"nv\">To</span><span class=\"w\"> </span><span class=\"nv\">set</span><span class=\"w\"> </span><span class=\"nv\">up</span><span class=\"w\"> </span><span class=\"nv\">Application</span><span class=\"w\"> </span><span class=\"nv\">Default</span><span class=\"w\"> </span><span class=\"nv\">Credentials</span>,<span class=\"w\"> </span><span class=\"nv\">see</span>\n<span class=\"nv\">https</span>:<span class=\"o\">//</span><span class=\"nv\">cloud</span>.<span class=\"nv\">google</span>.<span class=\"nv\">com</span><span class=\"o\">/</span><span class=\"nv\">docs</span><span class=\"o\">/</span><span class=\"nv\">authentication</span><span class=\"o\">/</span><span class=\"nv\">external</span><span class=\"o\">/</span><span class=\"nv\">set</span><span class=\"o\">-</span><span class=\"nv\">up</span><span class=\"o\">-</span><span class=\"nv\">adc</span><span class=\"w\"> </span><span class=\"k\">for</span><span class=\"w\"> </span><span class=\"nv\">more</span><span class=\"w\"> </span><span class=\"nv\">information</span>.\n</code></pre></div></span>\n<span class=\"paragraph\">Nous devons configurer les cr\u00e9dentials de Google en local pour pouvoir faire fonctionner la pipeline de chargement.</span>\n<span class=\"paragraph\">Mais avant de faire ces \u00e9tapes, il faudra r\u00e9aliser les actions suivantes:</span>\n<ol>\n<li>Cr\u00e9er son compte Google Cloud Plateform.</li>\n</ol>\n<div class=\"admonition attention\">\n<span class=\"paragraph\">Au 8 f\u00e9vrier 2026, Google Cloud Plateform demande la fourniture d'une carte bleu, sous paiement de 10e, remboursable sur demande, afin de d'activer les essaies.</span>\n</div>\n<div class=\"admonition danger\">\n<span class=\"paragraph\">En aucun cas vous devez cliquer sur un bouton similaire \u00e0 \"passer en compte payant\" sous peine de facturation suppl\u00e9mentaire.</span>\n</div>\n<ol start=\"3\">\n<li>\n<span class=\"paragraph\">Cr\u00e9er un bucket sur Google Cloud Storage (Le service \u00e9quivalent sur AWS est S3)</span>\n<div class=\"language-mysql highlight\"><pre><span></span><code><span class=\"o\">-</span><span class=\"w\"> </span><span class=\"n\">Pour</span><span class=\"w\"> </span><span class=\"n\">cela</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">il</span><span class=\"w\"> </span><span class=\"n\">faut</span><span class=\"w\"> </span><span class=\"n\">taper</span><span class=\"w\"> </span><span class=\"n\">dans</span><span class=\"w\"> </span><span class=\"n\">la</span><span class=\"w\"> </span><span class=\"n\">barre</span><span class=\"w\"> </span><span class=\"n\">de</span><span class=\"w\"> </span><span class=\"n\">recherche</span><span class=\"w\"> </span><span class=\"k\">S3</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">et</span><span class=\"w\"> </span><span class=\"n\">cliquer</span><span class=\"w\"> </span><span class=\"n\">sur</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Bucket`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">puis</span><span class=\"w\"> </span><span class=\"n\">sur</span><span class=\"w\"> </span><span class=\"n n-Quoted\">`Cr\u00e9er`</span><span class=\"p\">,</span><span class=\"w\"> </span><span class=\"n\">et</span><span class=\"w\"> </span><span class=\"n\">laisser</span><span class=\"w\"> </span><span class=\"n\">les</span><span class=\"w\"> </span><span class=\"n\">param\u00e8tres</span><span class=\"w\"> </span><span class=\"n\">par</span><span class=\"w\"> </span><span class=\"n\">d\u00e9fault</span><span class=\"p\">.</span>\n</code></pre></div>\n</li>\n<li>Uploader les fichiers csv de \"primary.csv\" vers le bucket que vous venez de cr\u00e9er<ul>\n<li>Pour cela, il faut aller dans bucket, Importer des fichiers</li>\n<li>Ouvrir un Terminal GCP et tapper les commande suivante (\u00e0 adapter)\n<div class=\"language-scdoc codehilite\"><pre><span></span><code>gsutil cp gs://purchase_predict/primary.zip /tmp\nmkdir -p /tmp/primary\nunzip /tmp/primary.zip\ngsutil cp -r unzipped_content gs://purchase_predict/primary/\n</code></pre></div></li>\n</ul>\n</li>\n<li>G\u00e9n\u00e9rer un Service Account pour le projet avec les acc\u00e8s \u00e0 Google Cloud Storage</li>\n<li>Cr\u00e9er une cl\u00e9e d'authentification pour le PC Local</li>\n</ol></span>"
           }
         }
       ],
@@ -279,6 +286,19 @@
     },
     {
       "id": "ecfG",
+      "code_hash": "1adafb3eed0f6f09c59c33d6be6a30f7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"creation-dun-compte-de-service\">Cr\u00e9ation d'un compte de service</h3>\n<span class=\"paragraph\">Une r\u00e8gle de s\u00e9curit\u00e9 en Cloud Computing consiste \u00e0 cr\u00e9er des <strong>r\u00f4les</strong> en fonction des services et des cas d'utilisation. Sous GCP, les <strong>comptes de services</strong> permettent de d\u00e9finir des r\u00f4les aux applications qui vont faire appel \u00e0 certains services, avec un certain niveau d'habilitation tout en garantissant une s\u00e9curit\u00e9 \u00e9lev\u00e9e.</span>\n<span class=\"paragraph\">Nous allons nommer ce compte de service <code>purchase-predict</code> avec le r\u00f4le <em>Lecteur des objets de l'espace de stockage</em>, ce qui autorisera la lecture des donn\u00e9es depuis l'ext\u00e9rieur.</span>\n<span class=\"paragraph\"><img alt=\"\" src=\"public/pipeline_ml2.png\" /></span>\n<span class=\"paragraph\">La description du compte de service n'est pas obligatoire, mais elle permet de pr\u00e9senter rapidement quelles applications vont utiliser ce compte de service car cela n'est pas toujours clair lorsqu'il y en a beaucoup.</span>\n<span class=\"paragraph\"><img alt=\"alt\" src=\"public/pipeline_ml3.png\" /></span>\n<span class=\"paragraph\">En s\u00e9curit\u00e9 du Cloud, il faut adopter le <strong>principe du moindre privil\u00e8ge</strong> : il faut donner uniquement les acc\u00e8s n\u00e9cessaires, c'est-\u00e0-dire juste ce qu'il faut pour que l'application fonctionne, jamais plus.</span>\n<span class=\"paragraph\">Apr\u00e8s avoir cr\u00e9e le compte de service, nous pouvons cr\u00e9er une cl\u00e9 au format JSON et la t\u00e9l\u00e9charger.</span>\n<div class=\"admonition danger\">\n<p class=\"admonition-title\">Danger</span>\n<span class=\"paragraph\">La cl\u00e9 du compte de service est \u00e9quivalent \u00e0 un mot de passe. Il ne faut jamais la divulguer ou la laisser dans un projet o\u00f9 Git ajouterai ce fichier \u00e0 un d\u00e9p\u00f4t distant.</span>\n</div>\n<span class=\"paragraph\">Heureusement pour nous, Kedro a pr\u00e9vu de cas de figure. Tous les mots de passes et cl\u00e9s de services, lorsqu'ils sont utilis\u00e9 sur des environnement de d\u00e9veloppement, doivent \u00eatre plac\u00e9s dans le dossier <code>conf/local</code>, qui est ignor\u00e9 par Git. Ajoutons le fichier <code>service-account.json</code> dans ce dossier en ins\u00e9rant le contenu de la cl\u00e9 JSON t\u00e9l\u00e9charg\u00e9e.</span>\n<span class=\"paragraph\">Il reste maintenant \u00e0 sp\u00e9cifier le chemin d'acc\u00e8s \u00e0 la cl\u00e9 du compte de service dans la variable d'environnement <code>GOOGLE_APPLICATION_CREDENTIALS</code>. \u00c0 noter que cette manipulation sera n\u00e9cessaire <strong>lorsque l'on d\u00e9marre un nouveau terminal</strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
       "code_hash": "3fe6cad4833ef213442c4877933c9df1",
       "outputs": [
         {
@@ -291,7 +311,7 @@
       "console": []
     },
     {
-      "id": "Pvdt",
+      "id": "ZBYS",
       "code_hash": "b9073b2ddbf0c6e9d4cf2e87a20bcca0",
       "outputs": [
         {
@@ -304,7 +324,7 @@
       "console": []
     },
     {
-      "id": "ZBYS",
+      "id": "aLJB",
       "code_hash": "f7f948f305c7f052ac4d077fbdbaac38",
       "outputs": [
         {
@@ -317,7 +337,7 @@
       "console": []
     },
     {
-      "id": "aLJB",
+      "id": "nHfw",
       "code_hash": "238f5d61f092af464b10067ec692f02f",
       "outputs": [
         {
@@ -330,7 +350,7 @@
       "console": []
     },
     {
-      "id": "nHfw",
+      "id": "xXTn",
       "code_hash": "b2e54dd7ed0930d6e4cfd18e268450a3",
       "outputs": [
         {
@@ -343,7 +363,7 @@
       "console": []
     },
     {
-      "id": "xXTn",
+      "id": "AjVT",
       "code_hash": "3f2fdae4f709cc2e1a29b3b39425a8d3",
       "outputs": [
         {
@@ -356,7 +376,7 @@
       "console": []
     },
     {
-      "id": "AjVT",
+      "id": "pHFh",
       "code_hash": "078e8c27c48ba225d275f0537c75aaed",
       "outputs": [
         {
@@ -369,7 +389,7 @@
       "console": []
     },
     {
-      "id": "pHFh",
+      "id": "NCOB",
       "code_hash": "a41e8a416b8c5ad78f36f113abb35c8b",
       "outputs": [
         {
@@ -382,7 +402,7 @@
       "console": []
     },
     {
-      "id": "NCOB",
+      "id": "aqbW",
       "code_hash": "c78709d38b1d4a94efb867bdeb0f33c6",
       "outputs": [
         {
@@ -395,7 +415,7 @@
       "console": []
     },
     {
-      "id": "aqbW",
+      "id": "TRpd",
       "code_hash": "80a22355768c354879ad65fc096decef",
       "outputs": [
         {
@@ -405,12 +425,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [],
       "console": []
     }
   ]
