@@ -60,27 +60,13 @@
     {
       "id": "lEQa",
       "code_hash": "f56ec0862f8811a740cd9d5fc51f67d9",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
       "id": "PKri",
       "code_hash": "8d1e17bd22da394762c0b79978285b70",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -125,34 +111,8 @@
     {
       "id": "RGSE",
       "code_hash": "7b3de36d53461f5633ee815aa8d259fb",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "/home/youenn/Documents/mlops/TP/tp-mlops-6/mlruns/484736495684845195/f49ff5491f714f2ab5c2a9e1bcddc0aa/artifacts\n",
-          "mimetype": "text/plain"
-        },
-        {
-          "type": "stream",
-          "name": "stderr",
-          "text": "2026/04/03 14:58:27 WARNING mlflow.utils.environment: Failed to resolve installed pip version. ``pip`` will be added to conda.yaml environment spec without a version specifier.\n",
-          "mimetype": "text/plain"
-        },
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "\ud83c\udfc3 View run magnificent-fish-517 at: http://127.0.0.1:5000/#/experiments/484736495684845195/runs/f49ff5491f714f2ab5c2a9e1bcddc0aa\n\ud83e\uddea View experiment at: http://127.0.0.1:5000/#/experiments/484736495684845195\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "outputs": [],
+      "console": []
     },
     {
       "id": "Kclp",
@@ -170,14 +130,7 @@
     {
       "id": "emfo",
       "code_hash": "241b82156573f1d1edb3051c25c8b88b",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "application/json": "[\"text/plain:<Metric: key='f1', step=0, timestamp=1775221104370, value=0.8751279426816786>\"]"
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -196,22 +149,8 @@
     {
       "id": "nWHF",
       "code_hash": "1be89c5731228d059db9fd93b3cee7dc",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "/home/youenn/Documents/mlops/TP/tp-mlops-6/\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "outputs": [],
+      "console": []
     },
     {
       "id": "iLit",
@@ -229,28 +168,8 @@
     {
       "id": "ZHCJ",
       "code_hash": "7a87cf544e96d226f9dd0ddac25f92fd",
-      "outputs": [
-        {
-          "type": "error",
-          "ename": "exception",
-          "evalue": "403 POST https://storage.googleapis.com/upload/storage/v1/b/le_bucket_de_youenn/o?uploadType=multipart: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"purchase-predict@project-ff5e9f4c-35af-4ac7-bc3.iam.gserviceaccount.com does not have storage.objects.create access to the Google Cloud Storage object. Permission 'storage.objects.create' denied on resource (or it may not exist).\",\n    \"errors\": [\n      {\n        \"message\": \"purchase-predict@project-ff5e9f4c-35af-4ac7-bc3.iam.gserviceaccount.com does not have storage.objects.create access to the Google Cloud Storage object. Permission 'storage.objects.create' denied on resource (or it may not exist).\",\n        \"domain\": \"global\",\n        \"reason\": \"forbidden\"\n      }\n    ]\n  }\n}\n: ('Request failed with status code', 403, 'Expected one of', <HTTPStatus.OK: 200>)",
-          "traceback": []
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "\ud83c\udfc3 View run agreeable-ray-470 at: http://35.231.231.72:80/#/experiments/1/runs/42b27e93ffb8464d8b6c103e6dbae48c\n\ud83e\uddea View experiment at: http://35.231.231.72:80/#/experiments/1\n",
-          "mimetype": "text/plain"
-        },
-        {
-          "type": "stream",
-          "name": "stderr",
-          "text": "<span class=\"codehilite\"><div class=\"highlight\"><pre><span></span><span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">2835</span>, in <span class=\"n\">_prep_and_do_upload</span>\n<span class=\"w\">    </span><span class=\"n\">created_json</span> <span class=\"o\">=</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_do_upload</span><span class=\"p\">(</span>\n<span class=\"w\">                   </span><span class=\"pm\">^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">2630</span>, in <span class=\"n\">_do_upload</span>\n<span class=\"w\">    </span><span class=\"n\">response</span> <span class=\"o\">=</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_do_multipart_upload</span><span class=\"p\">(</span>\n<span class=\"w\">               </span><span class=\"pm\">^^^^^^^^^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">2061</span>, in <span class=\"n\">_do_multipart_upload</span>\n<span class=\"w\">    </span><span class=\"n\">response</span> <span class=\"o\">=</span> <span class=\"n\">upload</span><span class=\"o\">.</span><span class=\"n\">transmit</span><span class=\"p\">(</span>\n<span class=\"w\">               </span><span class=\"pm\">^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/_media/requests/upload.py&quot;</span>, line <span class=\"m\">162</span>, in <span class=\"n\">transmit</span>\n<span class=\"w\">    </span><span class=\"k\">return</span> <span class=\"n\">_request_helpers</span><span class=\"o\">.</span><span class=\"n\">wait_and_retry</span><span class=\"p\">(</span><span class=\"n\">retriable_request</span><span class=\"p\">,</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_retry_strategy</span><span class=\"p\">)</span>\n<span class=\"w\">           </span><span class=\"pm\">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/_media/requests/_request_helpers.py&quot;</span>, line <span class=\"m\">107</span>, in <span class=\"n\">wait_and_retry</span>\n<span class=\"w\">    </span><span class=\"k\">return</span> <span class=\"n\">func</span><span class=\"p\">()</span>\n<span class=\"w\">           </span><span class=\"pm\">^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py&quot;</span>, line <span class=\"m\">294</span>, in <span class=\"n\">retry_wrapped_func</span>\n<span class=\"w\">    </span><span class=\"k\">return</span> <span class=\"n\">retry_target</span><span class=\"p\">(</span>\n<span class=\"w\">           </span><span class=\"pm\">^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py&quot;</span>, line <span class=\"m\">156</span>, in <span class=\"n\">retry_target</span>\n<span class=\"w\">    </span><span class=\"n\">next_sleep</span> <span class=\"o\">=</span> <span class=\"n\">_retry_error_helper</span><span class=\"p\">(</span>\n<span class=\"w\">                 </span><span class=\"pm\">^^^^^^^^^^^^^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_base.py&quot;</span>, line <span class=\"m\">216</span>, in <span class=\"n\">_retry_error_helper</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"n\">final_exc</span> <span class=\"kn\">from</span><span class=\"w\"> </span><span class=\"nn\">source_exc</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py&quot;</span>, line <span class=\"m\">147</span>, in <span class=\"n\">retry_target</span>\n<span class=\"w\">    </span><span class=\"n\">result</span> <span class=\"o\">=</span> <span class=\"n\">target</span><span class=\"p\">()</span>\n<span class=\"w\">             </span><span class=\"pm\">^^^^^^^^</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/_media/requests/upload.py&quot;</span>, line <span class=\"m\">158</span>, in <span class=\"n\">retriable_request</span>\n<span class=\"w\">    </span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_process_response</span><span class=\"p\">(</span><span class=\"n\">result</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/_media/_upload.py&quot;</span>, line <span class=\"m\">135</span>, in <span class=\"n\">_process_response</span>\n<span class=\"w\">    </span><span class=\"n\">_helpers</span><span class=\"o\">.</span><span class=\"n\">require_status_code</span><span class=\"p\">(</span><span class=\"n\">response</span><span class=\"p\">,</span> <span class=\"p\">(</span><span class=\"n\">http</span><span class=\"o\">.</span><span class=\"n\">client</span><span class=\"o\">.</span><span class=\"n\">OK</span><span class=\"p\">,),</span> <span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_get_status_code</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/_media/_helpers.py&quot;</span>, line <span class=\"m\">105</span>, in <span class=\"n\">require_status_code</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"n\">InvalidResponse</span><span class=\"p\">(</span>\n<span class=\"gr\">google.cloud.storage.exceptions.InvalidResponse</span>: <span class=\"n\">(&#39;Request failed with status code&#39;, 403, &#39;Expected one of&#39;, &lt;HTTPStatus.OK: 200&gt;)</span>\n\n<span class=\"gt\">During handling of the above exception, another exception occurred:</span>\n\n<span class=\"gt\">Traceback (most recent call last):</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/marimo/_runtime/executor.py&quot;</span>, line <span class=\"m\">138</span>, in <span class=\"n\">execute_cell</span>\n<span class=\"w\">    </span><span class=\"n\">exec</span><span class=\"p\">(</span><span class=\"n\">cell</span><span class=\"o\">.</span><span class=\"n\">body</span><span class=\"p\">,</span> <span class=\"n\">glbls</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/tmp/marimo_9643/__marimo__cell_ZHCJ_.py&quot;</span>, line <span class=\"m\">1</span>, in <span class=\"n\">&lt;module&gt;</span>\n<span class=\"w\">    </span><span class=\"n\">train_model</span><span class=\"p\">({</span><span class=\"o\">**</span><span class=\"n\">hyp_params</span><span class=\"p\">,</span> <span class=\"o\">**</span><span class=\"p\">{</span><span class=\"s2\">&quot;n_estimators&quot;</span><span class=\"p\">:</span> <span class=\"mi\">200</span><span class=\"p\">,</span> <span class=\"s2\">&quot;learning_rate&quot;</span><span class=\"p\">:</span> <span class=\"mf\">0.05</span><span class=\"p\">}})</span>\n  File <span class=\"nb\">&quot;/tmp/marimo_9643/__marimo__cell_yCnT_.py&quot;</span>, line <span class=\"m\">12</span>, in <span class=\"n\">train_model</span>\n<span class=\"w\">    </span><span class=\"n\">mlflow</span><span class=\"o\">.</span><span class=\"n\">log_artifact</span><span class=\"p\">(</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/mlflow/tracking/fluent.py&quot;</span>, line <span class=\"m\">1179</span>, in <span class=\"n\">log_artifact</span>\n<span class=\"w\">    </span><span class=\"n\">MlflowClient</span><span class=\"p\">()</span><span class=\"o\">.</span><span class=\"n\">log_artifact</span><span class=\"p\">(</span><span class=\"n\">run_id</span><span class=\"p\">,</span> <span class=\"n\">local_path</span><span class=\"p\">,</span> <span class=\"n\">artifact_path</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/mlflow/tracking/client.py&quot;</span>, line <span class=\"m\">1939</span>, in <span class=\"n\">log_artifact</span>\n<span class=\"w\">    </span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_tracking_client</span><span class=\"o\">.</span><span class=\"n\">log_artifact</span><span class=\"p\">(</span><span class=\"n\">run_id</span><span class=\"p\">,</span> <span class=\"n\">local_path</span><span class=\"p\">,</span> <span class=\"n\">artifact_path</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/mlflow/tracking/_tracking_service/client.py&quot;</span>, line <span class=\"m\">842</span>, in <span class=\"n\">log_artifact</span>\n<span class=\"w\">    </span><span class=\"n\">artifact_repo</span><span class=\"o\">.</span><span class=\"n\">log_artifact</span><span class=\"p\">(</span><span class=\"n\">local_path</span><span class=\"p\">,</span> <span class=\"n\">artifact_path</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/mlflow/store/artifact/gcs_artifact_repo.py&quot;</span>, line <span class=\"m\">106</span>, in <span class=\"n\">log_artifact</span>\n<span class=\"w\">    </span><span class=\"n\">blob</span><span class=\"o\">.</span><span class=\"n\">upload_from_filename</span><span class=\"p\">(</span><span class=\"n\">local_file</span><span class=\"p\">,</span> <span class=\"n\">timeout</span><span class=\"o\">=</span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_GCS_DEFAULT_TIMEOUT</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">3198</span>, in <span class=\"n\">upload_from_filename</span>\n<span class=\"w\">    </span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_handle_filename_and_upload</span><span class=\"p\">(</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">3048</span>, in <span class=\"n\">_handle_filename_and_upload</span>\n<span class=\"w\">    </span><span class=\"bp\">self</span><span class=\"o\">.</span><span class=\"n\">_prep_and_do_upload</span><span class=\"p\">(</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">2853</span>, in <span class=\"n\">_prep_and_do_upload</span>\n<span class=\"w\">    </span><span class=\"n\">_raise_from_invalid_response</span><span class=\"p\">(</span><span class=\"n\">exc</span><span class=\"p\">)</span>\n  File <span class=\"nb\">&quot;/home/youenn/Documents/mlops/cours_/mlops_cours/.venv/lib/python3.12/site-packages/google/cloud/storage/blob.py&quot;</span>, line <span class=\"m\">5158</span>, in <span class=\"n\">_raise_from_invalid_response</span>\n<span class=\"w\">    </span><span class=\"k\">raise</span> <span class=\"n\">exceptions</span><span class=\"o\">.</span><span class=\"n\">from_http_status</span><span class=\"p\">(</span><span class=\"n\">response</span><span class=\"o\">.</span><span class=\"n\">status_code</span><span class=\"p\">,</span> <span class=\"n\">message</span><span class=\"p\">,</span> <span class=\"n\">response</span><span class=\"o\">=</span><span class=\"n\">response</span><span class=\"p\">)</span>\n<span class=\"gr\">google.api_core.exceptions.Forbidden</span>: <span class=\"n\">403 POST https://storage.googleapis.com/upload/storage/v1/b/le_bucket_de_youenn/o?uploadType=multipart: {</span>\n<span class=\"x\">  &quot;error&quot;: {</span>\n<span class=\"x\">    &quot;code&quot;: 403,</span>\n<span class=\"x\">    &quot;message&quot;: &quot;purchase-predict@project-ff5e9f4c-35af-4ac7-bc3.iam.gserviceaccount.com does not have storage.objects.create access to the Google Cloud Storage object. Permission &#39;storage.objects.create&#39; denied on resource (or it may not exist).&quot;,</span>\n<span class=\"x\">    &quot;errors&quot;: [</span>\n<span class=\"x\">      {</span>\n<span class=\"x\">        &quot;message&quot;: &quot;purchase-predict@project-ff5e9f4c-35af-4ac7-bc3.iam.gserviceaccount.com does not have storage.objects.create access to the Google Cloud Storage object. Permission &#39;storage.objects.create&#39; denied on resource (or it may not exist).&quot;,</span>\n<span class=\"x\">        &quot;domain&quot;: &quot;global&quot;,</span>\n<span class=\"x\">        &quot;reason&quot;: &quot;forbidden&quot;</span>\n<span class=\"x\">      }</span>\n<span class=\"x\">    ]</span>\n<span class=\"x\">  }</span>\n<span class=\"x\">}</span>\n<span class=\"x\">: (&#39;Request failed with status code&#39;, 403, &#39;Expected one of&#39;, &lt;HTTPStatus.OK: 200&gt;)</span>\n</pre></div>\n</span>",
-          "mimetype": "application/vnd.marimo+traceback"
-        }
-      ]
+      "outputs": [],
+      "console": []
     },
     {
       "id": "ROlb",
@@ -298,8 +217,8 @@
       "console": []
     },
     {
-      "id": "JAQw",
-      "code_hash": null,
+      "id": "DnEU",
+      "code_hash": "7a2b40a7ebf61f5f21bb6914188b6d7e",
       "outputs": [],
       "console": []
     },
@@ -344,12 +263,12 @@
     },
     {
       "id": "ZBYS",
-      "code_hash": "d46242f6c4a96b454602b5aaa279dfbf",
+      "code_hash": "0d6015f15d23a7468d74d0d4c39112ce",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La derni\u00e8re \u00e9tape consiste \u00e0 activer le service et \u00e0 l'ex\u00e9cuter. Avec <code>daemon-reload</code>, nous activons le service MLflow.</span>\n<span class=\"paragraph\">(Ajout Youenn)\nTaper les commandes suivantes dans la console de la VM (SSH) </span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">La derni\u00e8re \u00e9tape consiste \u00e0 activer le service et \u00e0 l'ex\u00e9cuter. Avec <code>daemon-reload</code>, nous activons le service MLflow.</span>\n<span class=\"paragraph\">(Ajout Youenn)\nTaper les commandes suivantes dans la console de la VM (SSH)</span></span>"
           }
         }
       ],
@@ -401,12 +320,12 @@
     },
     {
       "id": "NCOB",
-      "code_hash": "0410348c19a0819f51fca54af2d970e2",
+      "code_hash": "82ff5eab9d5a9b11dba9d372e2b2c857",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Si mlflow n'apparait pas \u00e0 l'addresse ip externe, on peut d\u00e9j\u00e0 v\u00e9rifier si il tourne tout de m\u00eame : sudo systemctl status mlflow.</span>\n<span class=\"paragraph\">Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f</span>\n<span class=\"paragraph\">Si le service est actif, \u00e7a signifie que c'est google ou le navigateur qui le bloque. \nExemple : problemes avec Brave et son bloqueur de pubs.\nSi \u00e7a vient de GCS, pour empecher le bloquage on peut cr\u00e9er une r\u00e8gle de pare-feu sur Google Cloud Storage :</span>\n<ul>\n<li>Nom : allow-mlflow-http</li>\n<li>Cibles : \"Toutes les instances du r\u00e9seau\"</li>\n<li>Plages IP sources : 0.0.0.0/0 (pour autoriser tout le monde)</li>\n<li>Protocoles et ports : Cochez TCP et tapez 80.</li>\n</ul>\n<span class=\"paragraph\">Maintenant, en visitant la page web \u00e0 l'adresse IP externe de la VM, l'interface MLflow appara\u00eet.</span>\n<span class=\"paragraph\">Ajoutons la cl\u00e9 JSON que nous avons t\u00e9l\u00e9charg\u00e9, vers le dossier data</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn) \nSi mlflow n'apparait pas \u00e0 l'addresse ip externe, on peut d\u00e9j\u00e0 v\u00e9rifier si il tourne tout de m\u00eame : sudo systemctl status mlflow.</span>\n<span class=\"paragraph\">Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f</span>\n<span class=\"paragraph\">Si le service est actif, \u00e7a signifie que c'est google ou le navigateur qui le bloque.\nExemple : problemes avec Brave et son bloqueur de pubs.\nSi \u00e7a vient de GCS, pour empecher le bloquage on peut cr\u00e9er une r\u00e8gle de pare-feu sur Google Cloud Storage :</span>\n<ul>\n<li>Nom : allow-mlflow-http</li>\n<li>Cibles : \"Toutes les instances du r\u00e9seau\"</li>\n<li>Plages IP sources : 0.0.0.0/0 (pour autoriser tout le monde)</li>\n<li>Protocoles et ports : Cochez TCP et tapez 80.</li>\n</ul>\n<span class=\"paragraph\">Maintenant, en visitant la page web \u00e0 l'adresse IP externe de la VM, l'interface MLflow appara\u00eet.</span>\n<span class=\"paragraph\">Ajoutons la cl\u00e9 JSON que nous avons t\u00e9l\u00e9charg\u00e9, vers le dossier data</span></span>"
           }
         }
       ],
@@ -434,14 +353,7 @@
     {
       "id": "TXez",
       "code_hash": "a2e6dc253435f1684a896b8a5edf939c",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -460,22 +372,8 @@
     {
       "id": "yCnT",
       "code_hash": "daa4b7950257a3de0325da39dccabb6a",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stderr",
-          "text": "2026/04/03 16:47:13 INFO mlflow.tracking.fluent: Experiment with name 'purchase_predict' does not exist. Creating a new experiment.\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "outputs": [],
+      "console": []
     },
     {
       "id": "wlCL",
@@ -493,28 +391,8 @@
     {
       "id": "kqZH",
       "code_hash": "933ea40fd60ca7d6f6cb6c905a0da17a",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": [
-        {
-          "type": "stream",
-          "name": "stderr",
-          "text": "2026/04/03 16:50:41 WARNING mlflow.utils.environment: Failed to resolve installed pip version. ``pip`` will be added to conda.yaml environment spec without a version specifier.\n",
-          "mimetype": "text/plain"
-        },
-        {
-          "type": "stream",
-          "name": "stdout",
-          "text": "\ud83c\udfc3 View run popular-cow-149 at: http://35.231.231.72:80/#/experiments/1/runs/a2aee7d9a4ae49e881cbf39d3fb0700b\n\ud83e\uddea View experiment at: http://35.231.231.72:80/#/experiments/1\n",
-          "mimetype": "text/plain"
-        }
-      ]
+      "outputs": [],
+      "console": []
     },
     {
       "id": "wAgl",
@@ -530,7 +408,7 @@
       "console": []
     },
     {
-      "id": "OgfR",
+      "id": "rEll",
       "code_hash": "041d54a2867a04028000e0f8f079a4e7",
       "outputs": [
         {
@@ -543,7 +421,7 @@
       "console": []
     },
     {
-      "id": "rEll",
+      "id": "dGlV",
       "code_hash": "74052b4dace5afafa20c229ebc53592e",
       "outputs": [
         {

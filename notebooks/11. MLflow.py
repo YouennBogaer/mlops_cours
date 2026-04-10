@@ -518,6 +518,7 @@ app._unparsable_cell(
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    (Ajout Youenn)
     Si mlflow n'apparait pas à l'addresse ip externe, on peut déjà vérifier si il tourne tout de même : sudo systemctl status mlflow.
 
     Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f
