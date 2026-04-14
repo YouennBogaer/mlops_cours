@@ -1,10 +1,23 @@
 {
   "version": "1",
   "metadata": {
-    "marimo_version": "0.20.4",
+    "marimo_version": "0.22.0",
     "script_metadata_hash": null
   },
   "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
     {
       "id": "MJUe",
       "code_hash": "28b8e1e9d4dbe8831f6482498cdc15ed",
@@ -25,7 +38,7 @@
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"structure-de-lapi\">Structure de l'API</h2>\n<span class=\"paragraph\">Avant de d\u00e9buter sur la structure de l'API, nous devons apporter une l\u00e9g\u00e8re modification sur le pipeline <code>processing</code> et <code>training</code> de Kedro. En effet, si l'on regarde bien, dans le pipeline <code>processing</code>, la fonction <code>encode_features</code> transforme num\u00e9rique les donn\u00e9es en appliquant par exemple un <code>LabelEncoder</code> sur plusieurs colonnes. Sur l'API, il faut que l'on ait <strong>exactement le m\u00eame encodage</strong>, sinon cela pourrait poser des probl\u00e8mes lors de la pr\u00e9diction (valeur jamais observ\u00e9e par exemple).</span>\n<span class=\"paragraph\">Pour cela, nous rajoutons dans le catalogue de donn\u00e9es un nouvel \u00e9l\u00e9ment. (Si ce n'est pas d\u00e9j\u00e0 fait avant)</span>\n<div class=\"language-actionscript3 codehilite\"><pre><span></span><code><span class=\"n\">transform_pipeline</span><span class=\"o\">:</span>\n<span class=\"w\">  </span><span class=\"n\">type</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">pickle</span><span class=\"o\">.</span><span class=\"na\">PickleDataSet</span>\n<span class=\"w\">  </span><span class=\"n\">filepath</span><span class=\"o\">:</span><span class=\"w\"> </span><span class=\"n\">data</span><span class=\"sr\">/04_feature/</span><span class=\"n\">transform_pipeline</span><span class=\"o\">.</span><span class=\"na\">pkl</span>\n</code></pre></div></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"structure-de-lapi\">Structure de l'API</h2>\n<span class=\"paragraph\">Avant de d\u00e9buter sur la structure de l'API, nous devons apporter une l\u00e9g\u00e8re modification sur le pipeline <code>processing</code> et <code>training</code> de Kedro. En effet, si l'on regarde bien, dans le pipeline <code>processing</code>, la fonction <code>encode_features</code> transforme num\u00e9rique les donn\u00e9es en appliquant par exemple un <code>LabelEncoder</code> sur plusieurs colonnes. Sur l'API, il faut que l'on ait <strong>exactement le m\u00eame encodage</strong>, sinon cela pourrait poser des probl\u00e8mes lors de la pr\u00e9diction (valeur jamais observ\u00e9e par exemple).</span>\n<span class=\"paragraph\">Pour cela, nous rajoutons dans le catalogue de donn\u00e9es un nouvel \u00e9l\u00e9ment. (Si ce n'est pas d\u00e9j\u00e0 fait avant)</span>\n<div class=\"language-carbon codehilite\"><pre><span></span><code><span class=\"nx\">transform_pipeline</span><span class=\"p\">:</span>\n<span class=\"w\">  </span><span class=\"k\">type</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">pickle</span><span class=\"p\">.</span><span class=\"nx\">PickleDataSet</span>\n<span class=\"w\">  </span><span class=\"nx\">filepath</span><span class=\"p\">:</span><span class=\"w\"> </span><span class=\"nx\">data</span><span class=\"o\">/</span><span class=\"mi\">04</span><span class=\"nx\">_feature</span><span class=\"o\">/</span><span class=\"nx\">transform_pipeline</span><span class=\"p\">.</span><span class=\"nx\">pkl</span>\n</code></pre></div></span>"
           }
         }
       ],
@@ -85,6 +98,19 @@
     },
     {
       "id": "SFPL",
+      "code_hash": "813a7c4ce2d8f576200b001ea9d8f1bf",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn) Le bout de code suivant se trouve dans la node auto_ml de la pipeline de training</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
       "code_hash": "efaf50e7238a28a14ae3c0fb07eea0c0",
       "outputs": [
         {
@@ -97,7 +123,7 @@
       "console": []
     },
     {
-      "id": "BYtC",
+      "id": "RGSE",
       "code_hash": "3f070e27e94bc2989c7c648ba8b262a0",
       "outputs": [
         {
@@ -110,7 +136,20 @@
       "console": []
     },
     {
-      "id": "RGSE",
+      "id": "Kclp",
+      "code_hash": "43967df98c01a9e6e5160f7418da8b3c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn) Si les artifacts ne charge pas sur mlflow, le probleme peut venir du service google. Regardez les logs associ\u00e9s au bucket (resource.type=\"gcs_bucket\"\nresource.labels.bucket_name=\"NOM_DE_VOTRE_BUCKET\"). (Autorisez les logs dans IAM &amp; Admin/journeaux d'audit pour Google Cloud Storage)\nOn peut regarder les logs depuis la console SSH : sudo journalctl -u mlflow -e -n 50 --no-pager\nJ'avais un probleme car ma vm n'avait pas la cl\u00e9 json du service account.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
       "code_hash": "ba6353ccfb0c6235e1d22c3bfcc86b38",
       "outputs": [
         {
@@ -123,7 +162,7 @@
       "console": []
     },
     {
-      "id": "Kclp",
+      "id": "Hstk",
       "code_hash": "75573a64ee8e5712e0a14e1e96d58179",
       "outputs": [
         {
@@ -136,7 +175,7 @@
       "console": []
     },
     {
-      "id": "emfo",
+      "id": "nWHF",
       "code_hash": "d3ca11eccd8026f399ecdf42555f5b66",
       "outputs": [
         {
@@ -149,7 +188,7 @@
       "console": []
     },
     {
-      "id": "Hstk",
+      "id": "iLit",
       "code_hash": "4be0ef8cf392b5ad7545636053f1b890",
       "outputs": [
         {
@@ -162,7 +201,7 @@
       "console": []
     },
     {
-      "id": "nWHF",
+      "id": "ZHCJ",
       "code_hash": "fa55cdfaf245e3fbbaec414f5297f125",
       "outputs": [
         {
@@ -175,7 +214,7 @@
       "console": []
     },
     {
-      "id": "iLit",
+      "id": "ROlb",
       "code_hash": "8c4b6d156722a63eae499a25c4338296",
       "outputs": [
         {
@@ -188,7 +227,7 @@
       "console": []
     },
     {
-      "id": "ZHCJ",
+      "id": "qnkX",
       "code_hash": "1216182bd28cd329f863c0c91d4195b1",
       "outputs": [
         {
@@ -201,7 +240,7 @@
       "console": []
     },
     {
-      "id": "ROlb",
+      "id": "TqIu",
       "code_hash": "00470c0342e745316b0349360a8b4ec0",
       "outputs": [
         {
@@ -214,7 +253,7 @@
       "console": []
     },
     {
-      "id": "qnkX",
+      "id": "Vxnm",
       "code_hash": "a5460546ee9ccca2e3ed86f871b1dff6",
       "outputs": [
         {
@@ -227,7 +266,7 @@
       "console": []
     },
     {
-      "id": "TqIu",
+      "id": "DnEU",
       "code_hash": "320e2efbe411de6d0f87c4b746b841f6",
       "outputs": [
         {
@@ -240,7 +279,7 @@
       "console": []
     },
     {
-      "id": "Vxnm",
+      "id": "ulZA",
       "code_hash": "06cda83129c578f88416a0f448da9ddc",
       "outputs": [
         {
@@ -253,7 +292,13 @@
       "console": []
     },
     {
-      "id": "ulZA",
+      "id": "ecfG",
+      "code_hash": null,
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
       "code_hash": "2883e0307ca30c9c8a4e384a1b1b9e7c",
       "outputs": [
         {
@@ -266,7 +311,7 @@
       "console": []
     },
     {
-      "id": "ecfG",
+      "id": "ZBYS",
       "code_hash": "a7db93e38702440d55d838e32585e566",
       "outputs": [
         {
@@ -279,7 +324,7 @@
       "console": []
     },
     {
-      "id": "Pvdt",
+      "id": "aLJB",
       "code_hash": "9c1e1fe2ceef505c60322e192ad58b06",
       "outputs": [
         {
@@ -292,7 +337,7 @@
       "console": []
     },
     {
-      "id": "ZBYS",
+      "id": "nHfw",
       "code_hash": "8ef410e5cb49e60827e0e329412d801b",
       "outputs": [
         {
@@ -305,7 +350,7 @@
       "console": []
     },
     {
-      "id": "aLJB",
+      "id": "xXTn",
       "code_hash": "a83e4ce5272d378261c450658e1c405c",
       "outputs": [
         {
@@ -318,7 +363,7 @@
       "console": []
     },
     {
-      "id": "nHfw",
+      "id": "AjVT",
       "code_hash": "a9f96864aca5cc569a3d703a04c74aaf",
       "outputs": [
         {
@@ -331,7 +376,7 @@
       "console": []
     },
     {
-      "id": "xXTn",
+      "id": "pHFh",
       "code_hash": "2f5705d4ffac2cf8e930707b5c65de41",
       "outputs": [
         {
@@ -344,7 +389,26 @@
       "console": []
     },
     {
-      "id": "pHFh",
+      "id": "sWdz",
+      "code_hash": "48e57fc57e4cdf8e642f65349c704fee",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn) Cr\u00e9er un fichier test_api.py et executer dans un autre terminal.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "faa41fe3104430cc81173d0de53b99db",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "aqbW",
       "code_hash": "9694ad0826d1dfcee1fbe71dab7e576f",
       "outputs": [
         {
@@ -357,7 +421,13 @@
       "console": []
     },
     {
-      "id": "aqbW",
+      "id": "TRpd",
+      "code_hash": "50d3ab17a0fcbc26499a18f05574087f",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "TXez",
       "code_hash": "a9a3c9396d185aefe77530c3d148dccc",
       "outputs": [
         {
@@ -370,7 +440,7 @@
       "console": []
     },
     {
-      "id": "TRpd",
+      "id": "dNNg",
       "code_hash": "4229f72eb7f6bbaa3982cdddf007f4c3",
       "outputs": [
         {
@@ -383,7 +453,25 @@
       "console": []
     },
     {
+      "id": "yCnT",
+      "code_hash": "98f537a39b2b004b01bc533426757052",
+      "outputs": [],
+      "console": []
+    },
+    {
       "id": "wlCL",
+      "code_hash": "18c60d498bb57637d3f14ae1b59d8eed",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "8521d28a68212eff72366a7578cee589",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "wAgl",
       "code_hash": "49df9cb210555bbc8799ec7ac34df6e1",
       "outputs": [
         {
@@ -396,7 +484,13 @@
       "console": []
     },
     {
-      "id": "wAgl",
+      "id": "rEll",
+      "code_hash": "c54ac321afb73875722d06d778a6ae00",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "dGlV",
       "code_hash": "4190c7c9e90a6cd98239cdb95910df2b",
       "outputs": [
         {
@@ -409,7 +503,13 @@
       "console": []
     },
     {
-      "id": "dGlV",
+      "id": "SdmI",
+      "code_hash": "02cf80c2e2c95e45055a2d1c7cf2acc4",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "lgWD",
       "code_hash": "e977af81139220845d804f475c018b7e",
       "outputs": [
         {
@@ -422,7 +522,13 @@
       "console": []
     },
     {
-      "id": "lgWD",
+      "id": "yOPj",
+      "code_hash": "5e7c8f828706ce271325da90a17a5c84",
+      "outputs": [],
+      "console": []
+    },
+    {
+      "id": "fwwy",
       "code_hash": "cf076403f6a496b656bd3f1ca389197e",
       "outputs": [
         {
@@ -435,7 +541,7 @@
       "console": []
     },
     {
-      "id": "yOPj",
+      "id": "LJZf",
       "code_hash": "2c03f4ca8fc599b9bef8ee1d5600c136",
       "outputs": [
         {
@@ -448,7 +554,7 @@
       "console": []
     },
     {
-      "id": "fwwy",
+      "id": "urSm",
       "code_hash": "3ee9729487ed2bcc2615214a753b4814",
       "outputs": [
         {
@@ -461,7 +567,7 @@
       "console": []
     },
     {
-      "id": "LJZf",
+      "id": "jxvo",
       "code_hash": "af1d22734bdb3ae3f1a30aab54097e84",
       "outputs": [
         {
@@ -474,7 +580,7 @@
       "console": []
     },
     {
-      "id": "urSm",
+      "id": "mWxS",
       "code_hash": "bc2097d1857c0cb6bc46bbc56de29ad2",
       "outputs": [
         {
@@ -487,7 +593,7 @@
       "console": []
     },
     {
-      "id": "jxvo",
+      "id": "CcZR",
       "code_hash": "d401c7974272bcebb78ce85c42083e17",
       "outputs": [
         {
@@ -497,81 +603,6 @@
           }
         }
       ],
-      "console": []
-    },
-    {
-      "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "AjVT",
-      "code_hash": "dd532ec99d07634f40c15875e56c8407",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "NCOB",
-      "code_hash": "50d3ab17a0fcbc26499a18f05574087f",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "application/json": "[1, 1, 1, 1, 0, 1, 1, 0, 1, 1]"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "TXez",
-      "code_hash": "98f537a39b2b004b01bc533426757052",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "dNNg",
-      "code_hash": "18c60d498bb57637d3f14ae1b59d8eed",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "yCnT",
-      "code_hash": "8521d28a68212eff72366a7578cee589",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "kqZH",
-      "code_hash": "c54ac321afb73875722d06d778a6ae00",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "rEll",
-      "code_hash": "02cf80c2e2c95e45055a2d1c7cf2acc4",
-      "outputs": [],
-      "console": []
-    },
-    {
-      "id": "SdmI",
-      "code_hash": "5e7c8f828706ce271325da90a17a5c84",
-      "outputs": [],
       "console": []
     }
   ]

@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.4"
+__generated_with = "0.22.0"
 app = marimo.App()
 
 
@@ -164,6 +164,14 @@ def _(mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
+    (Ajout Youenn) Le bout de code suivant se trouve dans la node auto_ml de la pipeline de training
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
     La dernière manipulation consiste à envoyer ce pipeline `sklearn` vers MLflow. En exécutant ce pipeline Kedro, les transformations seront enregistrées dans `04_feature/transform_pipeline.pkl` comme défini dans le catalogue de données. Ainsi, il suffit d'envoyer cet artifact à MLflow, en même temps que les métriques et le modèle sont envoyés.
 
     ```py
@@ -190,6 +198,17 @@ def _(mo):
     kedro run --pipeline processing
     kedro run --pipeline training
     ```
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    (Ajout Youenn) Si les artifacts ne charge pas sur mlflow, le probleme peut venir du service google. Regardez les logs associés au bucket (resource.type="gcs_bucket"
+    resource.labels.bucket_name="NOM_DE_VOTRE_BUCKET"). (Autorisez les logs dans IAM & Admin/journeaux d'audit pour Google Cloud Storage)
+    On peut regarder les logs depuis la console SSH : sudo journalctl -u mlflow -e -n 50 --no-pager
+    J'avais un probleme car ma vm n'avait pas la clé json du service account.
     """)
     return
 
@@ -573,6 +592,14 @@ def _(mo):
     ## Exécution et test de l'API
 
     Testons notre API. Dans le terminal, exécutons `app.py` : cela va automatiquement exécuter l'API sur le port $5000$ de la machine (en localhost sur l'adresse 127.0.0.1).
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    (Ajout Youenn) Créer un fichier test_api.py et executer dans un autre terminal.
     """)
     return
 

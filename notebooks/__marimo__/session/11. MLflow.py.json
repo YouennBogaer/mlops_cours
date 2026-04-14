@@ -8,14 +8,7 @@
     {
       "id": "Hbol",
       "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/plain": ""
-          }
-        }
-      ],
+      "outputs": [],
       "console": []
     },
     {
@@ -320,12 +313,12 @@
     },
     {
       "id": "NCOB",
-      "code_hash": "82ff5eab9d5a9b11dba9d372e2b2c857",
+      "code_hash": "6454477204553a1af0b43249c976b4a3",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn) \nSi mlflow n'apparait pas \u00e0 l'addresse ip externe, on peut d\u00e9j\u00e0 v\u00e9rifier si il tourne tout de m\u00eame : sudo systemctl status mlflow.</span>\n<span class=\"paragraph\">Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f</span>\n<span class=\"paragraph\">Si le service est actif, \u00e7a signifie que c'est google ou le navigateur qui le bloque.\nExemple : problemes avec Brave et son bloqueur de pubs.\nSi \u00e7a vient de GCS, pour empecher le bloquage on peut cr\u00e9er une r\u00e8gle de pare-feu sur Google Cloud Storage :</span>\n<ul>\n<li>Nom : allow-mlflow-http</li>\n<li>Cibles : \"Toutes les instances du r\u00e9seau\"</li>\n<li>Plages IP sources : 0.0.0.0/0 (pour autoriser tout le monde)</li>\n<li>Protocoles et ports : Cochez TCP et tapez 80.</li>\n</ul>\n<span class=\"paragraph\">Maintenant, en visitant la page web \u00e0 l'adresse IP externe de la VM, l'interface MLflow appara\u00eet.</span>\n<span class=\"paragraph\">Ajoutons la cl\u00e9 JSON que nous avons t\u00e9l\u00e9charg\u00e9, vers le dossier data</span></span>"
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">(Ajout Youenn)\nSi mlflow n'apparait pas \u00e0 l'addresse ip externe, on peut d\u00e9j\u00e0 v\u00e9rifier si il tourne tout de m\u00eame : sudo systemctl status mlflow.</span>\n<span class=\"paragraph\">Si le service est inactif on peut regarder les logs : sudo journalctl -u mlflow -f</span>\n<span class=\"paragraph\">Si le service est actif, \u00e7a signifie que c'est google ou le navigateur qui le bloque.\nExemple : problemes avec Brave et son bloqueur de pubs.\nSi \u00e7a vient de GCS, pour empecher le bloquage on peut cr\u00e9er une r\u00e8gle de pare-feu sur Google Cloud Storage :</span>\n<ul>\n<li>Nom : allow-mlflow-http</li>\n<li>Cibles : \"Toutes les instances du r\u00e9seau\"</li>\n<li>Plages IP sources : 0.0.0.0/0 (pour autoriser tout le monde)</li>\n<li>Protocoles et ports : Cochez TCP et tapez 80.</li>\n</ul>\n<span class=\"paragraph\">Maintenant, en visitant la page web \u00e0 l'adresse IP externe de la VM, l'interface MLflow appara\u00eet.</span>\n<span class=\"paragraph\">Ajoutons la cl\u00e9 JSON que nous avons t\u00e9l\u00e9charg\u00e9, vers le dossier data</span></span>"
           }
         }
       ],
