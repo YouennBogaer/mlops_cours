@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.4"
+__generated_with = "0.22.0"
 app = marimo.App()
 
 
@@ -95,6 +95,9 @@ def _(mo):
     export GH_TOKEN=$(gcloud secrets versions access latest --secret="<Nom Du Secret>")
     ```
 
+    (Ajout Youenn) Ne pas oublier de créer une version du secret en ajoutant le token github !
+
+
     Il peut être assez répétitif de réaliser cette commande à chaque rémarrage. Nous avons donc deux options :
     1. Le rendre persistant à l'aide de Github dans le VM pour les prochaines executions.
     2. Le rendre persistant au niveau de la VM, rendant le répertoire indépendant.
@@ -107,6 +110,7 @@ def _(mo):
     ```
     echo 'export GH_TOKEN=$(gcloud secrets versions access latest --secret="<NOM DU SECERT>")' >> ~/.bashrc
     ```
+
 
     Mais en réalisant le clone, on vous demande une `public key`, pas terrible en effet, il faudra faire le clone à laide de la commande suivante :
 
@@ -451,6 +455,7 @@ def _(mo):
     mo.md(r"""
     L'utilisation de `sudo` est importante, car cela va créer les fichiers de configuration dans `/root`, car Docker est utilisé avec `sudo`. Avant d'envoyer l'image vers le registre, attribuons-lui un tag permettant de faire référence à notre projet Google Cloud.
 
+    (Ajout Youenn) Attention de bien remplacé l'identifiant de votre projet dans la commande : esgi-352608
     ```
     sudo docker tag purchase_predict_api us-central1-docker.pkg.dev/esgi-352608/purchased-docker/purchase_predict_api
     ```
@@ -554,6 +559,8 @@ def _(mo):
     La dernière étape consiste à créer un service `systemd` qui permettra d'exécuter automatiquement le conteneur en arrière-plan tout en garantissant le redémarrage. Mais avant, rappelons-nous que les variables d'environnements doivent être configurés, et avec un `systemd`, il n'est pas possible faire des `export`.
 
     Pour pouvoir configurer les variables d'environnements pour un service, il faut les centraliser dans un fichier de configuration, que nous allons créer avec `sudo nano /etc/default/purchase_predict_api`.
+
+    (Ajout Youenn) Ne pas oublier de changer l'id projet et mettre votre nom de domaine pour mflow
     """)
     return
 
