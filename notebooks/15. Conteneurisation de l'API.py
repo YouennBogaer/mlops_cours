@@ -296,6 +296,8 @@ app._unparsable_cell(
 def _(mo):
     mo.md(r"""
     En effet, nous n'avons pas défini les **variables d'environnement** ! Il faut donc spécifier au conteneur Docker les variables telles que nous les avions définies dans le fichier `.env` par exemple. Pour cela, il est plus commode de créer un fichier `env.list` par exemple.
+
+    (Ajout Youenn) MFLOW_SERVER correspond à l'ip interne de la VM Mlflow
     """)
     return
 
@@ -314,6 +316,14 @@ app._unparsable_cell(
 def _(mo):
     mo.md(r"""
     Pour passer l'ensembles des variables en paramètre au conteneur Docker, nous pouvons utiliser l'argument `--env-file`.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    (Ajoute Youenn) /home/bogaeryouenn/purchase_predict_api/env.list
     """)
     return
 
@@ -590,6 +600,18 @@ def _(mo):
     return
 
 
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    (Ajout Youenn)
+
+    EnvironmentFile=/etc/default/purchase_predict_api
+
+    ExecStart=/usr/bin/docker run --env-file /home/bogaeryouenn/purchase_predict_api/env.list -p 0.0.0.0:80:80 $DOCKER_IMAGE
+    """)
+    return
+
+
 app._unparsable_cell(
     r"""
     sudo nano /etc/systemd/system/purchase_predict_api.service
@@ -658,6 +680,8 @@ app._unparsable_cell(
 def _(mo):
     mo.md(r"""
     Pour vérifier si le conteneur est bien exécuté, nous pouvons vérifier que le port $80$ est bien utilisé.
+
+    (Ajout Youenn) sudo netstat -ltpn | grep :80
     """)
     return
 
